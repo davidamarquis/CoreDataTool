@@ -13,6 +13,9 @@
 		4810E35C1B1744C300F72097 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4810E35B1B1744C300F72097 /* Images.xcassets */; };
 		4810E35F1B1744C300F72097 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4810E35D1B1744C300F72097 /* LaunchScreen.xib */; };
 		4810E36B1B1744C400F72097 /* CoreDataModellerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810E36A1B1744C400F72097 /* CoreDataModellerTests.swift */; };
+		4810E3771B17454A00F72097 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810E3761B17454A00F72097 /* Graph.swift */; };
+		4810E3791B1746A500F72097 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810E3781B1746A500F72097 /* Edge.swift */; };
+		4810E37C1B17494000F72097 /* GraphHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 4810E37B1B17494000F72097 /* GraphHeader.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +39,10 @@
 		4810E3641B1744C400F72097 /* CoreDataModellerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreDataModellerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4810E3691B1744C400F72097 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4810E36A1B1744C400F72097 /* CoreDataModellerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataModellerTests.swift; sourceTree = "<group>"; };
+		4810E3761B17454A00F72097 /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
+		4810E3781B1746A500F72097 /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Edge.swift; sourceTree = "<group>"; };
+		4810E37A1B17494000F72097 /* CoreDataModeller-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoreDataModeller-Bridging-Header.h"; sourceTree = "<group>"; };
+		4810E37B1B17494000F72097 /* GraphHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GraphHeader.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +84,8 @@
 		4810E3511B1744C300F72097 /* CoreDataModeller */ = {
 			isa = PBXGroup;
 			children = (
+				4810E3741B1744DE00F72097 /* Model */,
+				4810E3751B17450D00F72097 /* View */,
 				4810E3541B1744C300F72097 /* AppDelegate.swift */,
 				4810E3561B1744C300F72097 /* ViewController.swift */,
 				4810E3581B1744C300F72097 /* Main.storyboard */,
@@ -110,6 +119,24 @@
 				4810E3691B1744C400F72097 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4810E3741B1744DE00F72097 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				4810E3761B17454A00F72097 /* Graph.swift */,
+				4810E3781B1746A500F72097 /* Edge.swift */,
+				4810E37B1B17494000F72097 /* GraphHeader.m */,
+				4810E37A1B17494000F72097 /* CoreDataModeller-Bridging-Header.h */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		4810E3751B17450D00F72097 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -212,7 +239,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4810E3771B17454A00F72097 /* Graph.swift in Sources */,
 				4810E3571B1744C300F72097 /* ViewController.swift in Sources */,
+				4810E3791B1746A500F72097 /* Edge.swift in Sources */,
+				4810E37C1B17494000F72097 /* GraphHeader.m in Sources */,
 				4810E3551B1744C300F72097 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -340,9 +370,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = CoreDataModeller/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "CoreDataModeller/CoreDataModeller-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -350,9 +383,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = CoreDataModeller/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "CoreDataModeller/CoreDataModeller-Bridging-Header.h";
 			};
 			name = Release;
 		};
