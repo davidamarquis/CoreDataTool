@@ -1,5 +1,5 @@
 //
-//  GraphHeader.m
+//  Entity.h
 //  CoreDataModeller
 //
 //  Created by David Marquis on 2015-05-28.
@@ -7,3 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
+#import "Graph.h"
+
+
+@interface Entity : Graph
+
+
+@end

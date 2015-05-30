@@ -1,13 +1,19 @@
 //
-//  Edge.swift
+//  Graph.m
 //  CoreDataModeller
 //
 //  Created by David Marquis on 2015-05-28.
 //  Copyright (c) 2015 David Marquis. All rights reserved.
 //
 
-import UIKit
+#import "Graph.h"
+#import "Edge.h"
+#import "Vert.h"
 
-class Edge: NSObject {
-   // hello
-}
+
+@implementation Graph
+
+@dynamic edge;
+@dynamic vert;
+
+@end
