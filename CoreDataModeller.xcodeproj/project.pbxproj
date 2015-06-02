@@ -14,16 +14,22 @@
 		4810E35F1B1744C300F72097 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4810E35D1B1744C300F72097 /* LaunchScreen.xib */; };
 		4810E36B1B1744C400F72097 /* CoreDataModellerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810E36A1B1744C400F72097 /* CoreDataModellerTests.swift */; };
 		4810E3771B17454A00F72097 /* Cows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810E3761B17454A00F72097 /* Cows.swift */; };
+		4812E3C71B1CF3E90061EAB1 /* GraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4812E3C61B1CF3E90061EAB1 /* GraphView.swift */; };
+		4812E3C91B1D046F0061EAB1 /* GraphWorldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4812E3C81B1D046F0061EAB1 /* GraphWorldView.swift */; };
+		4812E3CB1B1D047C0061EAB1 /* VertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4812E3CA1B1D047C0061EAB1 /* VertView.swift */; };
+		4812E3CD1B1D048C0061EAB1 /* EdgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4812E3CC1B1D048C0061EAB1 /* EdgeView.swift */; };
+		4812E3CF1B1D04BC0061EAB1 /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4812E3CE1B1D04BC0061EAB1 /* LandingVC.swift */; };
 		48282E921B179DF400BDA782 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 48282E901B179DF400BDA782 /* Model.xcdatamodeld */; };
 		48282EAA1B17A1DB00BDA782 /* Vert + VertEdit.m in Sources */ = {isa = PBXBuildFile; fileRef = 48282EA91B17A1DB00BDA782 /* Vert + VertEdit.m */; };
 		48282EAD1B17A1F800BDA782 /* Graph + GraphEdit.m in Sources */ = {isa = PBXBuildFile; fileRef = 48282EAC1B17A1F800BDA782 /* Graph + GraphEdit.m */; };
 		48282EB01B17A1FF00BDA782 /* Edge + EdgeEdit.m in Sources */ = {isa = PBXBuildFile; fileRef = 48282EAF1B17A1FF00BDA782 /* Edge + EdgeEdit.m */; };
 		48282EBA1B17AED100BDA782 /* VertExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48282EB91B17AED100BDA782 /* VertExtension.swift */; };
-		487FDCF91B1A62080087C0AF /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487FDCF81B1A62080087C0AF /* Edge.swift */; };
-		487FDCFB1B1A62080087C0AF /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487FDCFA1B1A62080087C0AF /* Vert.swift */; };
-		487FDCFD1B1A62080087C0AF /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487FDCFC1B1A62080087C0AF /* Graph.swift */; };
-		487FDCFF1B1A62080087C0AF /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487FDCFE1B1A62080087C0AF /* Entity.swift */; };
 		487FDD011B1A6BC60087C0AF /* NSSet + Edit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487FDD001B1A6BC60087C0AF /* NSSet + Edit.swift */; };
+		4890391C1B1B55CC005E0992 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4890391B1B1B55CC005E0992 /* Entity.swift */; };
+		4890391E1B1B55CD005E0992 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4890391D1B1B55CD005E0992 /* Edge.swift */; };
+		489039201B1B55CD005E0992 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4890391F1B1B55CD005E0992 /* Graph.swift */; };
+		489039221B1B55CD005E0992 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489039211B1B55CD005E0992 /* Vert.swift */; };
+		489039241B1B8E0C005E0992 /* Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489039231B1B8E0C005E0992 /* Controller.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +55,11 @@
 		4810E36A1B1744C400F72097 /* CoreDataModellerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataModellerTests.swift; sourceTree = "<group>"; };
 		4810E3761B17454A00F72097 /* Cows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Cows.swift; path = CoreDataModeller/Cows.swift; sourceTree = "<group>"; };
 		4810E37A1B17494000F72097 /* CoreDataModeller-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoreDataModeller-Bridging-Header.h"; sourceTree = "<group>"; };
+		4812E3C61B1CF3E90061EAB1 /* GraphView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphView.swift; sourceTree = "<group>"; };
+		4812E3C81B1D046F0061EAB1 /* GraphWorldView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphWorldView.swift; sourceTree = "<group>"; };
+		4812E3CA1B1D047C0061EAB1 /* VertView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertView.swift; sourceTree = "<group>"; };
+		4812E3CC1B1D048C0061EAB1 /* EdgeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeView.swift; sourceTree = "<group>"; };
+		4812E3CE1B1D04BC0061EAB1 /* LandingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
 		48282E911B179DF400BDA782 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		48282EA81B17A1DB00BDA782 /* Vert + VertEdit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Vert + VertEdit.h"; sourceTree = "<group>"; };
 		48282EA91B17A1DB00BDA782 /* Vert + VertEdit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Vert + VertEdit.m"; sourceTree = "<group>"; };
@@ -57,11 +68,12 @@
 		48282EAE1B17A1FF00BDA782 /* Edge + EdgeEdit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Edge + EdgeEdit.h"; sourceTree = "<group>"; };
 		48282EAF1B17A1FF00BDA782 /* Edge + EdgeEdit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Edge + EdgeEdit.m"; sourceTree = "<group>"; };
 		48282EB91B17AED100BDA782 /* VertExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertExtension.swift; sourceTree = "<group>"; };
-		487FDCF81B1A62080087C0AF /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Edge.swift; path = ../Edge.swift; sourceTree = "<group>"; };
-		487FDCFA1B1A62080087C0AF /* Vert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Vert.swift; path = ../Vert.swift; sourceTree = "<group>"; };
-		487FDCFC1B1A62080087C0AF /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Graph.swift; path = ../Graph.swift; sourceTree = "<group>"; };
-		487FDCFE1B1A62080087C0AF /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Entity.swift; path = ../Entity.swift; sourceTree = "<group>"; };
 		487FDD001B1A6BC60087C0AF /* NSSet + Edit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSSet + Edit.swift"; sourceTree = "<group>"; };
+		4890391B1B1B55CC005E0992 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Entity.swift; path = ../Entity.swift; sourceTree = "<group>"; };
+		4890391D1B1B55CD005E0992 /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Edge.swift; path = ../Edge.swift; sourceTree = "<group>"; };
+		4890391F1B1B55CD005E0992 /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Graph.swift; path = ../Graph.swift; sourceTree = "<group>"; };
+		489039211B1B55CD005E0992 /* Vert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Vert.swift; path = ../Vert.swift; sourceTree = "<group>"; };
+		489039231B1B8E0C005E0992 /* Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Controller.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +119,7 @@
 				487FDD001B1A6BC60087C0AF /* NSSet + Edit.swift */,
 				4810E3741B1744DE00F72097 /* Model */,
 				4810E3751B17450D00F72097 /* View */,
+				489039251B1B8E13005E0992 /* Controller */,
 				4810E3541B1744C300F72097 /* AppDelegate.swift */,
 				4810E3561B1744C300F72097 /* ViewController.swift */,
 				48282E901B179DF400BDA782 /* Model.xcdatamodeld */,
@@ -146,10 +159,10 @@
 		4810E3741B1744DE00F72097 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				487FDCFE1B1A62080087C0AF /* Entity.swift */,
-				487FDCFC1B1A62080087C0AF /* Graph.swift */,
-				487FDCFA1B1A62080087C0AF /* Vert.swift */,
-				487FDCF81B1A62080087C0AF /* Edge.swift */,
+				489039211B1B55CD005E0992 /* Vert.swift */,
+				4890391F1B1B55CD005E0992 /* Graph.swift */,
+				4890391D1B1B55CD005E0992 /* Edge.swift */,
+				4890391B1B1B55CC005E0992 /* Entity.swift */,
 				48282EA71B17A1BD00BDA782 /* Categories */,
 				4810E37A1B17494000F72097 /* CoreDataModeller-Bridging-Header.h */,
 			);
@@ -159,6 +172,10 @@
 		4810E3751B17450D00F72097 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				4812E3C61B1CF3E90061EAB1 /* GraphView.swift */,
+				4812E3C81B1D046F0061EAB1 /* GraphWorldView.swift */,
+				4812E3CA1B1D047C0061EAB1 /* VertView.swift */,
+				4812E3CC1B1D048C0061EAB1 /* EdgeView.swift */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -175,6 +192,15 @@
 				48282EB91B17AED100BDA782 /* VertExtension.swift */,
 			);
 			name = Categories;
+			sourceTree = "<group>";
+		};
+		489039251B1B8E13005E0992 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				489039231B1B8E0C005E0992 /* Controller.swift */,
+				4812E3CE1B1D04BC0061EAB1 /* LandingVC.swift */,
+			);
+			name = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -277,19 +303,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				489039201B1B55CD005E0992 /* Graph.swift in Sources */,
+				4890391E1B1B55CD005E0992 /* Edge.swift in Sources */,
 				48282EBA1B17AED100BDA782 /* VertExtension.swift in Sources */,
+				4812E3CB1B1D047C0061EAB1 /* VertView.swift in Sources */,
 				48282EAD1B17A1F800BDA782 /* Graph + GraphEdit.m in Sources */,
+				4812E3C91B1D046F0061EAB1 /* GraphWorldView.swift in Sources */,
 				48282EB01B17A1FF00BDA782 /* Edge + EdgeEdit.m in Sources */,
+				4812E3C71B1CF3E90061EAB1 /* GraphView.swift in Sources */,
 				4810E3771B17454A00F72097 /* Cows.swift in Sources */,
+				4812E3CD1B1D048C0061EAB1 /* EdgeView.swift in Sources */,
 				4810E3571B1744C300F72097 /* ViewController.swift in Sources */,
+				4812E3CF1B1D04BC0061EAB1 /* LandingVC.swift in Sources */,
 				48282EAA1B17A1DB00BDA782 /* Vert + VertEdit.m in Sources */,
-				487FDCFB1B1A62080087C0AF /* Vert.swift in Sources */,
-				487FDCFD1B1A62080087C0AF /* Graph.swift in Sources */,
-				487FDCFF1B1A62080087C0AF /* Entity.swift in Sources */,
+				4890391C1B1B55CC005E0992 /* Entity.swift in Sources */,
 				4810E3551B1744C300F72097 /* AppDelegate.swift in Sources */,
+				489039221B1B55CD005E0992 /* Vert.swift in Sources */,
 				487FDD011B1A6BC60087C0AF /* NSSet + Edit.swift in Sources */,
 				48282E921B179DF400BDA782 /* Model.xcdatamodeld in Sources */,
-				487FDCF91B1A62080087C0AF /* Edge.swift in Sources */,
+				489039241B1B8E0C005E0992 /* Controller.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

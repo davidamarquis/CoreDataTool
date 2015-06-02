@@ -11,8 +11,9 @@ import Foundation
 extension Vert {
 
 // computed property
-class func MAXPosition()->Int {
-    return 1000;
+class func MAXPosition()->Double {
+    var maxPos:Double=1000;
+    return maxPos;
 }
 
 func isNeighborOf(other:Vert)->Bool {
@@ -50,7 +51,7 @@ func isPositionEqual(other: Vert)->Bool {
         return true;
     }
     else {
-        return false;
+        return(false);
     }
 }
 // addEdge sets up a new edge
@@ -64,88 +65,73 @@ func addEdge(edge:Edge, toVert vert:Vert)  {
     finishedObservedMethod=true;
 }
 
-func removeEdge(edge:Edge, toVert:Vert) {
+func removeEdge(edge:Edge, vert:Vert) {
     // CD will handle removal of self from v2 automatically
-    neighbors.
+    neighbors.setByRemovingObject(vert);
+    edges.setByRemovingObject(edge);
+    vert.edges.setByRemovingObject(edge);
     
-    // edge sets of the two verts are distinct so need removes for both verts
-    [self removeEdgeObject:edge];
-    [v2 removeEdgeObject:edge];
-    
-    [self setFreshEdgeViews:NO];
-    self.finishedObservedMethod=[[NSNumber alloc] initWithBool:YES];
+    freshEdges=false;
+    finishedObservedMethod=true;
 }
 
-
-// public
-func distance(other:Vert)->double{
-    if([self isNeighborOf:other]) {
-        var x1=self.x;
-        var x2=other.x;
-        var y1=self.y;
-        var y2=other.y;
-        return sqrt(pow(x1-x2,2)+pow(y1-y2,2));
+func distance(other:Vert)->Double{
+    if(self.isNeighborOf(other)) {
+        var x1:Double=self.x;
+        var x2:Double=other.x;
+        var y1:Double=self.y;
+        var y2:Double=other.y;
+        let z1=pow(x1-x2,2);
+        let z2=pow(y1-y2,2);
+        return sqrt(z1+z2);
     }
     else {
-        // like infinity
-        return [[Vert class] MAXPosition];
+        // get the computed property. like infinity
+        return Vert.MAXPosition();
     }
 }
 
-# pragma mark Core updates
-# pragma mark -
-// public
 // change Fresh flags so VC must redraw (i.e. trigger a redraw of corresponding view)
-func invalidateViews {
-    [self setFreshVertView:NO];
-    [self setFreshEdgeViews:NO];
+func invalidateViews() {
+    self.freshEdges=false;
+    self.freshViews=false;
 }
 
-// public
-func setupVert:(double)newX :(double)newY {
-    // core
-    [self invalidateViews];
-    [self setX:newX Y:newY];
-    // no verts have been seen. Setting here is done only so outside classes will get correct information if they access this property:
-    // all search algos will set this flag to NO at start and end of their run
-    [self setDepthSearchSeen:NO];
-}
-
-// public
 // change vert position in data model
-func moveVertToX(newX:double newY:double)  {
-    self.invalidateViews();
-    self setX:newX Y:newY];
+func moveVertToX(newX:Double, newY:Double)  {
+    invalidateViews();
+    x=newX;
+    y=newY;
+    // no verts have been seen
+    // set here so outside classes don't get confused about vert state
+    // @search algos: set this flag to false at start when executed
+    depthSearchSeen=false;
 }
 
-#pragma mark GraphTheory
-// public
-func allNeighborsSeen->Bool {
-    for(v in self.neighbor) {
-        if([v isKindOfClass:[Vert class]]) {
-            Vert* vert=(Vert*)v;
+func allNeighborsSeen()->Bool {
+    for v in self.neighbors {
+        if let vert=v as? Vert {
             if(!vert.depthSearchSeen) {
                 return false;
             }
         }
         else {
-            NSLog(@"Vert cat: allNeighborsMarked: err self.neighbor contains object that is not vert");
+            print("Vert cat: allNeighborsSeen: err");
         }
     }
     return true;
 }
 // public
 // finds an unseen vert, marks it as seen, and returns it
-func findUnseen {
-    for(id v in self.neighbor) {
-        if([v isKindOfClass:[Vert class]]) {
-            Vert* vert=(Vert*)v;
+func findUnseen()->Vert? {
+    for v in self.neighbors {
+        if let vert=v as? Vert {
             if(!vert.depthSearchSeen) {
                 return vert;
             }
         }
         else {
-            NSLog(@"Vert cat: findUnseen: err self.neighbor contains object that is not vert");
+            print("Vert cat: findUnseen: err self.neighbor contains object that is not vert");
         }
     }
     return nil;
