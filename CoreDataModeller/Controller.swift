@@ -13,70 +13,46 @@ import CoreData
 class CoreController: UIViewController, UIScrollViewDelegate {
 
 required init(coder aDecoder: NSCoder) {
-    super.init(coder:aDecoder)
+    super.init(coder:aDecoder);
     hght=self.view.bounds.size.height;
     wdth=self.view.bounds.size.width;
 }
 
-let hght:CGFloat;
-let wdth:CGFloat;
 let vscale:CGFloat=0.15;
+var hght:CGFloat=CGFloat();
+var wdth:CGFloat=CGFloat();
+var vertViewCount:Int=Int();
+let context:NSManagedObjectContext;
+let managedObjectModel:NSManagedObjectModel;
+let persistentStoreCoordinator:NSPersistentStoreCoordinator;
 
 // main view is graphView
 // use a closure to contain the initialization logic
 lazy var graphView:GraphView? = {
+    // this is how designated initializers are called in swift
     var gv=GraphView()
     
     gv.frame=CGRectMake(CGFloat(0), CGFloat(0), self.wdth, self.hght*(1-self.vscale));
-    gv.backgroundColor=UIColor.whiteColor;
+    gv.backgroundColor=UIColor.init( red:CGFloat(0),green:CGFloat(0),blue:CGFloat(0),alpha:CGFloat(0) );
     gv.maximumZoomScale=2.0;
     gv.minimumZoomScale=0.2;
     gv.delegate=self;
-    self.view.addSubview=gv;
+    self.view.addSubview(gv);
     return gv;
 }()
 
 // the graph property is our model
 // Controller owns so the model so we maintain a strong reference
-var graph:Graph?;
+
 // TO DO what is this?
-var resume:Bool?;
+//var resume:Bool?;
 
-var vertViewCount:Int;
-
-let context:NSManagedObjectContext;
-let managedObjectModel:NSManagedObjectModel;
-let persistentStoreCoordinator:NSPersistentStoreCoordinator;
-/*
 lazy var graph:Graph?={
-    var tempGraph=NSEntityDescription.insertNewObjectForEntityForName(<#entityName: String#>, inManagedObjectContext: <#NSManagedObjectContext#>);
+    var tempGraph:Graph? = NSEntityDescription.insertNewObjectForEntityForName("Graph", inManagedObjectContext: self.context) as? Graph;
     return tempGraph;
     }()
 
-func setGraphView(graphView: GraphView) {
-  
-      if(!_graphView) {
-        _graphView=[[GraphView alloc] init];
-        _graphView.frame=CGRectMake(0, 0,self.view.bounds.size.width,self.hght*(1-self.bottomBarScale));
-        _graphView.backgroundColor=[UIColor whiteColor];
-        
-        // add as a subview
-        [self.view addSubview:_graphView];
-        
-        // set up zoom
-        _graphView.maximumZoomScale=2.0;
-        _graphView.minimumZoomScale=0.2;
-        _graphView.delegate=self;
-    }
-    _graphView=graphView;
-}
-func setGraph(graph:Graph) {
-    if(!_graph) {
-        _graph=[NSEntityDescription insertNewObjectForEntityForName:@"Graph" inManagedObjectContext:self.context];
-    }
-    _graph=graph;
-}
-
+/*
 func barButtons() {
     UIButton* edgeButton=[self barButton:@"E"];
     edgeButton.frame=CGRectMake(0,self.hght*(1-self.bottomBarScale),self.wdth*0.333,self.hght*self.bottomBarScale);
