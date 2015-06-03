@@ -1,33 +1,48 @@
 //
-//  Graph + GraphEdit.m
-//  April25NotGoingWell
+//  GraphExtension.swift
+//  CoreDataModeller
 //
-//  Created by David Marquis on 2015-05-12.
+//  Created by David Marquis on 2015-06-02.
 //  Copyright (c) 2015 David Marquis. All rights reserved.
 //
 
-#import "Graph + GraphEdit.h"
-// private methods are contained in another category
-#import "Graph + PrivateCatMethods.h"
+import CoreData
+import Foundation
 
-@implementation Graph (GraphEdit)
+extension Graph {
+// all methods in an extension
 
-// public
--(void)setupVert:(Vert*)vertToSetup atX:(double)xPos atY:(double)yPos {
-    // vertViewIds are 0 indexed. Warning: setting of ids should be guarded against the deletion of managed verts from but is not currently
-  
-    if(self.vert==nil) {
-        NSLog(@"setupVert Graph cat: err self.vert is nil");
+    func SetupVert(vertOrNil:Vert?, AtX xPos:Double, AtY yPos:Double) {
+        // Warning: setting of ids should be guarded against the deletion of managed verts from but is not currently
+      
+        if let vert=vertOrNil {
+            // add to set
+            verts.setByAddingObject(vert);
+            let vertId:Int32=Int32(self.verts.count-1);
+            
+            vert.vertViewId=vertId;
+            vert.moveVertTo(xPos, yPos);
+        }
+        else {
+        
+        }
     }
-    // add to set
-    [self addVertObject:vertToSetup];
-    
-    long vertId=[self.vert count]-1;
-    vertToSetup.vertViewId=[[NSNumber alloc] initWithUnsignedLong:vertId];
-    [vertToSetup setupVert:xPos :yPos];
-}
 
-// public
+    func SetupEdge(edgeOrNil:Edge?, From vertOrNil1:Vert?, To vertOrNil2:Vert?) {
+        if let edge=edgeOrNil {
+            edges.setByAddingObject(edge);
+            let edgeId:Int32=Int32(edges.count-1);
+            
+            edge.edgeViewId=edgeId;
+            // adding an edge sets vert1 and vert2 to be neighbors joined by the edge e
+        }
+        else {
+        
+        }
+        vertOrNil1!.addEdge(edgeOrNil, toVert:vertOrNil2);
+    }
+}
+/*
 -(Vert*)getVertById:(NSNumber*)vertId {
     int idAsInt=[vertId intValue];
     
@@ -48,7 +63,6 @@
     return nil;
 }
 
-// public
 -(void)moveVertById:(NSNumber*)vertId toXPos:(double)endX toYPos:(double)endY {
     Vert* v=[self getVertById:vertId];
     // check v
@@ -58,23 +72,8 @@
     [v moveVertToX:endX toY:endY];
 }
 
-// public
 -(void)removeVertById:(NSNumber*)vertId {
     // TO DO
-}
-
-# pragma mark edges
-// public
--(void)setupEdge:(Edge*)edgeToSetup from:(Vert*)vert1 to:(Vert*)vert2 {
-    if(self.edge==nil) {
-        NSLog(@"setupVert Graph cat: err self.vert is nil");
-    }
-    // add to edge set
-    [self addEdgeObject:edgeToSetup];
-    long edgeId=[self.edge count]-1;
-    edgeToSetup.edgeViewId=[[NSNumber alloc] initWithUnsignedLong:edgeId];
-    // adding an edge sets vert1 and vert2 to be neighbors joined by the edge e
-    [vert1 addEdge:edgeToSetup toVert:vert2];
 }
 
 // public
@@ -223,6 +222,4 @@
         [vert setDepthSearchSeen:NO];
     }
     return edgePairs;
-}
-
-@end
+*/

@@ -55,14 +55,20 @@ func isPositionEqual(other: Vert)->Bool {
     }
 }
 // addEdge sets up a new edge
-func addEdge(edge:Edge, toVert vert:Vert)  {
-    // neighbors is a bidirectional relationship
-    neighbors.setByAddingObject(vert);
-    edges.setByAddingObject(edge);
-    vert.edges.setByAddingObject(edge);
+func addEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
+
+    if let edge=edgeOrNil, let vert=vertOrNil {
+        // neighbors is a bidirectional relationship
+        neighbors.setByAddingObject(vert);
+        edges.setByAddingObject(edge);
+        vert.edges.setByAddingObject(edge);
+        
+        freshEdges=false;
+        finishedObservedMethod=true;
+    }
+    else {
     
-    freshEdges=false;
-    finishedObservedMethod=true;
+    }
 }
 
 func removeEdge(edge:Edge, vert:Vert) {
@@ -98,7 +104,7 @@ func invalidateViews() {
 }
 
 // change vert position in data model
-func moveVertToX(newX:Double, newY:Double)  {
+func moveVertTo(newX:Double, _ newY:Double) {
     invalidateViews();
     x=newX;
     y=newY;

@@ -1,18 +1,15 @@
 //
-//  Edge + EdgeEdit.m
-//  April25NotGoingWell
+//  EdgeExtension.swift
+//  CoreDataModeller
 //
-//  Created by David Marquis on 2015-05-22.
+//  Created by David Marquis on 2015-06-02.
 //  Copyright (c) 2015 David Marquis. All rights reserved.
 //
 
-#import "Edge + EdgeEdit.h"
-// private import
-#import "Vert + VertEdit.h"
+import UIKit
 
-@implementation Edge (EdgeEdit)
-
-// public
+extension Edge {
+/*
 // returns an array of two Verts that the edge is joined to
 -(NSArray*)vertArray {
     Vert* vert;
@@ -61,4 +58,5 @@
         count++;
     }
 }
-@end
+*/
+}
