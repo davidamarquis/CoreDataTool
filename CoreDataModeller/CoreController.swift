@@ -155,7 +155,7 @@ private func testVert(xPos:Double, _ yPos:Double) -> Vert? {
         vert=NSEntityDescription.insertNewObjectForEntityForName("Vert", inManagedObjectContext:nonnilCon) as? Vert;
         // TODO: vert.addObserver:self forKeyPath:@"finishedObservedMethod" options:0 context:NULL];
         // setupVert calls Vert to finish setup
-        // TODO: nonnilGraph.SetupVert(vert, AtX:xPos, AtY:yPos);
+        nonnilGraph.SetupVert(vert, AtX:xPos, AtY:yPos);
     }
     return vert;
 }
@@ -298,6 +298,7 @@ private func testVert(xPos:Double, _ yPos:Double) -> Vert? {
 
     lazy var managedObjectModel: NSManagedObjectModel = {
         // The managed object model for the application. This property is not optional. It is a fatal error for the application not to be able to find and load its model.
+        // TODO: change "CoreDataTest" using grep
         let modelURL = NSBundle.mainBundle().URLForResource("CoreDataTest", withExtension: "momd")!
         return NSManagedObjectModel(contentsOfURL: modelURL)!
     }()
