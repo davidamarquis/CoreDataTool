@@ -114,14 +114,6 @@ func onNewGraph() {
     testGraph();
 }
 
-func stupid() {
-    var myGraph=GraphFunction();
-    if let context=self.context {
-        myGraph = NSEntityDescription.insertNewObjectForEntityForName("Graph", inManagedObjectContext: context) as! GraphFunction;
-        myGraph.fuck();
-    }
-}
-
 // private
 // create some variables in the managedObjectModel and send them to the model for setup
 private func testGraph() {

@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-class Edge: NSManagedObject {
+@objc(Edge) class Edge: NSManagedObject {
 
     @NSManaged var edgeViewId: Int32
     @NSManaged var parseObjectId: String

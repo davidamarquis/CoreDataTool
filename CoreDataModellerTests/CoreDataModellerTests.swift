@@ -21,12 +21,14 @@ var modelURL:NSURL?;
 var model:NSManagedObjectModel?;
 var store:NSPersistentStoreCoordinator?;
 
+// setUp sets up the XCTestCases
 override func setUp() {
     super.setUp();
     setCore();
     makeGraph1();
 }
 
+// setCore sets up core data
 func setCore() {
     modelURL = NSBundle.mainBundle().URLForResource("Model", withExtension:"momd");
     if let nonnilURL=modelURL {
@@ -38,6 +40,9 @@ func setCore() {
     if let nonnilModel = model {
         // init the persistent store coordinator
         store = NSPersistentStoreCoordinator(managedObjectModel: nonnilModel);
+        if store==nil {
+             XCTAssert(false, "should have a store that is not nil");
+        }
         
         // test if we can create an in-memory store
         // the return is an optional
@@ -56,52 +61,106 @@ func setCore() {
       
     }
     context = NSManagedObjectContext();
-    if let nonnilContext=context {
+    if context != nil {
         context!.persistentStoreCoordinator = store;
-        graph=NSEntityDescription.insertNewObjectForEntityForName("Graph", inManagedObjectContext:nonnilContext) as? Graph;
+        graph=NSEntityDescription.insertNewObjectForEntityForName("Graph", inManagedObjectContext:context!) ;
+        
     }
+    else { print("tests: setCore(): context is nil"); }
 }
 
 // verts array using swift arrays
 func makeVertsArray(numVerts:Int) {
     verts=Array<Vert>();
-    // check if verts is nonnil
     
-    if var nonnilVerts=verts, nonnilContext=context {
-        // assuming type inference will be able to handle the lack of an int declaration
+    // check if verts is nonnil
+    if(verts != nil && context != nil) {
         for var i=0;i<numVerts;i++ {
-            var vert:Vert = NSEntityDescription.insertNewObjectForEntityForName("Vert", inManagedObjectContext: nonnilContext) as! Vert;
-            // just append the fucker
-            nonnilVerts.append(vert);
+            var myObject:AnyObject = NSEntityDescription.insertNewObjectForEntityForName("Vert", inManagedObjectContext: context!);
+            vert!.append(myObject);
+            
+            // TODO
+            var myNonOptionalVert:Vert! = myObject as! Vert;
+            
+            
+            // swift downcasting failure:
+            // give me ideas
+            // do I truly need to downcast
+            // what happens if I don't ?
+            // q: is graph nil ?
+            // a: yes
+            // maybe there is some structural reason that we can only work with AnyObjects
+            var vert:Vert? = myObject as? Vert;
+            if vert != nil {
+                verts!.append();
+            }
+            else {
+            
+                println("tests: makeVertsArray: vert is nil");
+            }
         }
+    }
+    else {
+    
     }
 }
 
-func makeEdgesArray:(int)numEdges {
-    self.edges=[[NSMutableArray alloc] init];
-    for(int i=0;i<numEdges;i++) {
-        Edge* edge=[NSEntityDescription insertNewObjectForEntityForName:@"Edge" inManagedObjectContext:self.context];
-        self.edges[i]=edge;
+func makeEdgesArray(numEdges:Int) {
+    edges=Array<Edge>();
+    
+    if (edges != nil && context != nil) {
+        for var i=0;i<numEdges;i++ {
+            var edge:Edge? = NSEntityDescription.insertNewObjectForEntityForName("Edge", inManagedObjectContext:context!) as? Edge;
+            if edge != nil {
+                edges!.append(edge!);
+            }
+            else { println("tests: makeEdgesArray: edge is nil"); }
+        }
+    }
+    else {
+    
     }
 }
 
 func makeGraph1() {
-    [self setCore];
-    [self makeVertsArray:4];
-    [self makeEdgesArray:4];
+    setCore();
+    makeVertsArray(4);
+    makeEdgesArray(4);
     
     // setup edges and verts and add to graph
-    [self setupVert:@[_verts[0],@10,@70]];
-    [self setupVert:@[_verts[1],@100,@200]];
-    [self setupVert:@[_verts[2],@50,@300]];
-    [self setupVert:@[_verts[3],@200,@80]];
-    [self.graph setupEdge:_edges[0] from:_verts[0] to:_verts[1]];
-    [self.graph setupEdge:_edges[1] from:_verts[0] to:_verts[2]];
-    [self.graph setupEdge:_edges[2] from:_verts[0] to:_verts[3]];
-    [self.graph setupEdge:_edges[3] from:_verts[1] to:_verts[2]];
+    // the methods SetupVert and SetupEdges expect optionals
+    if var nonnilGraph=graph, var nonnilVerts=verts, var nonnilEdges=edges {
+        nonnilGraph.SetupVert(nonnilVerts[0], AtX:10, AtY:70);
+        nonnilGraph.SetupVert(nonnilVerts[1], AtX:100, AtY:200);
+        nonnilGraph.SetupVert(nonnilVerts[2], AtX:50, AtY:300);
+        nonnilGraph.SetupVert(nonnilVerts[3], AtX:200, AtY:80);
+        nonnilGraph.SetupEdge(nonnilEdges[0], From:nonnilVerts[0], To:nonnilVerts[1]);
+        nonnilGraph.SetupEdge(nonnilEdges[1], From:nonnilVerts[0], To:nonnilVerts[2]);
+        nonnilGraph.SetupEdge(nonnilEdges[2], From:nonnilVerts[0], To:nonnilVerts[3]);
+        nonnilGraph.SetupEdge(nonnilEdges[3], From:nonnilVerts[1], To:nonnilVerts[2]);
+    }
+}
+
+// all verts initially have not been seen
+func testSeen1() {
+    if let nonnilVerts=verts {
+        XCTAssert(nonnilVerts[0].allNeighborsSeen()==false);
+    }
+    else { XCTAssert(false); }
 }
 
 /*
+// takes an array of verts and sets them up at (0,0)
+-(void)setupVertsAtZero:(NSArray*)verts {
+    for(id v in verts) {
+        if(![v isKindOfClass:[Vert class]]) {
+            XCTAssert(NO);
+        }
+        Vert* vert=(Vert*)v;
+        [self setupVert:@[vert,@0,@0]];
+    }
+}
+
 func makeGraph2() {
     [self setCore];
     [self makeVertsArray:3];
@@ -133,23 +192,7 @@ func makeGraph2() {
     
     // eventually should have [self.graph setupGraph:@[@[@1,@2],@[@1,@3],
 }
-//-(void)setupGraph
 
-// takes an array of 3 args to setup a single vert
-// arg0=vert index, arg1=xCoord, arg2=yCoord
--(void)setupVert:(NSArray*)args {
-    [self.graph setupVert:args[0] atX:[args[1] doubleValue] atY:[args[2] doubleValue]];
-}
-// takes an array of verts and sets them up at (0,0)
--(void)setupVertsAtZero:(NSArray*)verts {
-    for(id v in verts) {
-        if(![v isKindOfClass:[Vert class]]) {
-            XCTAssert(NO);
-        }
-        Vert* vert=(Vert*)v;
-        [self setupVert:@[vert,@0,@0]];
-    }
-}
 
 #pragma mark vert methods
 
@@ -177,10 +220,6 @@ func makeGraph2() {
     XCTAssert(![self.graph cycleExists]);
 }
 
-// all verts initially have not been seen
--(void)testSeen1 {
-    XCTAssert([_verts[0] allNeighborsSeen]==NO);
-}
 // a neighbor of v0 has been seen but not all neighbors of v0 have been
 -(void)testSeen2 {
     Vert* vert=(Vert*)_verts[1];

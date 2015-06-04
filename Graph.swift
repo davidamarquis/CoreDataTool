@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-class Graph: NSManagedObject {
+@objc(Graph) class Graph: NSManagedObject {
 
     @NSManaged var edges: NSSet
     @NSManaged var verts: NSSet
