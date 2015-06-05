@@ -12,92 +12,105 @@ import CoreData
 
 class CoreDataModellerTests: XCTestCase {
     
-var context:NSManagedObjectContext?;
 var graph:Graph?;
 var verts:Array<Vert>?;
 var edges:Array<Edge>?;
 
-var modelURL:NSURL?;
-var model:NSManagedObjectModel?;
-var store:NSPersistentStoreCoordinator?;
-
 // setUp sets up the XCTestCases
 override func setUp() {
+    let graphDescription = NSEntityDescription.entityForName("Graph",inManagedObjectContext: context!);
+    graph = Graph(entity: graphDescription!,insertIntoManagedObjectContext: context);
+    
     super.setUp();
-    setCore();
     makeGraph1();
 }
 
-// setCore sets up core data
-func setCore() {
-    modelURL = NSBundle.mainBundle().URLForResource("Model", withExtension:"momd");
-    if let nonnilURL=modelURL {
-        model = NSManagedObjectModel(contentsOfURL: nonnilURL);
+// MARK: - Core Data stack
+// applicationDocumentsDirectory
+// managedObjectModel
+// persistentStoreCoordinator
+// context
+
+lazy var applicationDocumentsDirectory: NSURL =
+{
+    // The directory the application uses to store the Core Data store file. This code uses a directory named "com.david.CoreDataTest" in the application's documents Application Support directory.
+    let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
+    return urls[urls.count-1] as! NSURL
+}()
+
+lazy var managedObjectModel: NSManagedObjectModel = {
+    // The managed object model for the application. This property is not optional. It is a fatal error for the application not to be able to find and load its model.
+    // TODO: change "CoreDataTest" using grep
+    let urlOrNil = NSBundle.mainBundle().URLForResource("Model", withExtension: "momd");
+    if urlOrNil == nil {
+
     }
-    else {
+    let modelURL = urlOrNil! ;
+    return NSManagedObjectModel(contentsOfURL: modelURL)! ;
+}()
+
+lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator? = {
+    // The persistent store coordinator for the application. This implementation creates and return a coordinator, having added the store for the application to it. This property is optional since there are legitimate error conditions that could cause the creation of the store to fail.
+    // Create the coordinator and store
+    var coordinator: NSPersistentStoreCoordinator? = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
+    let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent("CoreDataTest.sqlite")
+    var error: NSError? = nil
+    var failureReason = "There was an error creating or loading the application's saved data."
+    if coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: nil, error: &error) == nil {
+        coordinator = nil
+        // Report any error we got.
+        var dict = [String: AnyObject]()
+        dict[NSLocalizedDescriptionKey] = "Failed to initialize the application's saved data"
+        dict[NSLocalizedFailureReasonErrorKey] = failureReason
+        dict[NSUnderlyingErrorKey] = error
+        error = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict)
+        // Replace this with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog("Unresolved error \(error), \(error!.userInfo)")
+        abort()
+    }
     
+    return coordinator
+}()
+
+lazy var context: NSManagedObjectContext? = {
+    // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.) This property is optional since there are legitimate error conditions that could cause the creation of the context to fail.
+    let coordinator = self.persistentStoreCoordinator
+    if coordinator == nil {
+        return nil
     }
-    if let nonnilModel = model {
-        // init the persistent store coordinator
-        store = NSPersistentStoreCoordinator(managedObjectModel: nonnilModel);
-        if store==nil {
-             XCTAssert(false, "should have a store that is not nil");
+    var context = NSManagedObjectContext()
+    context.persistentStoreCoordinator = coordinator
+    return context
+}()
+
+// MARK: - Core Data Saving support
+
+func saveContext () {
+    if let moc = context {
+        var error: NSError? = nil
+        if moc.hasChanges && !moc.save(&error) {
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            NSLog("Unresolved error \(error), \(error!.userInfo)")
+            abort()
         }
-        
-        // test if we can create an in-memory store
-        // the return is an optional
-        // TODO: not sure about the error
-        if let nonnilStore=store {
-            let inMem:NSPersistentStore? = store!.addPersistentStoreWithType(NSInMemoryStoreType, configuration:nil, URL:nil, options:nil, error:nil);
-            if inMem==nil {
-                XCTAssert(false, "Should be able to add a store in memory");
-            }
-        }
-        else {
-        
-        }
     }
-    else {
-      
-    }
-    context = NSManagedObjectContext();
-    if context != nil {
-        context!.persistentStoreCoordinator = store;
-        graph=NSEntityDescription.insertNewObjectForEntityForName("Graph", inManagedObjectContext:context!) ;
-        
-    }
-    else { print("tests: setCore(): context is nil"); }
 }
+
+// MARK: tests
 
 // verts array using swift arrays
 func makeVertsArray(numVerts:Int) {
     verts=Array<Vert>();
+    let vertDescription = NSEntityDescription.entityForName("Vert",inManagedObjectContext: context!);
     
     // check if verts is nonnil
     if(verts != nil && context != nil) {
         for var i=0;i<numVerts;i++ {
-            var myObject:AnyObject = NSEntityDescription.insertNewObjectForEntityForName("Vert", inManagedObjectContext: context!);
-            vert!.append(myObject);
+            var vert:Vert? = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
             
-            // TODO
-            var myNonOptionalVert:Vert! = myObject as! Vert;
-            
-            
-            // swift downcasting failure:
-            // give me ideas
-            // do I truly need to downcast
-            // what happens if I don't ?
-            // q: is graph nil ?
-            // a: yes
-            // maybe there is some structural reason that we can only work with AnyObjects
-            var vert:Vert? = myObject as? Vert;
-            if vert != nil {
-                verts!.append();
-            }
-            else {
-            
-                println("tests: makeVertsArray: vert is nil");
-            }
+            verts!.append(vert!);
         }
     }
     else {
@@ -107,10 +120,11 @@ func makeVertsArray(numVerts:Int) {
 
 func makeEdgesArray(numEdges:Int) {
     edges=Array<Edge>();
+    let edgeDescription = NSEntityDescription.entityForName("Edge",inManagedObjectContext: context!);
     
     if (edges != nil && context != nil) {
         for var i=0;i<numEdges;i++ {
-            var edge:Edge? = NSEntityDescription.insertNewObjectForEntityForName("Edge", inManagedObjectContext:context!) as? Edge;
+            var edge:Edge? = Edge(entity: edgeDescription!,insertIntoManagedObjectContext: context);
             if edge != nil {
                 edges!.append(edge!);
             }
@@ -123,80 +137,110 @@ func makeEdgesArray(numEdges:Int) {
 }
 
 func makeGraph1() {
-    setCore();
     makeVertsArray(4);
     makeEdgesArray(4);
     
     // setup edges and verts and add to graph
     // the methods SetupVert and SetupEdges expect optionals
-    if var nonnilGraph=graph, var nonnilVerts=verts, var nonnilEdges=edges {
-        nonnilGraph.SetupVert(nonnilVerts[0], AtX:10, AtY:70);
-        nonnilGraph.SetupVert(nonnilVerts[1], AtX:100, AtY:200);
-        nonnilGraph.SetupVert(nonnilVerts[2], AtX:50, AtY:300);
-        nonnilGraph.SetupVert(nonnilVerts[3], AtX:200, AtY:80);
-        nonnilGraph.SetupEdge(nonnilEdges[0], From:nonnilVerts[0], To:nonnilVerts[1]);
-        nonnilGraph.SetupEdge(nonnilEdges[1], From:nonnilVerts[0], To:nonnilVerts[2]);
-        nonnilGraph.SetupEdge(nonnilEdges[2], From:nonnilVerts[0], To:nonnilVerts[3]);
-        nonnilGraph.SetupEdge(nonnilEdges[3], From:nonnilVerts[1], To:nonnilVerts[2]);
-    }
-}
-
-// all verts initially have not been seen
-func testSeen1() {
-    if let nonnilVerts=verts {
-        XCTAssert(nonnilVerts[0].allNeighborsSeen()==false);
-    }
-    else { XCTAssert(false); }
-}
-
-/*
-// takes an array of verts and sets them up at (0,0)
--(void)setupVertsAtZero:(NSArray*)verts {
-    for(id v in verts) {
-        if(![v isKindOfClass:[Vert class]]) {
-            XCTAssert(NO);
-        }
-        Vert* vert=(Vert*)v;
-        [self setupVert:@[vert,@0,@0]];
+    if (graph != nil && verts != nil && edges != nil) {
+        graph!.SetupVert(verts![0], AtX:10, AtY:70);
+        graph!.SetupVert(verts![1], AtX:100, AtY:200);
+        graph!.SetupVert(verts![2], AtX:50, AtY:300);
+        graph!.SetupVert(verts![3], AtX:200, AtY:80);
+        graph!.SetupEdge(edges![0], From:verts![0], To:verts![1]);
+        graph!.SetupEdge(edges![1], From:verts![0], To:verts![2]);
+        graph!.SetupEdge(edges![2], From:verts![0], To:verts![3]);
+        graph!.SetupEdge(edges![3], From:verts![1], To:verts![2]);
     }
 }
 
 func makeGraph2() {
-    [self setCore];
-    [self makeVertsArray:3];
-    [self makeEdgesArray:3];
+    makeVertsArray(3);
+    makeEdgesArray(3);
     
     // setup edges and verts and add to graph
-    [self setupVert:@[_verts[0],@10,@70]];
-    [self setupVert:@[_verts[1],@100,@200]];
-    [self setupVert:@[_verts[2],@50,@300]];
-    [self.graph setupEdge:_edges[0] from:_verts[0] to:_verts[1]];
-    [self.graph setupEdge:_edges[1] from:_verts[1] to:_verts[2]];
-    [self.graph setupEdge:_edges[2] from:_verts[2] to:_verts[0]];
+    if (graph != nil && verts != nil && edges != nil) {
+        graph!.SetupVert(verts![0], AtX:10, AtY:70);
+        graph!.SetupVert(verts![1], AtX:100, AtY:200);
+        graph!.SetupVert(verts![2], AtX:50, AtY:300);
+        graph!.SetupEdge(edges![0], From:verts![0], To:verts![1]);
+        graph!.SetupEdge(edges![1], From:verts![1], To:verts![2]);
+        graph!.SetupEdge(edges![2], From:verts![2], To:verts![0]);
+    }
 }
 
--(void)makeGraph3 {
-    [self setCore];
-    [self makeVertsArray:5];
-    [self makeEdgesArray:4];
-    // alias
-    NSArray* E=self.edges;
-    NSArray* V=self.edges;
+// takes an array of verts and sets them up at (0,0)
+func setupVertsAtZero(verts: Array<Vert>) {
     
+    if graph != nil {
+        for vert in verts
+        {
+            graph!.SetupVert(vert, AtX:0, AtY:0);
+        }
+    }
+}
+
+func makeGraph3() {
+    makeVertsArray(5);
+    makeEdgesArray(4);
     // setup edges and verts and add to graph
-    [self setupVertsAtZero:_verts];
-    [self.graph setupEdge:E[0] from:V[0] to:V[1]];
-    [self.graph setupEdge:E[1] from:V[1] to:V[4]];
-    [self.graph setupEdge:E[2] from:V[1] to:V[2]];
-    [self.graph setupEdge:E[3] from:V[2] to:V[3]];
     
-    // eventually should have [self.graph setupGraph:@[@[@1,@2],@[@1,@3],
+    if verts != nil {
+        setupVertsAtZero(verts!);
+        if(graph != nil) {
+            graph!.SetupEdge(edges![0], From:verts![0], To:verts![1]);
+            graph!.SetupEdge(edges![1], From:verts![1], To:verts![4]);
+            graph!.SetupEdge(edges![2], From:verts![1], To:verts![2]);
+            graph!.SetupEdge(edges![3], From:verts![2], To:verts![3]);
+        }
+    }
+    // TODO: eventually should have [self.graph setupGraph:@[@[@1,@2],@[@1,@3],
+}
+
+// all verts initially have not been seen
+func testSeen1() {
+    if verts != nil {
+    
+        XCTAssert(verts![0].allNeighborsSeen()==false);
+    }
+    else { XCTAssert(false); }
+}
+
+// all verts start with edges that are not fresh
+func testFreshEdges1() {
+    if verts != nil {
+        XCTAssert(verts![0].freshEdges==false);
+    }
+}
+
+// graph 1 has been set up
+// dist from v0=(10,70) to v1=(100,200) is 158
+func testDistance1() {
+    if verts != nil {
+        let dist:Double = verts![0].distance(verts![1]);
+        
+        XCTAssert((158<dist) && (dist<159));
+    }
+    else {
+        XCTAssert(false);
+    }
+}
+
+/*
+// dist from v0 to v0 is MAX
+func testDistance2() {
+    double dist=[_verts[0] distance:_verts[0]];
+    XCTAssert(([Vert MAXPosition]-0.1<dist) & (dist<[Vert MAXPosition]+0.1));
+}
+
+// dist from v2 to v3 is MAX
+func testDistance3() {
+    double dist=[_verts[2] distance:_verts[3]];
+    XCTAssert((([Vert MAXPosition]-0.1)<dist) & (dist<([Vert MAXPosition]+0.1)));
 }
 
 
-#pragma mark vert methods
-
--(void)testEdges1 {
+func testEdges1() {
     //NSMutableArray* mutableEdges;
     //[_graph edgeIdArray:&mutableEdges];
     
@@ -204,6 +248,8 @@ func makeGraph2() {
     [_graph sortedEdgeIdArray:&edges];
     
 }
+
+#pragma mark vert methods
 
 // a cycle exists (0,1),(1,2),(2,0)
 -(void)testCycle1 {
@@ -254,24 +300,6 @@ func makeGraph2() {
     if(seenCount!=1) {
         XCTAssert(NO);
     }
-}
-
-// dist from v0=(10,70) to v1=(100,200) is 158
--(void)testDistance1 {
-    double dist=[_verts[0] distance:_verts[1]];
-    XCTAssert((158<dist) && (dist<159));
-}
-
-// dist from v0 to v0 is MAX
--(void)testDistance2 {
-    double dist=[_verts[0] distance:_verts[0]];
-    XCTAssert(([Vert MAXPosition]-0.1<dist) & (dist<[Vert MAXPosition]+0.1));
-}
-
-// dist from v2 to v3 is MAX
--(void)testDistance3 {
-    double dist=[_verts[2] distance:_verts[3]];
-    XCTAssert((([Vert MAXPosition]-0.1)<dist) & (dist<([Vert MAXPosition]+0.1)));
 }
 
 // v0 is a neighbor of v1

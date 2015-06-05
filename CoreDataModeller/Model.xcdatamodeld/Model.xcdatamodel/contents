@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7549" systemVersion="14D131" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
-    <entity name="Edge" representedClassName="Edge" syncable="YES">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="14D136" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Edge" representedClassName="CoreDataModeller.Edge" syncable="YES">
         <attribute name="edgeViewId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="parseObjectId" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="graph" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Graph" inverseName="edges" inverseEntity="Graph" syncable="YES"/>
         <relationship name="joinedTo" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vert" inverseName="edges" inverseEntity="Vert" syncable="YES"/>
     </entity>
     <entity name="Entity" representedClassName="Entity" parentEntity="Graph" syncable="YES"/>
-    <entity name="Graph" representedClassName="Graph" syncable="YES">
+    <entity name="Graph" representedClassName="CoreDataModeller.Graph" syncable="YES">
         <relationship name="edges" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Edge" inverseName="graph" inverseEntity="Edge" syncable="YES"/>
         <relationship name="verts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vert" inverseName="graph" inverseEntity="Vert" syncable="YES"/>
     </entity>
-    <entity name="Vert" representedClassName="Vert" syncable="YES">
+    <entity name="Vert" representedClassName="CoreDataModeller.Vert" syncable="YES">
         <attribute name="depthSearchSeen" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="finishedObservedMethod" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="freshEdges" optional="YES" attributeType="Boolean" syncable="YES"/>
