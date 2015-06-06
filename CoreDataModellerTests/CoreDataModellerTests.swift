@@ -147,11 +147,16 @@ func makeGraph1() {
         graph!.SetupVert(verts![1], AtX:100, AtY:200);
         graph!.SetupVert(verts![2], AtX:50, AtY:300);
         graph!.SetupVert(verts![3], AtX:200, AtY:80);
+        // passing 3 arguments into
+        
+        // TODO: probably bad
         graph!.SetupEdge(edges![0], From:verts![0], To:verts![1]);
         graph!.SetupEdge(edges![1], From:verts![0], To:verts![2]);
         graph!.SetupEdge(edges![2], From:verts![0], To:verts![3]);
         graph!.SetupEdge(edges![3], From:verts![1], To:verts![2]);
+        
     }
+    
 }
 
 func makeGraph2() {
@@ -197,6 +202,12 @@ func makeGraph3() {
     // TODO: eventually should have [self.graph setupGraph:@[@[@1,@2],@[@1,@3],
 }
 
+func testEdges1() {
+
+    let potato:Array<Array<Int32>> = graph!.edgeIdArray();
+    
+}
+
 // all verts initially have not been seen
 func testSeen1() {
     if verts != nil {
@@ -237,16 +248,6 @@ func testDistance2() {
 func testDistance3() {
     double dist=[_verts[2] distance:_verts[3]];
     XCTAssert((([Vert MAXPosition]-0.1)<dist) & (dist<([Vert MAXPosition]+0.1)));
-}
-
-
-func testEdges1() {
-    //NSMutableArray* mutableEdges;
-    //[_graph edgeIdArray:&mutableEdges];
-    
-    NSArray* edges;
-    [_graph sortedEdgeIdArray:&edges];
-    
 }
 
 #pragma mark vert methods

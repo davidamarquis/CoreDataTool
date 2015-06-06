@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Vert {
+extension Vert:Printable {
 
 // computed property
 class func MAXPosition()->Double {
@@ -16,9 +16,30 @@ class func MAXPosition()->Double {
     return maxPos;
 }
 
+override var description:String {
+    // store methodName for logging errors
+    var desc:String="Vert(\(Int(x)),\(Int(y)))[";
+    let nghs:Array<Vert> = self.neighbors.allObjects as! Array<Vert>;
+    let n:Int=self.neighbors.count;
+    var i:Int;
+
+    // first n-1 elems and last elem slightly different formatting
+    for i=0;i<n-1;i++ {
+        desc=desc+"(\(Int(nghs[i].x)),\(Int(nghs[i].y))),";
+    }
+    desc=desc+"(\(Int(nghs[i].x)),\(Int(nghs[i].y)))]";
+
+    return desc;
+}
+
 func isNeighborOf(other:Vert)->Bool {
+
     if(self.neighbors.containsObject(other) && other.neighbors.containsObject(self))
     {
+        return true;
+    }
+    else if self.neighbors.containsObject(other) {
+        
         return true;
     }
     else {
@@ -55,13 +76,21 @@ func isPositionEqual(other: Vert)->Bool {
     }
 }
 // addEdge sets up a new edge
-func addEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
+func AddEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
 
-    if let edge=edgeOrNil, let vert=vertOrNil {
+    if(edgeOrNil != nil && vertOrNil != nil) {
+        
         // neighbors is a bidirectional relationship
-        neighbors.setByAddingObject(vert);
-        edges.setByAddingObject(edge);
-        vert.edges.setByAddingObject(edge);
+        neighbors=neighbors.setByAddingObject(vertOrNil!);
+        // joinedTo updated by next line
+        edges=edges.setByAddingObject(edgeOrNil!);
+        
+        
+        // joinedTo updated by next line
+        vertOrNil!.edges=vertOrNil!.edges.setByAddingObject(edgeOrNil!);
+        
+        edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByAddingObject(vertOrNil!);
+        edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByAddingObject(self);
         
         freshEdges=false;
         finishedObservedMethod=true;
@@ -72,6 +101,7 @@ func addEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
 }
 
 func removeEdge(edge:Edge, vert:Vert) {
+    /*
     // CD will handle removal of self from v2 automatically
     neighbors.setByRemovingObject(vert);
     edges.setByRemovingObject(edge);
@@ -79,6 +109,7 @@ func removeEdge(edge:Edge, vert:Vert) {
     
     freshEdges=false;
     finishedObservedMethod=true;
+    */
 }
 
 func distance(other:Vert)->Double{

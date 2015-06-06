@@ -30,6 +30,69 @@ override func viewDidLoad() {
     hght=self.view.bounds.size.height;
     wdth=self.view.bounds.size.width;
     self.barButtons();
+    
+    testGraph();
+    
+    if graph != nil {
+        var edgeIds:Array<Array<Int32>> = graph!.edgeIdArray();
+        print(edgeIds);
+    }
+}
+
+// verts array using swift arrays
+private func makeVertsArray(numVerts:Int)->Array<Vert> {
+   
+    var verts=Array<Vert>();
+    if context == nil {
+        println("CoreController: makeVertsArray: context is nil");
+    }
+    else {
+        let vertDescription = NSEntityDescription.entityForName("Vert",inManagedObjectContext: context!);
+        for var i=0;i<numVerts;i++ {
+            var vert:Vert? = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
+            
+            verts.append(vert!);
+        }
+    }
+    return verts;
+}
+
+private func makeEdgesArray(numEdges:Int)->Array<Edge> {
+    var edges=Array<Edge>();
+    let edgeDescription = NSEntityDescription.entityForName("Edge",inManagedObjectContext: context!);
+    
+    if context != nil {
+        for var i=0;i<numEdges;i++ {
+            var edge:Edge? = Edge(entity: edgeDescription!,insertIntoManagedObjectContext: context);
+            edges.append(edge!);
+        }
+    }
+    else {
+    
+    }
+    return edges;
+}
+
+// private
+// create some variables in the managedObjectModel and send them to the model for setup
+private func testGraph() {
+
+    var verts=makeVertsArray(4);
+    var edges=makeEdgesArray(4);
+    if graph != nil {
+        graph!.SetupVert(verts[0], AtX:10, AtY:70);
+        graph!.SetupVert(verts[1], AtX:100, AtY:200);
+        graph!.SetupVert(verts[2], AtX:50, AtY:300);
+        graph!.SetupVert(verts[3], AtX:200, AtY:80);
+        graph!.SetupEdge(edges[0], From:verts[0], To:verts[1]);
+        graph!.SetupEdge(edges[1], From:verts[1], To:verts[3]);
+        graph!.SetupEdge(edges[2], From:verts[1], To:verts[2]);
+        graph!.SetupEdge(edges[3], From:verts[2], To:verts[3]);
+    }
+    else {
+        println("CoreController: testGraph: err graph is nil");
+    }
+    
 }
 
 // sets up 3 buttons for the view controllers UI states
@@ -47,6 +110,9 @@ func barButtons() {
     vertButton.frame=CGRectMake(wdth*0.666,hght*(1-vscale),wdth*0.334,hght*vscale);
     vertButton.addTarget(self, action: "vertMode", forControlEvents:.TouchUpInside);
 }
+
+
+
 
 // main view is graphView
 // use a closure to contain the initialization logic
@@ -67,8 +133,12 @@ lazy var graphView:GraphView? = {
 // Controller owns so the model so we maintain a strong reference
 lazy var graph:Graph?={
     var graph:Graph?;
-    if let context=self.context {
-        graph = NSEntityDescription.insertNewObjectForEntityForName("Graph", inManagedObjectContext: context) as? Graph;
+    if self.context != nil {
+        let graphDescription = NSEntityDescription.entityForName("Graph",inManagedObjectContext: self.context!);
+        graph = Graph(entity: graphDescription!,insertIntoManagedObjectContext: self.context!);
+    }
+    else {
+        println("CoreController: graph: cannot create graph, context is nil");
     }
     return graph;
 }()
@@ -112,30 +182,6 @@ func onResumeGraph() {
 
 func onNewGraph() {
     testGraph();
-}
-
-// private
-// create some variables in the managedObjectModel and send them to the model for setup
-private func testGraph() {
-
-    var v1:Vert?=testVert(10, 70);
-    var v2:Vert?=testVert(100, 200);
-    var v3:Vert?=testVert(50, 300);
-    var v4:Vert?=testVert(200, 80);
-    var e1:Edge?;
-    var e2:Edge?;
-    var e3:Edge?;
-    var e4:Edge?;
-    if let nonnilCon=context, let nonnilGraph=graph {
-        e1=NSEntityDescription.insertNewObjectForEntityForName("Edge", inManagedObjectContext:nonnilCon) as? Edge;
-        e2=NSEntityDescription.insertNewObjectForEntityForName("Edge", inManagedObjectContext:nonnilCon) as? Edge;
-        e3=NSEntityDescription.insertNewObjectForEntityForName("Edge", inManagedObjectContext:nonnilCon) as? Edge;
-        e4=NSEntityDescription.insertNewObjectForEntityForName("Edge", inManagedObjectContext:nonnilCon) as? Edge;
-        nonnilGraph.SetupEdge(e1, From:v1, To:v2);
-        nonnilGraph.SetupEdge(e2, From:v1, To:v3);
-        nonnilGraph.SetupEdge(e3, From:v1, To:v4);
-        nonnilGraph.SetupEdge(e4, From:v2, To:v3);
-    }
 }
 
 // private
@@ -291,8 +337,13 @@ private func testVert(xPos:Double, _ yPos:Double) -> Vert? {
     lazy var managedObjectModel: NSManagedObjectModel = {
         // The managed object model for the application. This property is not optional. It is a fatal error for the application not to be able to find and load its model.
         // TODO: change "CoreDataTest" using grep
-        let modelURL = NSBundle.mainBundle().URLForResource("CoreDataModeller", withExtension: "momd")!
-        return NSManagedObjectModel(contentsOfURL: modelURL)!
+        //let modelURL = NSBundle.mainBundle().URLForResource("CoreDataModeller", withExtension: "momd")!
+        
+        let modelURL = NSBundle.mainBundle().URLForResource("Model", withExtension: "momd");
+        if modelURL == nil {
+
+        }
+        return NSManagedObjectModel(contentsOfURL: modelURL!)!
     }()
 
     lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator? = {
