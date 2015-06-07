@@ -33,12 +33,13 @@ override func viewDidLoad() {
     
     testGraph();
     
-    if graph != nil {
-        var edgeIds:Array<Array<Int32>> = graph!.edgeIdArray();
-        print(edgeIds);
-    }
+    let edgeIds:Array<Array<Int32>> = graph!.edgeIdArray();
+    println(edgeIds);
+    let sortedEdgeIds:Array<Array<Int32>> = graph!.sortedEdgeIdArray();
+    println(sortedEdgeIds);
 }
 
+// MARK: Setup
 // verts array using swift arrays
 private func makeVertsArray(numVerts:Int)->Array<Vert> {
    
@@ -106,9 +107,23 @@ func barButtons() {
     vertButton.frame=CGRectMake(wdth*0.666,hght*(1-vscale),wdth*0.334,hght*vscale);
     vertButton.addTarget(self, action: "vertMode", forControlEvents:.TouchUpInside);
 }
-
-
-
+// creates an individual button
+func barButton(title:String) -> UIButton {
+    // bcol is color of back of button, tcol of the text on the button
+    let bcol:UIColor=UIColor.blackColor();
+    let tcol:UIColor=UIColor.grayColor();
+    let buttonFont:UIFont=UIFont.systemFontOfSize(60);
+    
+    let button:UIButton=UIButton.buttonWithType(.System) as! UIButton;
+    button.backgroundColor=bcol;
+    button.setTitle(title, forState:UIControlState.Normal);
+    button.setTitleColor(tcol, forState:.Normal);
+    if let label=button.titleLabel {
+         label.font=buttonFont;
+    }
+    view.addSubview(button);
+    return button;
+}
 
 // main view is graphView
 // use a closure to contain the initialization logic
@@ -139,24 +154,6 @@ lazy var graph:Graph?={
     return graph;
 }()
 
-// creates an individual button
-func barButton(title:String) -> UIButton {
-    // bcol is color of back of button, tcol of the text on the button
-    let bcol:UIColor=UIColor.blackColor();
-    let tcol:UIColor=UIColor.grayColor();
-    let buttonFont:UIFont=UIFont.systemFontOfSize(60);
-    
-    let button:UIButton=UIButton.buttonWithType(.System) as! UIButton;
-    button.backgroundColor=bcol;
-    button.setTitle(title, forState:UIControlState.Normal);
-    button.setTitleColor(tcol, forState:.Normal);
-    if let label=button.titleLabel {
-         label.font=buttonFont;
-    }
-    view.addSubview(button);
-    return button;
-}
-
 func edgeMode() {
     // TO DO turn off pan and zoom
     if let gv=graphView {
@@ -180,65 +177,55 @@ func onNewGraph() {
     testGraph();
 }
 
-// private
-// inits a vert at the given position
-private func testVert(xPos:Double, _ yPos:Double) -> Vert? {
-    // alloc, observe it, set it up in graph (vertId and relationship)
-    var vert:Vert?;
-    if let nonnilCon=context, nonnilGraph=graph {
-        vert=NSEntityDescription.insertNewObjectForEntityForName("Vert", inManagedObjectContext:nonnilCon) as? Vert;
-        // TODO: vert.addObserver:self forKeyPath:@"finishedObservedMethod" options:0 context:NULL];
-        // setupVert calls Vert to finish setup
-        nonnilGraph.SetupVert(vert, AtX:xPos, AtY:yPos);
-    }
-    return vert;
-}
-
-/*
 // KVO
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-   if ([object isKindOfClass:[Vert class]]) {
-        Vert* v=(Vert*)object;
-        if([keyPath isEqualToString:@"finishedObservedMethod"] && self.graphView)
+override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject: AnyObject], context: UnsafeMutablePointer<Void>) {
+        let v:Vert = object as! Vert;
+    
+        if( keyPath=="finishedObservedMethod" && (graphView != nil) )
         {
-            if(![v freshVertView]) {
-                VertView* vertView=[self.graphView.gwv getVertViewById:v.vertViewId];
+            if(!v.freshViews) {
+                // getVertViewById is in the graphWorldView class
+                // create an instance of the VertView class. Does not need to be a variable
+                let vertView:VertView = graphView.gwv.getVertViewById(v.vertViewId);
                 
                 // check if a view exists corresponding to the vert instance
                 //   if no view is found then vertView is nil and we alloc a vertView and add it
                 //   otherwise model and view are out of date: drawn==NO implies Vert instance has changed since the last time the VC drew
                 // VC updates the view by removing the outdated VertView and adding a correct one
-                if(vertView!=nil) {
-                    [vertView removeFromSuperview];
-                    vertView.x=[v.xNum doubleValue];
-                    vertView.y=[v.yNum doubleValue];
-                    [self.graphView.gwv addSubview:vertView];
-                    [vertView setNeedsDisplay];
+                if(vertView != nil) {
+                    vertView.removeFromSuperview();
+                    vertView.x=v.x;
+                    vertView.y=v.y;
+                    self.graphView.gwv.addSubview(vertView);
+                    vertView.setNeedsDisplay();
                 }
                 else if(vertView==nil) {
-                    VertView* vv=[self.graphView.gwv addVertAtPoint:CGPointMake([v x], [v y])];
+                    let vv:VertView = graphView.gwv.addVertAtPoint(CGPointMake(v.x, v.y) );
                     vv.delegate=self;
                     vv.vertViewId=[[NSNumber alloc] initWithInt:[v.vertViewId intValue]];
                     
                 }
                 // vert instance now fresh
-                [v setFreshVertView:YES];
+                v.setFreshVertView(YES];
             }
             if(![v freshEdgeViews]) {
                 [self drawEdges:v];
                 // edge instance now fresh
-                [v setFreshEdgeViews:YES];
+                v.setFreshEdgeViews:YES];
             }
         }
     }
 }
 
--(void)dealloc {
-    for(Vert* vert in self.graph.vert) {
-        [vert removeObserver:self forKeyPath:@"modelInt"];
+func dealloc() {
+    for(vert in graph!.verts) {
+        if vert is Vert {
+            (vert as! Vert).removeObserver(self, forKeyPath:"modelInt");
+        }
     }
 }
 
+/*
 // more zoom stuff
 -(UIView*)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     return self.graphView.gwv;

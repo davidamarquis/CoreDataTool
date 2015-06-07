@@ -68,52 +68,41 @@ extension Graph {
         }
         return edgeArray;
     }
-}
 
-/*
--(void)sortedEdgeIdArray:(NSArray**)sortedEdges {
-    NSMutableArray* mutableEdges;
-    
-    [self edgeIdArray:&mutableEdges];
-    if(mutableEdges==nil) {
-        sortedEdges=nil;
-    }
-    NSArray* edges=[NSArray arrayWithArray:mutableEdges];
-    
-    *sortedEdges = [edges sortedArrayUsingComparator:
-    ^NSComparisonResult(id obj1, id obj2) {
-        NSArray * idPair0,* idPair1;
-        NSNumber * id00, * id01, * id10, * id11;
-        // first vert in first edge, second vert in first edge, etc
-        
-        // TO DO fix suicidal casts
-        idPair0=(NSArray*)obj1;
-        idPair1=(NSArray*)obj2;
-        id00=(NSNumber*)idPair0[0];
-        id01=(NSNumber*)idPair0[1];
-        id10=(NSNumber*)idPair1[0];
-        id11=(NSNumber*)idPair1[1];
-        
-        if ([id00 intValue] < [id10 intValue]) {
-            return NSOrderedAscending;
-        }
-        else if ([id00 intValue] > [id10 intValue]) {
-            return NSOrderedDescending;
-        }
-        else {
-            if([id01 intValue] < [id11 intValue]) {
-                return NSOrderedAscending;
+
+    func sortFunction(e1:Array<Int32>, e2:Array<Int32>)->Bool {
+            let id00=e1[0];
+            let id01=e1[1];
+            let id10=e2[0];
+            let id11=e2[1];
+            
+            if (id00 < id10) {
+                return true;
             }
-            else if([id01 intValue] > [id11 intValue]) {
-                return NSOrderedDescending;
+            else if (id00 > id10) {
+                return false;
             }
             else {
-                return NSOrderedSame;
+                if(id01<id11) {
+                    return true;
+                }
+                else if(id01>id11) {
+                    return false;
+                }
             }
-        }
-    }];
-}
+            return false;
+    }
 
+    func sortedEdgeIdArray()->Array<Array<Int32>> {
+        
+        var bacon:Array<Array<Int32>> = edgeIdArray();
+        let sortArray=sorted(bacon,sortFunction);
+
+        return sortArray;
+    }
+
+}
+/*
 // NSObject override
 -(NSString*)description {
     // store methodName for logging errors
