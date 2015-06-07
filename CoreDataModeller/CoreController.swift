@@ -43,15 +43,11 @@ override func viewDidLoad() {
 private func makeVertsArray(numVerts:Int)->Array<Vert> {
    
     var verts=Array<Vert>();
-    if context == nil {
-        println("CoreController: makeVertsArray: context is nil");
-    }
+    if context == nil { println("CoreController: makeVertsArray: context is nil");}
     else {
         let vertDescription = NSEntityDescription.entityForName("Vert",inManagedObjectContext: context!);
         for var i=0;i<numVerts;i++ {
-            var vert:Vert? = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
-            
-            verts.append(vert!);
+            verts.append(Vert(entity: vertDescription!,insertIntoManagedObjectContext: context));
         }
     }
     return verts;

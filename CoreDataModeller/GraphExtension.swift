@@ -46,29 +46,27 @@ extension Graph {
 
     // returns an array of the form [id1, id2] where the elements are ints
     // change NSMutableArray to array
+    //
     func edgeIdArray()->Array<Array<Int32>> {
 
-        var vertArray:Array<Array<Int32>> = Array();
+        var edgeArray:Array<Array<Int32>> = Array();
         //println("Graph cat: number of elems in edges is \(edges.count)");
         
-        for testVert in self.verts {
-            if testVert is NSManagedObject {
-
-                if(testVert is Vert ) {
-
+        for testEdge in self.edges {
+        
+            if(!(testEdge is NSManagedObject)) { println("Graph cat: edgeIdArray: verts has element that is not an NSManagedObject"); }
+            else {
+                if(testEdge is Edge ) {
+                    let (v:Vert?,w:Vert?)=(testEdge as! Edge).Connects();
+                    edgeArray.append([v!.vertViewId,w!.vertViewId]);
+                    
                 }
                 else {
-                    println("GraphExtension is not a vert");
+                    println("Graph cat: edgeIdArray: verts has element that is not a vert");
                 }
             }
-            else {
-                println("fucker is not an NSManaged Object");
-            }
         }
-        for myEdge in self.edges {
-            //let (v,w)=myEdge.Connects();
-        }
-        return vertArray;
+        return edgeArray;
     }
 }
 
