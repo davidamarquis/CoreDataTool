@@ -11,8 +11,8 @@ import Foundation
 extension Vert:Printable {
 
 // computed property
-class func MAXPosition()->Double {
-    var maxPos:Double=1000;
+class func MAXPosition()->Float {
+    var maxPos:Float=1000;
     return maxPos;
 }
 

@@ -10,32 +10,34 @@ import UIKit
 
 class GraphWorldView: UIView {
 
+// MARK: vars
+var circSize:CGFloat = 50;
+var edgeSize:CGFloat = 10;
+var strokeSize:CGFloat = 5;
+var x1:Double = 0;
+var x2:Double = 0;
+var y1:Double = 0;
+var y2:Double = 0;
+var radius:CGFloat {return (self.circSize+self.edgeSize)/2; }
+var diameter:CGFloat {return (self.circSize+self.edgeSize); }
+
 // MARK: init
 override init(frame: CGRect) {
-    backgroundColor=UIColor.whiteColor();
-    circSize=50;
-    edgeSize=10;
-    strokeSize=5;
-    // make the graph recognize taps
-    let recog      = UITapGestureRecognizer(target:self, action:"tap:");
-    addGestureRecognizer(recog);
+    // step1: set non-inherited properties
+    
+    // step 2: delegate to superclass
     super.init(frame: frame);
+    
+    // make the graph recognize taps
+    let recog = UITapGestureRecognizer(target:self, action:"tap:");
+    // step 3: set inherited properties
+    self.backgroundColor=UIColor.whiteColor();
+    addGestureRecognizer(recog);
 }
 
 required init(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder);
 }
-
-// MARK: vars
-var circSize:CGFloat;
-var edgeSize:CGFloat;
-var strokeSize:CGFloat;
-var x1:Double;
-var x2:Double;
-var y1:Double;
-var y2:Double;
-var radius:CGFloat {return (self.circSize+self.edgeSize)/2; }
-var diameter:CGFloat {return (self.circSize+self.edgeSize); }
 
 // MARK: methods
 func removeSubviews() {
@@ -77,7 +79,7 @@ func tap(recognizer:UITapGestureRecognizer) {
     }
 }
 
-func addVertAtPoint(cgp:CGPoint) {
+func addVertAtPoint(cgp:CGPoint)->VertView {
     let diameter:CGFloat=circSize+edgeSize;
 
     let vert:VertView=VertView( frame: CGRectMake(cgp.x, cgp.y, diameter, diameter) );
@@ -101,12 +103,12 @@ func addEdgeWithFrame(frame:CGRect, edgeDirectionCase:Int) {
 // public
 // return the VertView corresponding to a particular id
 // or nil if such a VertView does not exist
-func getVertViewById(vertViewId:Int32) -> VertView {
+func getVertViewById(vertViewId:Int32) -> VertView? {
 
     for subview in subviews {
         if subview is VertView {
             let vertView:VertView=subview as! VertView;
-            if([vertView.vertViewId isEqualToNumber:vertViewId]) {return vertView;}
+            if(vertView.vertViewId == vertViewId) {return vertView;}
         }
     }
     return nil;
