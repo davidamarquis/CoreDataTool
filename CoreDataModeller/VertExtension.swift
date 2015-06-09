@@ -34,12 +34,10 @@ override var description:String {
 
 func isNeighborOf(other:Vert)->Bool {
 
-    if(self.neighbors.containsObject(other) && other.neighbors.containsObject(self))
-    {
+    if(self.neighbors.containsObject(other) && other.neighbors.containsObject(self)) {
         return true;
     }
     else if self.neighbors.containsObject(other) {
-        
         return true;
     }
     else {
@@ -130,8 +128,8 @@ func distance(other:Vert)->Float{
 
 // change Fresh flags so VC must redraw (i.e. trigger a redraw of corresponding view)
 func invalidateViews() {
-    self.freshEdges=false;
-    self.freshViews=false;
+    freshEdges=false;
+    freshViews=false;
 }
 
 // change vert position in data model

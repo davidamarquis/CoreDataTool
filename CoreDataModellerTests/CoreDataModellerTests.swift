@@ -228,7 +228,7 @@ func testFreshEdges1() {
 // dist from v0=(10,70) to v1=(100,200) is 158
 func testDistance1() {
     if verts != nil {
-        let dist:Double = verts![0].distance(verts![1]);
+        let dist:Float = verts![0].distance(verts![1]);
         
         XCTAssert((158<dist) && (dist<159));
     }

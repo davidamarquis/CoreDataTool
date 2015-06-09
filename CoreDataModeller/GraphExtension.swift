@@ -23,10 +23,9 @@ extension Graph {
             vert.vertViewId=vertId;
             // 
             vert.moveVertTo(xPos, yPos);
-            
         }
         else {
-        
+            println("Graph cat: SetupVert: err ");
         }
     }
 

@@ -30,20 +30,20 @@ class GraphView: UIScrollView {
     }()
     
     required init(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder);
         // set the content size first as all subclasses will need it
         contentSize=CGSizeMake(1000,1000);
         // self.backgroundColor may seem irrelevant as the view is covered by a GraphWorldView
         // This is wrong. There is no default color so nothing will be displayed
         backgroundColor=UIColor.whiteColor();
         opaque=false;
-        super.init(coder: aDecoder);
     }
     override init(frame: CGRect) {
+        super.init(frame: frame);
         contentSize=CGSizeMake(1000,1000);
         // self.backgroundColor may seem irrelevant as the view is covered by a GraphWorldView
         // This is wrong. There is no default color so nothing will be displayed
         backgroundColor=UIColor.whiteColor();
         opaque=false;
-        super.init(frame: frame);
     }
 }

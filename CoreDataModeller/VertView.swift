@@ -19,15 +19,13 @@ class VertView: UIView {
     var selected:Bool;
     var x:CGFloat;
     var y:CGFloat;
-    var positionBeforePan:CGPoint;
-    // set by other classes
+    // variables that are set after initialization
+    var positionBeforePan:CGPoint?;
     var circSize:CGFloat?;
     var strokeSize:CGFloat?;
-
-    // reference to an object that obeys the VertViewWasTouchedProtocol
+    var vertViewId:Int32?;
+    // protocol delegates
     var delegate:VertViewWasTouchedProtocol?;
-    var vertViewId:Int32;
-    weak var parentController:CoreController?;
 
     // MARK: inits
     override init(frame:CGRect) {
@@ -48,8 +46,8 @@ class VertView: UIView {
     required init(coder aDecoder: NSCoder) {
         // step 1:
         selected=false;
-        x=frame.origin.x ;
-        y=frame.origin.y ;
+        x=0 ;
+        y=0 ;
         // step 2:
         super.init(coder: aDecoder);
         // step 3:
@@ -74,12 +72,18 @@ class VertView: UIView {
         }
         else if(recognizer.state==UIGestureRecognizerState.Ended) {
             let endPos:CGPoint=frame.origin;
-            if((delegate != nil) && (parentController != nil)) {
+            if delegate != nil && vertViewId != nil {
             
                 // call the drawGraphAfterMovingVert method on the parent
-                delegate!.drawGraphAfterMovingVert(vertViewId, toXPos: Float(endPos.x), toYPos: Float(endPos.y) );
+                delegate!.drawGraphAfterMovingVert(vertViewId!, toXPos: Float(endPos.x), toYPos: Float(endPos.y) );
+            }
+            else {
+                println("VertView: pan: err delegate is nil or vertViewId is nil");
             }
             // we do not detach the view yet from the superview yet. If we did that we would no longer have a strong reference to it that is needed by the VC
+        }
+        else {
+            println("VertView: pan: err state is not valid");
         }
     }
 
@@ -93,13 +97,14 @@ class VertView: UIView {
         drawPoint();
     }
 
+    // drawPoint is called by drawRect
     func drawPoint() {
         // when drawPoint has been called circSize and strokeSize have alreay been set
 
         //double circSize=((GraphWorldView*)self.superview).circSize;
         //double strokeSize=((GraphWorldView*)self.superview).strokeSize;
         // need to offset from the origin by the stroke size to ensure the bez is inside fully inside the frame
-        bz=UIBezierPath(ovalInRect: CGRectMake(strokeSize, strokeSize, circSize, circSize ));
+        bz=UIBezierPath(ovalInRect: CGRectMake(strokeSize!, strokeSize!, circSize!, circSize! ));
         // set fill property
         if selected {
             UIColor.greenColor().setFill();
@@ -109,7 +114,7 @@ class VertView: UIView {
         }
         // set stroke properties
         UIColor.blackColor().setStroke();
-        bz.lineWidth = strokeSize;
+        bz.lineWidth = strokeSize!;
         // stroke and fill
         bz.stroke();
         bz.fill();

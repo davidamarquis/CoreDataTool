@@ -10,9 +10,10 @@ import UIKit
 import Foundation
 import CoreData
 
-class CoreController: UIViewController, UIScrollViewDelegate {
+class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol {
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
+    
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil);    
     }
 
@@ -70,28 +71,6 @@ class CoreController: UIViewController, UIScrollViewDelegate {
         return edges;
     }
 
-    // private
-    // create some variables in the managedObjectModel and send them to the model for setup
-    private func testGraph() {
-
-        var verts=makeVertsArray(4);
-        var edges=makeEdgesArray(4);
-        if graph != nil {
-            graph!.SetupVert(verts[0], AtX:10, AtY:70);
-            graph!.SetupVert(verts[1], AtX:100, AtY:200);
-            graph!.SetupVert(verts[2], AtX:50, AtY:300);
-            graph!.SetupVert(verts[3], AtX:200, AtY:80);
-            graph!.SetupEdge(edges[0], From:verts[0], To:verts[1]);
-            graph!.SetupEdge(edges[1], From:verts[1], To:verts[3]);
-            graph!.SetupEdge(edges[2], From:verts[1], To:verts[2]);
-            graph!.SetupEdge(edges[3], From:verts[2], To:verts[3]);
-        }
-        else {
-            println("CoreController: testGraph: err graph is nil");
-        }
-        
-    }
-
     // sets up 3 buttons for the view controllers UI states
     func barButtons() {
 
@@ -145,6 +124,7 @@ class CoreController: UIViewController, UIScrollViewDelegate {
         if self.context != nil {
             let graphDescription = NSEntityDescription.entityForName("Graph",inManagedObjectContext: self.context!);
             graph = Graph(entity: graphDescription!,insertIntoManagedObjectContext: self.context!);
+            graph?.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
         }
         else {
             println("CoreController: graph: cannot create graph, context is nil");
@@ -175,47 +155,105 @@ class CoreController: UIViewController, UIScrollViewDelegate {
         testGraph();
     }
 
-    /*
+    
     // KVO
     override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject: AnyObject], context: UnsafeMutablePointer<Void>) {
-            let v:Vert = object as! Vert;
-        
-            if( keyPath=="finishedObservedMethod" && (graphView != nil) )
-            {
-                if(!v.freshViews) {
-                    // getVertViewById is in the graphWorldView class
-                    // create an instance of the VertView class. Does not need to be a variable
-                    let vertView:VertView = graphView.gwv.getVertViewById(v.vertViewId);
-                    
-                    // check if a view exists corresponding to the vert instance
-                    //   if no view is found then vertView is nil and we alloc a vertView and add it
-                    //   otherwise model and view are out of date: drawn==NO implies Vert instance has changed since the last time the VC drew
-                    // VC updates the view by removing the outdated VertView and adding a correct one
-                    if(vertView != nil) {
-                        vertView.removeFromSuperview();
-                        vertView.x=v.x;
-                        vertView.y=v.y;
-                        self.graphView.gwv.addSubview(vertView);
-                        vertView.setNeedsDisplay();
-                    }
-                    else if(vertView==nil) {
-                        let vv:VertView = graphView.gwv.addVertAtPoint(CGPointMake(v.x, v.y) );
-                        vv.delegate=self;
-                        vv.vertViewId=[[NSNumber alloc] initWithInt:[v.vertViewId intValue]];
-                        
-                    }
-                    // vert instance now fresh
-                    v.setFreshVertView(YES];
+        var v:Vert?
+        if object is Vert {
+            v = object as? Vert;
+        }
+        else {
+            println("CoreController: observeValueForKeyPath: object is not Vert");
+        }
+        if( keyPath=="finishedObservedMethod" && graphView != nil ) {
+            if(!v!.freshViews) {
+                //NOTE: gwv class = graphWorldView
+                
+                // check if a view exists corresponding to the vert instance
+                //   if no view is found then vertView is nil and we alloc a vertView and add it
+                //   otherwise model and view are out of date: drawn==NO implies Vert instance has changed since the last time the VC drew
+                // VC updates the view by removing the outdated VertView and adding a correct one
+                let vertView:VertView? = graphView!.gwv.getVertViewById(v!.vertViewId);
+                if(vertView != nil) {
+                    vertView!.removeFromSuperview();
+                    vertView!.x = CGFloat(v!.x);
+                    vertView!.y = CGFloat(v!.y);
+                    graphView!.gwv.addSubview(vertView!);
+                    vertView!.setNeedsDisplay();
                 }
-                if(![v freshEdgeViews]) {
-                    [self drawEdges:v];
-                    // edge instance now fresh
-                    v.setFreshEdgeViews:YES];
+                else {
+                    let vv:VertView = graphView!.gwv.addVertAtPoint(CGPointMake(CGFloat(v!.x), CGFloat(v!.y)) );
+                    vv.delegate=self;
+                    vv.vertViewId=v!.vertViewId;
+                }
+                // vert instance now fresh
+                v!.freshViews=true;
+            }
+            if(!v!.freshEdges) {
+                // call drawEdges to prepare for the drawing of the edges of v
+                drawEdges(v!);
+                // edge instance now fresh
+                v!.freshEdges=true;
+            }
+        }
+    }
+    
+    // drawEdges draws the edges out of v
+    private func drawEdges(v:Vert) {
+
+        var X1:CGFloat?;
+        var Y1:CGFloat?;
+        var X2:CGFloat?;
+        var Y2:CGFloat?;
+        var diameter:CGFloat?;
+        var frameWidth:CGFloat?;
+        var frameHeight:CGFloat?;
+        var edgeFrame:CGRect?;
+        var w:Vert!;
+        
+        for vert in v.neighbors {
+            // check that the class is correct
+            // and the verts v and w are not equal
+            // and the neighbors of v have not been drawn already
+            if vert is Vert {
+                w=vert as! Vert;
+            }
+            else {
+                println("CoreController: drawEdges: v.neighbors has an element that is not a vert");
+            }
+            
+            if v.isPositionEqual(w) {
+                if !v.freshEdges {
+                    // ensure edges don't get drawn twice with neighborsDrawn flag
+
+                    X1=CGFloat(v.x);
+                    Y1=CGFloat(v.y);
+                    X2=CGFloat(w.x);
+                    Y2=CGFloat(w.y);
+                    diameter=graphView!.gwv.diameter;
+                    frameWidth=fabs(X1!-X2!)+diameter!;
+                    frameHeight=fabs(Y1!-Y2!)+diameter!;
+                    // adjust the frame based on the least coordinate for the xval and yval for the pair of points
+                    if(X1<X2 && Y1<Y2) {
+                        edgeFrame=CGRectMake(X1!, Y1! , frameWidth!, frameHeight!);
+                        graphView!.gwv.addEdgeWithFrame(edgeFrame!, edgeDirectionCase: 0);
+                    }
+                    else if(X1<X2 && Y1>=Y2) {
+                        edgeFrame=CGRectMake(X1!, Y2! , frameWidth!, frameHeight!);
+                        graphView!.gwv.addEdgeWithFrame(edgeFrame!, edgeDirectionCase: 1);
+                    }
+                    else if(X1>=X2 && Y1<Y2) {
+                        edgeFrame=CGRectMake(X2!, Y1! , frameWidth!, frameHeight!);
+                        graphView!.gwv.addEdgeWithFrame(edgeFrame!, edgeDirectionCase: 1);
+                    }
+                    else if(X1>=X2 && Y1>=Y2) {
+                        edgeFrame=CGRectMake(X2!, Y2! , frameWidth!, frameHeight!);
+                        graphView!.gwv.addEdgeWithFrame(edgeFrame!, edgeDirectionCase: 0);
+                    }
                 }
             }
         }
     }
-    */
 
     // MARK: deinit
     deinit {
@@ -229,7 +267,7 @@ class CoreController: UIViewController, UIScrollViewDelegate {
     // MARK: protocol conformance
     // public
     // this method is called the -(void)pan in VertView
-    func drawGraphAfterMovingVertById(viewId:Int32, toXPos endX:Float, toYPos endY:Float) {
+    func drawGraphAfterMovingVert(viewId:Int32, toXPos endX:Float, toYPos endY:Float) {
         if graph != nil {
             // cast the number of verts in the array to an Int32
             let vertCount:Int32 = Int32(graph!.verts.count);
@@ -302,7 +340,7 @@ class CoreController: UIViewController, UIScrollViewDelegate {
         return newContext
     }()
 
-    // MARK: - Core Data Saving support
+    //MARK: - Core Data Saving support
 
     func saveContext () {
         if let moc = context {
@@ -315,55 +353,28 @@ class CoreController: UIViewController, UIScrollViewDelegate {
             }
         }
     }
+    
+    //MARK:testing
+    // create some variables in the managedObjectModel and send them to the model for setup
+    private func testGraph() {
 
-    /*
-    // more zoom stuff
-    -(UIView*)viewForZoomingInScrollView:(UIScrollView *)scrollView {
-        return self.graphView.gwv;
-    }
-
-    // private method
-    // drawEdges draws the edges out of v
-    -drawEdges()->v:Vert {
-
-        double X1,Y1,X2,Y2,diameter,frameWidth,frameHeight;
-        CGRect edgeFrame;
-        
-        for(Vert* w in v.neighbor) {
-            // check that the class is correct
-            // and the verts v and w are not equal
-            // and the neighbors of v have not been drawn already
-            
-            if([w isKindOfClass:[Vert class]] && ![v isPositionEqual:w] && ![v freshEdgeViews]) {
-                // ensure edges don't get drawn twice with neighborsDrawn flag
-
-                X1=v.x;
-                Y1=v.y;
-                X2=w.x;
-                Y2=w.y;
-                diameter=self.graphView.gwv.diameter;
-                frameWidth=fabs(X1-X2)+diameter;
-                frameHeight=fabs(Y1-Y2)+diameter;
-                // adjust the frame based on the least coordinate for the xval and yval for the pair of points
-                if(X1<X2 && Y1<Y2) {
-                    edgeFrame=CGRectMake(X1, Y1 , frameWidth, frameHeight);
-                    [self.graphView.gwv addEdgeWithFrame:edgeFrame :0 ];
-                }
-                else if(X1<X2 && Y1>=Y2) {
-                    edgeFrame=CGRectMake(X1, Y2 , frameWidth, frameHeight);
-                    [self.graphView.gwv addEdgeWithFrame:edgeFrame :1 ];
-                }
-                else if(X1>=X2 && Y1<Y2) {
-                    edgeFrame=CGRectMake(X2, Y1 , frameWidth, frameHeight);
-                    [self.graphView.gwv addEdgeWithFrame:edgeFrame :1 ];
-                }
-                else if(X1>=X2 && Y1>=Y2) {
-                    edgeFrame=CGRectMake(X2, Y2 , frameWidth, frameHeight);
-                    [self.graphView.gwv addEdgeWithFrame:edgeFrame :0 ];
-                }
-            }
+        var verts=makeVertsArray(4);
+        var edges=makeEdgesArray(4);
+        if graph != nil {
+            graph!.SetupVert(verts[0], AtX:10, AtY:70);
+            graph!.SetupVert(verts[1], AtX:100, AtY:200);
+            graph!.SetupVert(verts[2], AtX:50, AtY:300);
+            graph!.SetupVert(verts[3], AtX:200, AtY:80);
+            graph!.SetupEdge(edges[0], From:verts[0], To:verts[1]);
+            graph!.SetupEdge(edges[1], From:verts[1], To:verts[3]);
+            graph!.SetupEdge(edges[2], From:verts[1], To:verts[2]);
+            graph!.SetupEdge(edges[3], From:verts[2], To:verts[3]);
+        }
+        else {
+            println("CoreController: testGraph: err graph is nil");
         }
     }
+    /*
 
     // public
     // the method addVertToModel is triggered whenever the user hits the button
@@ -373,9 +384,4 @@ class CoreController: UIViewController, UIScrollViewDelegate {
     }
     */
 
-    // context = _context;
-    // managedObjectModel = _managedObjectModel;
-    // persistentStoreCoordinator = _persistentStoreCoordinator;
-
-    // MARK: - Core Data stack
 }
