@@ -20,23 +20,30 @@ class GraphView: UIScrollView {
 
     lazy var gwv:GraphWorldView = {
         // inside a block so we have to use self
-            let sizeX:CGFloat = self.contentSize.width;
-            let sizeY:CGFloat = self.contentSize.height;
-            let worldRect:CGRect = CGRectMake(0,0,sizeX,sizeY);
-            let worldView = init();
-            worldView.frame=worldRect
-            addSubview(worldView);
-            return worldView;
+        let sizeX:CGFloat = self.contentSize.width;
+        let sizeY:CGFloat = self.contentSize.height;
+        let worldRect:CGRect = CGRectMake(0,0,sizeX,sizeY);
+        let worldView:GraphWorldView = GraphWorldView();
+        worldView.frame=worldRect
+        self.addSubview(worldView);
+        return worldView;
     }()
     
     required init(coder aDecoder: NSCoder) {
         // set the content size first as all subclasses will need it
-        self.contentSize=CGSizeMake(1000,1000);
+        contentSize=CGSizeMake(1000,1000);
         // self.backgroundColor may seem irrelevant as the view is covered by a GraphWorldView
         // This is wrong. There is no default color so nothing will be displayed
-        self.backgroundColor=UIColor.whiteColor();
-        self.opaque=false;
+        backgroundColor=UIColor.whiteColor();
+        opaque=false;
         super.init(coder: aDecoder);
     }
-
+    override init(frame: CGRect) {
+        contentSize=CGSizeMake(1000,1000);
+        // self.backgroundColor may seem irrelevant as the view is covered by a GraphWorldView
+        // This is wrong. There is no default color so nothing will be displayed
+        backgroundColor=UIColor.whiteColor();
+        opaque=false;
+        super.init(frame: frame);
+    }
 }

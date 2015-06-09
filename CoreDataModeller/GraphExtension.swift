@@ -71,26 +71,26 @@ extension Graph {
 
 
     func sortFunction(e1:Array<Int32>, e2:Array<Int32>)->Bool {
-            let id00=e1[0];
-            let id01=e1[1];
-            let id10=e2[0];
-            let id11=e2[1];
-            
-            if (id00 < id10) {
+        let id00=e1[0];
+        let id01=e1[1];
+        let id10=e2[0];
+        let id11=e2[1];
+        
+        if (id00 < id10) {
+            return true;
+        }
+        else if (id00 > id10) {
+            return false;
+        }
+        else {
+            if(id01<id11) {
                 return true;
             }
-            else if (id00 > id10) {
+            else if(id01>id11) {
                 return false;
             }
-            else {
-                if(id01<id11) {
-                    return true;
-                }
-                else if(id01>id11) {
-                    return false;
-                }
-            }
-            return false;
+        }
+        return false;
     }
 
     func sortedEdgeIdArray()->Array<Array<Int32>> {
@@ -99,6 +99,36 @@ extension Graph {
         let sortArray=sorted(bacon,sortFunction);
 
         return sortArray;
+    }
+
+    func getVertById(vertId:Int32)->Vert? {
+
+        // check id
+        let vertCount:Int32 = Int32(self.verts.count);
+        if((vertId < Int32(0) ) || (vertCount <= vertId)) {
+            print("getVertById: err id argument is too large or small");
+            return nil;
+        }
+        // search for matching id
+        for v in verts {
+            if v is Vert {
+                let vert:Vert=v as! Vert;
+                if vert.vertViewId == vertId {
+                    return vert;
+                }
+            }
+        }
+        return nil;
+    }
+
+    //moveVertTo(newX:Double, _ newY:Double)
+    func moveVertById(vertId:Int32, toXPos endX:Float, toYPos endY:Float) {
+        let v:Vert? = getVertById(vertId);
+        // check v
+        if(v==nil) {
+            print("moveVertById err: no vert found");
+        }
+        v!.moveVertTo(endX, endY);
     }
 
 }
@@ -123,35 +153,6 @@ extension Graph {
         [description appendString:vertPairString];
     }
     return description;
-}
-
--(Vert*)getVertById:(NSNumber*)vertId {
-    int idAsInt=[vertId intValue];
-    
-    // check id
-    if(idAsInt<0 || [self.vert count]<=idAsInt) {
-        NSLog(@"getVertById: err id argument is too large or small");
-        return nil;
-    }
-    // search for matching id
-    for(id v in self.vert) {
-        if([v isKindOfClass:[Vert class]]) {
-            Vert* vert=(Vert*)v;
-            if([vert.vertViewId isEqualToNumber:vertId]){
-                return vert;
-            }
-        }
-    }
-    return nil;
-}
-
--(void)moveVertById:(NSNumber*)vertId toXPos:(double)endX toYPos:(double)endY {
-    Vert* v=[self getVertById:vertId];
-    // check v
-    if(v==nil) {
-        NSLog(@"moveVertById err: no vert found");
-    }
-    [v moveVertToX:endX toY:endY];
 }
 
 -(void)removeVertById:(NSNumber*)vertId {

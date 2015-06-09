@@ -112,12 +112,12 @@ func removeEdge(edge:Edge, vert:Vert) {
     */
 }
 
-func distance(other:Vert)->Double{
+func distance(other:Vert)->Float{
     if(self.isNeighborOf(other)) {
-        var x1:Double=self.x;
-        var x2:Double=other.x;
-        var y1:Double=self.y;
-        var y2:Double=other.y;
+        var x1:Float=self.x;
+        var x2:Float=other.x;
+        var y1:Float=self.y;
+        var y2:Float=other.y;
         let z1=pow(x1-x2,2);
         let z2=pow(y1-y2,2);
         return sqrt(z1+z2);
@@ -135,7 +135,7 @@ func invalidateViews() {
 }
 
 // change vert position in data model
-func moveVertTo(newX:Double, _ newY:Double) {
+func moveVertTo(newX:Float, _ newY:Float) {
     invalidateViews();
     x=newX;
     y=newY;

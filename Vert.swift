@@ -17,8 +17,8 @@ class Vert: NSManagedObject {
     @NSManaged var freshViews: Bool
     @NSManaged var parseObjId: String
     @NSManaged var vertViewId: Int32
-    @NSManaged var x: Double
-    @NSManaged var y: Double
+    @NSManaged var x: Float
+    @NSManaged var y: Float
     @NSManaged var edges: NSSet
     @NSManaged var graph: Graph
     @NSManaged var neighbors: NSSet
