@@ -41,35 +41,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     }
 
     // MARK: Setup
-    // verts array using swift arrays
-    private func makeVertsArray(numVerts:Int)->Array<Vert> {
-       
-        var verts=Array<Vert>();
-        if context == nil { println("CoreController: makeVertsArray: context is nil");}
-        else {
-            let vertDescription = NSEntityDescription.entityForName("Vert",inManagedObjectContext: context!);
-            for var i=0;i<numVerts;i++ {
-                verts.append(Vert(entity: vertDescription!,insertIntoManagedObjectContext: context));
-            }
-        }
-        return verts;
-    }
-
-    private func makeEdgesArray(numEdges:Int)->Array<Edge> {
-        var edges=Array<Edge>();
-        let edgeDescription = NSEntityDescription.entityForName("Edge",inManagedObjectContext: context!);
-        
-        if context != nil {
-            for var i=0;i<numEdges;i++ {
-                var edge:Edge? = Edge(entity: edgeDescription!,insertIntoManagedObjectContext: context);
-                edges.append(edge!);
-            }
-        }
-        else {
-        
-        }
-        return edges;
-    }
 
     // sets up 3 buttons for the view controllers UI states
     func barButtons() {
@@ -155,9 +126,9 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         testGraph();
     }
 
-    
-    // KVO
+    //MARK: KVO on model
     override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject: AnyObject], context: UnsafeMutablePointer<Void>) {
+
         var v:Vert?
         if object is Vert {
             v = object as? Vert;
@@ -180,6 +151,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                     vertView!.y = CGFloat(v!.y);
                     graphView!.gwv.addSubview(vertView!);
                     vertView!.setNeedsDisplay();
+                    
                 }
                 else {
                     let vv:VertView = graphView!.gwv.addVertAtPoint(CGPointMake(CGFloat(v!.x), CGFloat(v!.y)) );
@@ -358,8 +330,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     // create some variables in the managedObjectModel and send them to the model for setup
     private func testGraph() {
 
-        var verts=makeVertsArray(4);
-        var edges=makeEdgesArray(4);
+        var verts=testVertsArray(4);
+        var edges=testEdgesArray(4);
         if graph != nil {
             graph!.SetupVert(verts[0], AtX:10, AtY:70);
             graph!.SetupVert(verts[1], AtX:100, AtY:200);
@@ -369,10 +341,41 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             graph!.SetupEdge(edges[1], From:verts[1], To:verts[3]);
             graph!.SetupEdge(edges[2], From:verts[1], To:verts[2]);
             graph!.SetupEdge(edges[3], From:verts[2], To:verts[3]);
+            // add an observer of the graph object
         }
         else {
             println("CoreController: testGraph: err graph is nil");
         }
+    }
+    
+    private func testVertsArray(numVerts:Int)->Array<Vert> {
+        var verts=Array<Vert>();
+        if context == nil { println("CoreController: makeVertsArray: context is nil");}
+        else {
+            let vertDescription = NSEntityDescription.entityForName("Vert",inManagedObjectContext: context!);
+            for var i=0;i<numVerts;i++ {
+                let vert:Vert = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
+                vert.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
+                verts.append(vert);
+            }
+        }
+        return verts;
+    }
+
+    private func testEdgesArray(numEdges:Int)->Array<Edge> {
+        var edges=Array<Edge>();
+        let edgeDescription = NSEntityDescription.entityForName("Edge",inManagedObjectContext: context!);
+        
+        if context != nil {
+            for var i=0;i<numEdges;i++ {
+                var edge:Edge? = Edge(entity: edgeDescription!,insertIntoManagedObjectContext: context);
+                edges.append(edge!);
+            }
+        }
+        else {
+        
+        }
+        return edges;
     }
     /*
 
