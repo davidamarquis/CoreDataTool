@@ -38,7 +38,7 @@ extension Graph {
             // adding an edge sets vert1 and vert2 to be neighbors joined by the edge e
         }
         else {
-            println("Graph Cat : SetupEdge: fuckup ");
+            println("Graph Cat : SetupEdge: ");
         }
         vertOrNil1!.AddEdge(edgeOrNil, toVert:vertOrNil2);
     }

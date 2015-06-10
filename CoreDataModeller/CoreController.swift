@@ -138,55 +138,106 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
         if( keyPath=="finishedObservedMethod" && graphView != nil ) {
             if(!v!.freshViews) {
-                //NOTE: gwv class = graphWorldView
-                
-                // check if a view exists corresponding to the vert instance
-                //   if no view is found then vertView is nil and we alloc a vertView and add it
-                //   otherwise model and view are out of date: drawn==NO implies Vert instance has changed since the last time the VC drew
+                // check if a view exists corresponding to the vert instance. (1) if no view is found then vertView is nil and
+                // we init a vertView and paste it to view. (2) otherwise model and view are out of date: implies Vert instance 
+                // has changed since the last time the VC drew.
                 // VC updates the view by removing the outdated VertView and adding a correct one
                 let vertView:VertView? = graphView!.gwv.getVertViewById(v!.vertViewId);
                 if(vertView != nil) {
+                    // remove the old view
                     vertView!.removeFromSuperview();
+                    // set the new position
                     vertView!.x = CGFloat(v!.x);
                     vertView!.y = CGFloat(v!.y);
+                    // add the new view
                     graphView!.gwv.addSubview(vertView!);
                     vertView!.setNeedsDisplay();
-                    
                 }
                 else {
                     let vv:VertView = graphView!.gwv.addVertAtPoint(CGPointMake(CGFloat(v!.x), CGFloat(v!.y)) );
                     vv.delegate=self;
+                    // set the view id to match the model id
                     vv.vertViewId=v!.vertViewId;
+                    
                 }
                 // vert instance now fresh
                 v!.freshViews=true;
             }
             if(!v!.freshEdges) {
                 // call drawEdges to prepare for the drawing of the edges of v
-                drawEdges(v!);
+                drawEdges2();
                 // edge instance now fresh
                 v!.freshEdges=true;
             }
         }
     }
     
+    private func drawEdges2() {
+        var X1,Y1,X2,Y2,diameter,frameWidth,frameHeight:CGFloat?;
+        var edgeFrame:CGRect?;
+        var e:Edge!;
+        var v,w:Vert?;
+        
+        if graph != nil {
+            for edge in graph!.edges {
+                println("CoreController: drawEdges2: ");
+                if edge is Edge {
+                    e=edge as! Edge;
+                }
+                else {
+                    println("CoreController: drawEdges: graph has an element that is not an edge");
+                }
+                
+                (v,w)=e.Connects();
+                
+                if v != nil && w != nil {
+                    let edgeView:EdgeView? = graphView!.gwv.getEdgeViewById(e!.edgeViewId);
+                    if(edgeView != nil) {
+                        // remove the old view
+                        edgeView!.removeFromSuperview();
+                        // add the new view
+                        graphView!.gwv.addSubview(edgeView!);
+                        edgeView!.setNeedsDisplay();
+                    }
+                    else {
+                    
+                        X1=CGFloat(v!.x);
+                        Y1=CGFloat(v!.y);
+                        X2=CGFloat(w!.x);
+                        Y2=CGFloat(w!.y);
+                        diameter=graphView!.gwv.diameter;
+                        frameWidth=fabs(X1!-X2!)+diameter!;
+                        frameHeight=fabs(Y1!-Y2!)+diameter!;
+                        // adjust the frame based on the least coordinate for the xval and yval for the pair of points
+                        let minX=min(X1!,X2!);
+                        let minY=min(Y1!,Y2!);
+                        edgeFrame=CGRectMake(minX, minY, frameWidth!, frameHeight!);
+                        
+                        // there are four cases to consider. Two are topLeftToBotRight, other two are not
+                        if (X1<X2 && Y1<Y2) || (X1>=X2 && Y1>=Y2) {
+                            graphView!.gwv.addEdgeWithFrame(edgeFrame!, topLeftToBotRight: true);
+                        }
+                        else {
+                            graphView!.gwv.addEdgeWithFrame(edgeFrame!, topLeftToBotRight: false);
+                        }
+                        
+                        edgeView!.edgeViewId=e!.edgeViewId;
+                        
+                    }
+                }
+            }
+        }
+    }
+    
     // drawEdges draws the edges out of v
     private func drawEdges(v:Vert) {
-
-        var X1:CGFloat?;
-        var Y1:CGFloat?;
-        var X2:CGFloat?;
-        var Y2:CGFloat?;
-        var diameter:CGFloat?;
-        var frameWidth:CGFloat?;
-        var frameHeight:CGFloat?;
+        var X1,Y1,X2,Y2,diameter,frameWidth,frameHeight:CGFloat?;
         var edgeFrame:CGRect?;
         var w:Vert!;
         
         for vert in v.neighbors {
-            // check that the class is correct
-            // and the verts v and w are not equal
-            // and the neighbors of v have not been drawn already
+            // check (1) that the class is correct (2) the verts v and w are not equal 3) the neighbors of v have not 
+            // been drawn already
             if vert is Vert {
                 w=vert as! Vert;
             }
@@ -194,34 +245,43 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                 println("CoreController: drawEdges: v.neighbors has an element that is not a vert");
             }
             
-            if v.isPositionEqual(w) {
+            // if v is not in the same place as w
+            if !v.isPositionEqual(w) {
+                // check this flag so edges are not drawn twice
                 if !v.freshEdges {
-                    // ensure edges don't get drawn twice with neighborsDrawn flag
-
-                    X1=CGFloat(v.x);
-                    Y1=CGFloat(v.y);
-                    X2=CGFloat(w.x);
-                    Y2=CGFloat(w.y);
-                    diameter=graphView!.gwv.diameter;
-                    frameWidth=fabs(X1!-X2!)+diameter!;
-                    frameHeight=fabs(Y1!-Y2!)+diameter!;
-                    // adjust the frame based on the least coordinate for the xval and yval for the pair of points
-                    if(X1<X2 && Y1<Y2) {
-                        edgeFrame=CGRectMake(X1!, Y1! , frameWidth!, frameHeight!);
-                        graphView!.gwv.addEdgeWithFrame(edgeFrame!, edgeDirectionCase: 0);
+                    //TODO: get edge by id
+                    /*
+                    if(edgeView != nil) {
+                        // remove the old view
+                        edgeView!.removeFromSuperview();
+                        // add the new view
+                        graphView!.gwv.addSubview(edgeView!);
+                        edgeView!.setNeedsDisplay();
                     }
-                    else if(X1<X2 && Y1>=Y2) {
-                        edgeFrame=CGRectMake(X1!, Y2! , frameWidth!, frameHeight!);
-                        graphView!.gwv.addEdgeWithFrame(edgeFrame!, edgeDirectionCase: 1);
+                    else {
+                        X1=CGFloat(v.x);
+                        Y1=CGFloat(v.y);
+                        X2=CGFloat(w.x);
+                        Y2=CGFloat(w.y);
+                        diameter=graphView!.gwv.diameter;
+                        frameWidth=fabs(X1!-X2!)+diameter!;
+                        frameHeight=fabs(Y1!-Y2!)+diameter!;
+                        // adjust the frame based on the least coordinate for the xval and yval for the pair of points
+                        let minX=min(X1!,X2!);
+                        let minY=min(Y1!,Y2!);
+                        edgeFrame=CGRectMake(minX, minY, frameWidth!, frameHeight!);
+                        
+                        // there are four cases to consider. Two cases of each type
+                        if (X1<X2 && Y1<Y2) || (X1>=X2 && Y1>=Y2) {
+                            graphView!.gwv.addEdgeWithFrame(edgeFrame!, topLeftToBotRight: true);
+                        }
+                        else {
+                            graphView!.gwv.addEdgeWithFrame(edgeFrame!, topLeftToBotRight: false);
+                        }
+                        
+                        //TODO: set edge view
                     }
-                    else if(X1>=X2 && Y1<Y2) {
-                        edgeFrame=CGRectMake(X2!, Y1! , frameWidth!, frameHeight!);
-                        graphView!.gwv.addEdgeWithFrame(edgeFrame!, edgeDirectionCase: 1);
-                    }
-                    else if(X1>=X2 && Y1>=Y2) {
-                        edgeFrame=CGRectMake(X2!, Y2! , frameWidth!, frameHeight!);
-                        graphView!.gwv.addEdgeWithFrame(edgeFrame!, edgeDirectionCase: 0);
-                    }
+                    */
                 }
             }
         }

@@ -10,6 +10,7 @@ import UIKit
 
 class EdgeView: UIView {
 
+    //MARK: init
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder);
         opaque=false;
@@ -19,9 +20,11 @@ class EdgeView: UIView {
         opaque=false;
     }
     // directionCase options are 0 or 1
-    var directionCase:Int?;
+    var topLeftToBotRight:Bool?;
     var radius:CGFloat?;
+    var edgeViewId:Int32?;
     
+    //MARK: custom drawing
     override func drawRect(rect:CGRect) {
 
         let cont:CGContextRef = UIGraphicsGetCurrentContext();
@@ -29,31 +32,32 @@ class EdgeView: UIView {
         CGContextSetRGBFillColor(cont, 1.0, 1.0, 0.0, 1.0);
         CGContextStrokeRect(cont, rect);
         
-        let wdth:CGFloat = self.bounds.size.width;
-        let hght:CGFloat = self.bounds.size.height;
+        let wdth:CGFloat = bounds.size.width;
+        let hght:CGFloat = bounds.size.height;
      
         let bz:UIBezierPath=UIBezierPath();
         
-        var p1:CGPoint?;
-        var p2:CGPoint?;
-        
+        var p1,p2:CGPoint?;
+
         UIColor.blackColor().setStroke();
         UIColor.blackColor().setFill();
         bz.lineWidth=CGFloat(5.0);
 
-        // when drawRect is called self.radius has already been set by the superview
-        if(self.directionCase==0) {
-        //X1<X2 && Y1<Y2
-            p1=CGPointMake(radius!,radius!);
-            p2=CGPointMake(wdth-radius!,hght-radius!);
-        }
-        else if(self.directionCase==1) {
-            //X1<X2 && Y1>=Y2
-            p1=CGPointMake(radius!,hght-radius!);
-            p2=CGPointMake(wdth-radius!,radius!);
+        if topLeftToBotRight != nil {
+            if topLeftToBotRight!==true {
+                // handling a case like X1<X2 && Y1<Y2
+                p1=CGPointMake(radius!,radius!);
+                p2=CGPointMake(wdth-radius!,hght-radius!);
+            }
+            else {
+                // handling a case like X1<X2 && Y1>=Y2
+                //
+                p1=CGPointMake( radius!, hght-radius!);
+                p2=CGPointMake(wdth-radius!, radius!);
+            }
         }
         else {
-            print("EdgeView drawRect: err");
+            println("EdgeView: drawRect: err");
         }
         bz.moveToPoint(p1!);
         bz.addLineToPoint(p2!);

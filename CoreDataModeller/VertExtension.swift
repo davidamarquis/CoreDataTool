@@ -91,7 +91,9 @@ func AddEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
         edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByAddingObject(self);
         
         freshEdges=false;
+        vertOrNil!.freshEdges=false;
         finishedObservedMethod=true;
+        vertOrNil!.finishedObservedMethod=true;
     }
     else {
     
@@ -141,6 +143,7 @@ func moveVertTo(newX:Float, _ newY:Float) {
     // set here so outside classes don't get confused about vert state
     // @search algos: set this flag to false at start when executed
     depthSearchSeen=false;
+    finishedObservedMethod=true;
 }
 
 func allNeighborsSeen()->Bool {

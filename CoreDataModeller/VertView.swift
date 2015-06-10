@@ -17,12 +17,10 @@ class VertView: UIView {
     // MARK: VARS
     var bz:UIBezierPath = UIBezierPath();
     var selected:Bool;
-    var x:CGFloat;
-    var y:CGFloat;
+    var x,y:CGFloat;
     // variables that are set after initialization
     var positionBeforePan:CGPoint?;
-    var circSize:CGFloat?;
-    var strokeSize:CGFloat?;
+    var circSize,strokeSize:CGFloat?;
     var vertViewId:Int32?;
     // protocol delegates
     var delegate:VertViewWasTouchedProtocol?;
