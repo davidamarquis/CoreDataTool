@@ -12,7 +12,8 @@ import Foundation
 extension Graph {
 // all methods in an extension
     
-    func SetupVert(vertOrNil:Vert?, AtX xPos:Float, AtY yPos:Float) {
+    
+    func SetupVert(vertOrNil:Vert?, AtX xPos:Float, AtY yPos:Float ) {
         // Warning: setting of ids should be guarded against the deletion of managed verts from but is not currently
       
         if let vert=vertOrNil {

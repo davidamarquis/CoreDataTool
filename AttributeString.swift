@@ -1,5 +1,5 @@
 //
-//  Entity.swift
+//  AttributeString.swift
 //  CoreDataModeller
 //
 //  Created by David Marquis on 2015-06-11.
@@ -9,7 +9,9 @@
 import Foundation
 import CoreData
 
-class Entity: Graph {
+class AttributeString: NSManagedObject {
 
+    @NSManaged var string: String
+    @NSManaged var vertWithAttribute: Vert
 
 }

@@ -22,20 +22,22 @@
 		48282EBA1B17AED100BDA782 /* VertExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48282EB91B17AED100BDA782 /* VertExtension.swift */; };
 		483DAFB11B1E8D40007A532E /* GraphExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58C1B1E4046002F6A01 /* GraphExtension.swift */; };
 		483DAFB21B1E8D42007A532E /* EdgeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58E1B1E4391002F6A01 /* EdgeExtension.swift */; };
-		483DAFC71B1FE911007A532E /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483DAFC61B1FE911007A532E /* Graph.swift */; };
-		483DAFC91B1FE911007A532E /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483DAFC81B1FE911007A532E /* Vert.swift */; };
-		483DAFCB1B1FE912007A532E /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483DAFCA1B1FE912007A532E /* Edge.swift */; };
-		483DAFCD1B1FE912007A532E /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483DAFCC1B1FE912007A532E /* Entity.swift */; };
-		484DE2791B1FE9EE0035B674 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483DAFCC1B1FE912007A532E /* Entity.swift */; };
-		484DE27A1B1FE9F10035B674 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483DAFCA1B1FE912007A532E /* Edge.swift */; };
-		484DE27B1B1FE9F30035B674 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483DAFC81B1FE911007A532E /* Vert.swift */; };
-		484DE27C1B1FE9F50035B674 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483DAFC61B1FE911007A532E /* Graph.swift */; };
 		487FDD011B1A6BC60087C0AF /* NSSet + Edit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487FDD001B1A6BC60087C0AF /* NSSet + Edit.swift */; };
 		4882F58D1B1E4046002F6A01 /* GraphExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58C1B1E4046002F6A01 /* GraphExtension.swift */; };
 		4882F58F1B1E4391002F6A01 /* EdgeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58E1B1E4391002F6A01 /* EdgeExtension.swift */; };
 		489039241B1B8E0C005E0992 /* CoreController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489039231B1B8E0C005E0992 /* CoreController.swift */; };
 		48BEF91A1B2A038000DC51A4 /* AttributeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9191B2A038000DC51A4 /* AttributeTable.swift */; };
 		48BEF91B1B2A185C00DC51A4 /* AttributeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9191B2A038000DC51A4 /* AttributeTable.swift */; };
+		48BEF9311B2A255500DC51A4 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9301B2A255500DC51A4 /* Vert.swift */; };
+		48BEF9331B2A255500DC51A4 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9321B2A255500DC51A4 /* Edge.swift */; };
+		48BEF9351B2A255600DC51A4 /* AttributeString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9341B2A255600DC51A4 /* AttributeString.swift */; };
+		48BEF9371B2A255600DC51A4 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9361B2A255600DC51A4 /* Entity.swift */; };
+		48BEF9391B2A255600DC51A4 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9381B2A255600DC51A4 /* Graph.swift */; };
+		48BEF93A1B2A2A4800DC51A4 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9381B2A255600DC51A4 /* Graph.swift */; };
+		48BEF93B1B2A2A4B00DC51A4 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9361B2A255600DC51A4 /* Entity.swift */; };
+		48BEF93C1B2A2A4E00DC51A4 /* AttributeString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9341B2A255600DC51A4 /* AttributeString.swift */; };
+		48BEF93D1B2A2A5000DC51A4 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9321B2A255500DC51A4 /* Edge.swift */; };
+		48BEF93E1B2A2A5400DC51A4 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9301B2A255500DC51A4 /* Vert.swift */; };
 		48E92AB61B1E226700110510 /* NSSet + Edit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487FDD001B1A6BC60087C0AF /* NSSet + Edit.swift */; };
 		48E92ABB1B1E226700110510 /* VertExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48282EB91B17AED100BDA782 /* VertExtension.swift */; };
 		48E92ABC1B1E226700110510 /* CoreDataModeller-Bridging-Header.h in Sources */ = {isa = PBXBuildFile; fileRef = 4810E37A1B17494000F72097 /* CoreDataModeller-Bridging-Header.h */; };
@@ -77,15 +79,16 @@
 		4812E3CE1B1D04BC0061EAB1 /* LandingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
 		48282E911B179DF400BDA782 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		48282EB91B17AED100BDA782 /* VertExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertExtension.swift; sourceTree = "<group>"; };
-		483DAFC61B1FE911007A532E /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Graph.swift; path = ../Graph.swift; sourceTree = "<group>"; };
-		483DAFC81B1FE911007A532E /* Vert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Vert.swift; path = ../Vert.swift; sourceTree = "<group>"; };
-		483DAFCA1B1FE912007A532E /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Edge.swift; path = ../Edge.swift; sourceTree = "<group>"; };
-		483DAFCC1B1FE912007A532E /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Entity.swift; path = ../Entity.swift; sourceTree = "<group>"; };
 		487FDD001B1A6BC60087C0AF /* NSSet + Edit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSSet + Edit.swift"; sourceTree = "<group>"; };
 		4882F58C1B1E4046002F6A01 /* GraphExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphExtension.swift; sourceTree = "<group>"; };
 		4882F58E1B1E4391002F6A01 /* EdgeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeExtension.swift; sourceTree = "<group>"; };
 		489039231B1B8E0C005E0992 /* CoreController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreController.swift; sourceTree = "<group>"; };
 		48BEF9191B2A038000DC51A4 /* AttributeTable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeTable.swift; sourceTree = "<group>"; };
+		48BEF9301B2A255500DC51A4 /* Vert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Vert.swift; path = ../Vert.swift; sourceTree = "<group>"; };
+		48BEF9321B2A255500DC51A4 /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Edge.swift; path = ../Edge.swift; sourceTree = "<group>"; };
+		48BEF9341B2A255600DC51A4 /* AttributeString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttributeString.swift; path = ../AttributeString.swift; sourceTree = "<group>"; };
+		48BEF9361B2A255600DC51A4 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Entity.swift; path = ../Entity.swift; sourceTree = "<group>"; };
+		48BEF9381B2A255600DC51A4 /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Graph.swift; path = ../Graph.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,10 +173,11 @@
 		4810E3741B1744DE00F72097 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				483DAFCC1B1FE912007A532E /* Entity.swift */,
-				483DAFCA1B1FE912007A532E /* Edge.swift */,
-				483DAFC81B1FE911007A532E /* Vert.swift */,
-				483DAFC61B1FE911007A532E /* Graph.swift */,
+				48BEF9381B2A255600DC51A4 /* Graph.swift */,
+				48BEF9361B2A255600DC51A4 /* Entity.swift */,
+				48BEF9341B2A255600DC51A4 /* AttributeString.swift */,
+				48BEF9321B2A255500DC51A4 /* Edge.swift */,
+				48BEF9301B2A255500DC51A4 /* Vert.swift */,
 				48282EA71B17A1BD00BDA782 /* Categories */,
 				4810E37A1B17494000F72097 /* CoreDataModeller-Bridging-Header.h */,
 			);
@@ -311,23 +315,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				48BEF9351B2A255600DC51A4 /* AttributeString.swift in Sources */,
 				4882F58F1B1E4391002F6A01 /* EdgeExtension.swift in Sources */,
 				48282EBA1B17AED100BDA782 /* VertExtension.swift in Sources */,
-				483DAFC71B1FE911007A532E /* Graph.swift in Sources */,
 				4812E3CB1B1D047C0061EAB1 /* VertView.swift in Sources */,
 				4812E3C91B1D046F0061EAB1 /* GraphWorldView.swift in Sources */,
 				4812E3C71B1CF3E90061EAB1 /* GraphView.swift in Sources */,
-				483DAFC91B1FE911007A532E /* Vert.swift in Sources */,
-				483DAFCD1B1FE912007A532E /* Entity.swift in Sources */,
 				4810E3771B17454A00F72097 /* Cows.swift in Sources */,
+				48BEF9311B2A255500DC51A4 /* Vert.swift in Sources */,
 				4812E3CD1B1D048C0061EAB1 /* EdgeView.swift in Sources */,
 				4812E3CF1B1D04BC0061EAB1 /* LandingVC.swift in Sources */,
 				48BEF91A1B2A038000DC51A4 /* AttributeTable.swift in Sources */,
-				483DAFCB1B1FE912007A532E /* Edge.swift in Sources */,
+				48BEF9331B2A255500DC51A4 /* Edge.swift in Sources */,
 				4810E3551B1744C300F72097 /* AppDelegate.swift in Sources */,
 				487FDD011B1A6BC60087C0AF /* NSSet + Edit.swift in Sources */,
+				48BEF9371B2A255600DC51A4 /* Entity.swift in Sources */,
 				48282E921B179DF400BDA782 /* Model.xcdatamodeld in Sources */,
 				4882F58D1B1E4046002F6A01 /* GraphExtension.swift in Sources */,
+				48BEF9391B2A255600DC51A4 /* Graph.swift in Sources */,
 				489039241B1B8E0C005E0992 /* CoreController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -336,19 +341,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				48BEF93C1B2A2A4E00DC51A4 /* AttributeString.swift in Sources */,
 				48E92AB61B1E226700110510 /* NSSet + Edit.swift in Sources */,
 				483DAFB21B1E8D42007A532E /* EdgeExtension.swift in Sources */,
-				484DE2791B1FE9EE0035B674 /* Entity.swift in Sources */,
 				48E92ABB1B1E226700110510 /* VertExtension.swift in Sources */,
 				48E92ABC1B1E226700110510 /* CoreDataModeller-Bridging-Header.h in Sources */,
+				48BEF93B1B2A2A4B00DC51A4 /* Entity.swift in Sources */,
 				48E92ABD1B1E226700110510 /* GraphView.swift in Sources */,
-				484DE27B1B1FE9F30035B674 /* Vert.swift in Sources */,
 				48E92ABE1B1E226700110510 /* GraphWorldView.swift in Sources */,
+				48BEF93D1B2A2A5000DC51A4 /* Edge.swift in Sources */,
 				48E92ABF1B1E226700110510 /* VertView.swift in Sources */,
-				484DE27C1B1FE9F50035B674 /* Graph.swift in Sources */,
-				484DE27A1B1FE9F10035B674 /* Edge.swift in Sources */,
 				48BEF91B1B2A185C00DC51A4 /* AttributeTable.swift in Sources */,
+				48BEF93E1B2A2A5400DC51A4 /* Vert.swift in Sources */,
 				48E92AC01B1E226700110510 /* EdgeView.swift in Sources */,
+				48BEF93A1B2A2A4800DC51A4 /* Graph.swift in Sources */,
 				48E92AC11B1E226700110510 /* CoreController.swift in Sources */,
 				48E92AC21B1E226700110510 /* LandingVC.swift in Sources */,
 				48E92AC31B1E226700110510 /* AppDelegate.swift in Sources */,

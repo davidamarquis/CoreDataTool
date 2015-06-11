@@ -9,9 +9,13 @@
 import UIKit
 
 class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelegate {
- 
+  
+    // this vert will be assigned before we segue to this view
     var vert:Vert?;
+    var attrsOrNil:NSArray?;
+    var attrStrings:NSArray?;
     
+    //MARK: view lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -23,13 +27,23 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
         
         let tableView=UITableView();
         tableView.frame = CGRectMake(10,30,320,400);
-        
         tableView.dataSource = self;
         tableView.delegate = self;
         //tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier:"AttributeCell");
         tableView.reloadData();
         view.addSubview(tableView);
+    }
+    override func viewWillAppear(animated: Bool) {
+        attrsOrNil=vert?.attributeStrings.allObjects;
+        if attrsOrNil != nil {
+            let attrs=attrsOrNil!;
+            println(attrs[0]);
+        }
+        else {
+
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -48,7 +62,12 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return 5
+        if attrStrings != nil {
+            return attrStrings!.count;
+        }
+        else {
+            return 0;
+        }
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -58,8 +77,10 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
         if cell == nil {
             
         }
-        let names=["Bob","Bub","Off","Snuff","Guts"];
-        cell!.textLabel!.text = names[indexPath.row];
+        let elem:AnyObject = attrStrings![indexPath.row];
+        if elem is String {
+            cell!.textLabel!.text=elem as? String;
+        }
         // Configure the cell...
 
         return cell!

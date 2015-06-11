@@ -484,10 +484,28 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         var verts=testVertsArray(4);
         var edges=testEdgesArray(4);
         if graph != nil {
-            graph!.SetupVert(verts[0], AtX:10, AtY:70);
-            graph!.SetupVert(verts[1], AtX:100, AtY:200);
-            graph!.SetupVert(verts[2], AtX:50, AtY:300);
-            graph!.SetupVert(verts[3], AtX:200, AtY:80);
+   
+            //let test:String="cat";
+            //let test2:NSString=NSString.init(string: "hello");
+            
+            let attrDescription = NSEntityDescription.entityForName("AttributeString",inManagedObjectContext: context!);
+            let attr:AttributeString = AttributeString(entity: attrDescription!,insertIntoManagedObjectContext: context);
+            attr.string="test";
+            
+            verts[0].attributeStrings = verts[0].attributeStrings.setByAddingObject(attr);
+            verts[1].attributeStrings = verts[1].attributeStrings.setByAddingObject(attr);
+            verts[2].attributeStrings = verts[2].attributeStrings.setByAddingObject(attr);
+            verts[3].attributeStrings = verts[3].attributeStrings.setByAddingObject(attr);
+            
+            var temp:NSSet=verts[0].attributeStrings.setByAddingObject(attr);
+            var cat:NSSet=NSSet();
+            cat = cat.setByAddingObject(attr);
+            
+            
+            graph!.SetupVert(verts[0], AtX:10, AtY:70 );
+            graph!.SetupVert(verts[1], AtX:100, AtY:200 );
+            graph!.SetupVert(verts[2], AtX:50, AtY:300 );
+            graph!.SetupVert(verts[3], AtX:200, AtY:80 );
             graph!.SetupEdge(edges[0], From:verts[0], To:verts[1]);
             graph!.SetupEdge(edges[1], From:verts[1], To:verts[3]);
             graph!.SetupEdge(edges[2], From:verts[1], To:verts[2]);
@@ -505,7 +523,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         else {
             let vertDescription = NSEntityDescription.entityForName("Vert",inManagedObjectContext: context!);
             for var i=0;i<numVerts;i++ {
-                let vert:Vert = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
+                var vert:Vert = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
                 vert.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
                 verts.append(vert);
             }
