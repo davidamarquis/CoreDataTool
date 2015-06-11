@@ -19,6 +19,7 @@ class GraphWorldView: UIView {
 
     // MARK: init
     override init(frame: CGRect) {
+    
         // step1: set non-inherited properties
         circSize=50;
         edgeSize=10;
@@ -81,13 +82,9 @@ class GraphWorldView: UIView {
     //MARK: Vert Interface
     func addVertAtPoint(cgp:CGPoint)->VertView {
         let diameter:CGFloat=circSize!+edgeSize!;
-
         let vert:VertView=VertView( frame: CGRectMake(cgp.x, cgp.y, diameter, diameter) );
-
-        vert.circSize=circSize;
-        vert.strokeSize=strokeSize;
+        (vert.circSize,vert.strokeSize)=(circSize,strokeSize);
         addSubview(vert);
-        setNeedsDisplay();
         return vert;
     }
     // return the VertView corresponding to a particular id
@@ -104,19 +101,22 @@ class GraphWorldView: UIView {
     }
 
     //MARK: Edge Interface
-    func addEdgeWithFrame(frame:CGRect, topLeftToBotRight:Bool) {
-        let ev:EdgeView=EdgeView(frame: frame);
+    // setEdge sets the properties of an EdgeView. Returns a reference to this in case this view had init() in setEdge input
+    func setEdge(ev:EdgeView, topLeftToBotRight:Bool)->EdgeView {
         ev.topLeftToBotRight=topLeftToBotRight;
         // fill in the radius
-        ev.radius=self.radius;
+        ev.radius=radius;
+
         addSubview(ev);
         sendSubviewToBack(ev);
+        return ev;
     }
 
     // return the EdgeView corresponding to a particular id
     func getEdgeViewById(edgeViewId:Int32)->EdgeView? {
         for subview in subviews {
             if subview is EdgeView {
+            
                 let edgeView:EdgeView=subview as! EdgeView;
                 if(edgeView.edgeViewId == edgeViewId) {return edgeView;}
             }

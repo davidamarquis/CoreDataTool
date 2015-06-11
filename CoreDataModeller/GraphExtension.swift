@@ -100,6 +100,7 @@ extension Graph {
         return sortArray;
     }
 
+    //MARK: vert inferface
     func getVertById(vertId:Int32)->Vert? {
 
         // check id

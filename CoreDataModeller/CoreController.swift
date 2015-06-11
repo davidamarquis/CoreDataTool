@@ -25,12 +25,23 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     var hght:CGFloat=CGFloat();
     var wdth:CGFloat=CGFloat();
     var vertViewCount:Int=Int();
+    var edgeButton:UIButton?;
+    var moveButton:UIButton?;
+    var vertButton:UIButton?;
+    var addVert:UIButton?;
+    var remVert:UIButton?;
+    
+    var unselectedTextColor = UIColor.grayColor();
+    var selectedTextColor = UIColor.whiteColor();
 
+    //MARK: view lifecycle
     override func viewDidLoad() {
 
         hght=view.bounds.size.height;
         wdth=view.bounds.size.width;
-        self.barButtons();
+        barButtons();
+        setupVertButtons();
+        moveMode();
         
         testGraph();
         
@@ -39,35 +50,66 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         let sortedEdgeIds:Array<Array<Int32>> = graph!.sortedEdgeIdArray();
         println(sortedEdgeIds);
     }
+    
+    override func viewWillAppear(animated: Bool) {
+    
+        // now is the time
+        if addVert != nil {
+            view.bringSubviewToFront(addVert!);
+        }
+    }
 
-    // MARK: Setup
+    //MARK: Setup
+    func setupVertButtons() {
+    
+        let buttonFont:UIFont=UIFont.systemFontOfSize(60);
+        
+        // init a button
+        addVert=UIButton.buttonWithType(.System) as? UIButton;
+        
+        addVert!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
+        addVert!.addTarget(self, action: "addVert", forControlEvents:.TouchUpInside);
+        addVert!.setTitle("+", forState:UIControlState.Normal);
+        addVert!.setTitleColor(unselectedTextColor, forState:.Normal);
+        addVert!.titleLabel!.font=buttonFont;
+        addVert!.backgroundColor=UIColor.clearColor();
+
+        // init a button
+        remVert=UIButton.buttonWithType(.System) as? UIButton;
+        
+        remVert!.frame=CGRectMake(wdth*0.666,hght*(1-2*vscale),wdth*0.334,hght*vscale);
+        remVert!.addTarget(self, action: "remVert", forControlEvents:.TouchUpInside);
+        remVert!.setTitle("X", forState:UIControlState.Normal);
+        remVert!.setTitleColor(unselectedTextColor, forState:.Normal);
+        remVert!.titleLabel!.font=buttonFont;
+        remVert!.backgroundColor=UIColor.clearColor();
+    }
 
     // sets up 3 buttons for the view controllers UI states
     func barButtons() {
+        
+        edgeButton = barButton("E");
+        edgeButton!.frame=CGRectMake(0,hght*(1-vscale),wdth*0.333,hght*vscale);
+        edgeButton!.addTarget(self, action: "edgeMode", forControlEvents:.TouchUpInside);
 
-        let edgeButton:UIButton = self.barButton("E");
-        edgeButton.frame=CGRectMake(0,hght*(1-vscale),wdth*0.333,hght*vscale);
-        edgeButton.addTarget(self, action: "edgeMode", forControlEvents:.TouchUpInside);
+        moveButton = barButton("M");
+        moveButton!.frame=CGRectMake(wdth*0.333,hght*(1-vscale),wdth*0.333,hght*vscale);
+        moveButton!.addTarget(self, action: "moveMode", forControlEvents:.TouchUpInside);
 
-        let moveButton:UIButton = self.barButton("M");
-        moveButton.frame=CGRectMake(wdth*0.333,hght*(1-vscale),wdth*0.333,hght*vscale);
-        moveButton.addTarget(self, action: "moveMode", forControlEvents:.TouchUpInside);
-
-        let vertButton:UIButton = self.barButton("V");
-        vertButton.frame=CGRectMake(wdth*0.666,hght*(1-vscale),wdth*0.334,hght*vscale);
-        vertButton.addTarget(self, action: "vertMode", forControlEvents:.TouchUpInside);
+        vertButton = barButton("V");
+        vertButton!.frame=CGRectMake(wdth*0.666,hght*(1-vscale),wdth*0.334,hght*vscale);
+        vertButton!.addTarget(self, action: "vertMode", forControlEvents:.TouchUpInside);
     }
     // creates an individual button
     func barButton(title:String) -> UIButton {
         // bcol is color of back of button, tcol of the text on the button
         let bcol:UIColor=UIColor.blackColor();
-        let tcol:UIColor=UIColor.grayColor();
         let buttonFont:UIFont=UIFont.systemFontOfSize(60);
         
         let button:UIButton=UIButton.buttonWithType(.System) as! UIButton;
         button.backgroundColor=bcol;
         button.setTitle(title, forState:UIControlState.Normal);
-        button.setTitleColor(tcol, forState:.Normal);
+        button.setTitleColor(unselectedTextColor, forState:.Normal);
         if let label=button.titleLabel {
              label.font=buttonFont;
         }
@@ -80,9 +122,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     lazy var graphView:GraphView? = {
         // this is how designated initializers are called in swift
         var gv=GraphView(frame: CGRectMake(CGFloat(0), CGFloat(0), self.wdth, self.hght*(1-self.vscale)));
+        
         gv.backgroundColor=UIColor( red:CGFloat(0),green:CGFloat(0),blue:CGFloat(0),alpha:CGFloat(0) );
-        gv.maximumZoomScale=2.0;
-        gv.minimumZoomScale=0.2;
         gv.delegate=self;
         self.view.addSubview(gv);
         return gv;
@@ -103,19 +144,50 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         return graph;
     }()
 
+    func scrollOff() {
+        if graphView == nil {println("CoreController: scrollOff: graphView is nil");}
+        (graphView!.maximumZoomScale,graphView!.minimumZoomScale) = (1.0,1.0);
+        graphView!.panGestureRecognizer.enabled=false;
+    }
+    
+    func scrollOn() {
+        if graphView == nil {println("CoreController: scrollOn: graphView is nil");}
+        (graphView!.maximumZoomScale,graphView!.minimumZoomScale) = (2.0,0.2);
+        graphView!.panGestureRecognizer.enabled=true;
+    }
+    
     func edgeMode() {
-        // TO DO turn off pan and zoom
-        if let gv=graphView {
-            gv.maximumZoomScale=1.0;
-            gv.minimumZoomScale=1.0;
-        }
-        else {
-            
+        edgeButton!.setTitleColor(selectedTextColor, forState:.Normal);
+        vertButton!.setTitleColor(unselectedTextColor, forState:.Normal);
+        moveButton!.setTitleColor(unselectedTextColor, forState:.Normal);
+        scrollOff();
+        if addVert != nil && remVert != nil {
+            addVert!.removeFromSuperview();
+            remVert!.removeFromSuperview();
         }
     }
     func moveMode() {
+        edgeButton!.setTitleColor(unselectedTextColor, forState:.Normal);
+        vertButton!.setTitleColor(unselectedTextColor, forState:.Normal);
+        moveButton!.setTitleColor(selectedTextColor, forState:.Normal);
+        scrollOn();
+        if addVert != nil && remVert != nil {
+            addVert!.removeFromSuperview();
+            remVert!.removeFromSuperview();
+        }
     }
     func vertMode() {
+        edgeButton!.setTitleColor(unselectedTextColor, forState:.Normal);
+        vertButton!.setTitleColor(selectedTextColor, forState:.Normal);
+        moveButton!.setTitleColor(unselectedTextColor, forState:.Normal);
+        scrollOff();
+        if addVert != nil && remVert != nil {
+            view.addSubview(addVert!);
+            view.addSubview(remVert!);
+        }
+        else {
+        
+        }
     }
 
     func onResumeGraph() {
@@ -137,20 +209,17 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             println("CoreController: observeValueForKeyPath: object is not Vert");
         }
         if( keyPath=="finishedObservedMethod" && graphView != nil ) {
+        
             if(!v!.freshViews) {
                 // check if a view exists corresponding to the vert instance. (1) if no view is found then vertView is nil and
-                // we init a vertView and paste it to view. (2) otherwise model and view are out of date: implies Vert instance 
-                // has changed since the last time the VC drew.
+                // we init a vertView and paste it to view. (2) otherwise model and view are out of date
                 // VC updates the view by removing the outdated VertView and adding a correct one
                 let vertView:VertView? = graphView!.gwv.getVertViewById(v!.vertViewId);
                 if(vertView != nil) {
                     // remove the old view
-                    vertView!.removeFromSuperview();
                     // set the new position
-                    vertView!.x = CGFloat(v!.x);
-                    vertView!.y = CGFloat(v!.y);
+                    (vertView!.frame.origin.x, vertView!.frame.origin.y) = (CGFloat(v!.x), CGFloat(v!.y));
                     // add the new view
-                    graphView!.gwv.addSubview(vertView!);
                     vertView!.setNeedsDisplay();
                 }
                 else {
@@ -165,129 +234,78 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             }
             if(!v!.freshEdges) {
                 // call drawEdges to prepare for the drawing of the edges of v
-                drawEdges2();
+                drawEdges();
                 // edge instance now fresh
                 v!.freshEdges=true;
             }
         }
     }
     
-    private func drawEdges2() {
-        var X1,Y1,X2,Y2,diameter,frameWidth,frameHeight:CGFloat?;
+    private func drawEdges() {
+        var minX,minY,X1,Y1,X2,Y2,frameWidth,frameHeight:CGFloat?;
         var edgeFrame:CGRect?;
-        var e:Edge!;
+        var e:Edge?;
         var v,w:Vert?;
+        var edgeDir:Bool?;
         
-        if graph != nil {
-            for edge in graph!.edges {
-                println("CoreController: drawEdges2: ");
-                if edge is Edge {
-                    e=edge as! Edge;
-                }
-                else {
-                    println("CoreController: drawEdges: graph has an element that is not an edge");
-                }
-                
-                (v,w)=e.Connects();
-                
-                if v != nil && w != nil {
-                    let edgeView:EdgeView? = graphView!.gwv.getEdgeViewById(e!.edgeViewId);
-                    if(edgeView != nil) {
-                        // remove the old view
-                        edgeView!.removeFromSuperview();
-                        // add the new view
-                        graphView!.gwv.addSubview(edgeView!);
-                        edgeView!.setNeedsDisplay();
-                    }
-                    else {
-                    
-                        X1=CGFloat(v!.x);
-                        Y1=CGFloat(v!.y);
-                        X2=CGFloat(w!.x);
-                        Y2=CGFloat(w!.y);
-                        diameter=graphView!.gwv.diameter;
-                        frameWidth=fabs(X1!-X2!)+diameter!;
-                        frameHeight=fabs(Y1!-Y2!)+diameter!;
-                        // adjust the frame based on the least coordinate for the xval and yval for the pair of points
-                        let minX=min(X1!,X2!);
-                        let minY=min(Y1!,Y2!);
-                        edgeFrame=CGRectMake(minX, minY, frameWidth!, frameHeight!);
-                        
-                        // there are four cases to consider. Two are topLeftToBotRight, other two are not
-                        if (X1<X2 && Y1<Y2) || (X1>=X2 && Y1>=Y2) {
-                            graphView!.gwv.addEdgeWithFrame(edgeFrame!, topLeftToBotRight: true);
-                        }
-                        else {
-                            graphView!.gwv.addEdgeWithFrame(edgeFrame!, topLeftToBotRight: false);
-                        }
-                        
-                        edgeView!.edgeViewId=e!.edgeViewId;
-                        
-                    }
-                }
-            }
+        if graph == nil || graphView == nil {
+            println("CoreController: drawEdges: graph or graphView is nil");
         }
-    }
-    
-    // drawEdges draws the edges out of v
-    private func drawEdges(v:Vert) {
-        var X1,Y1,X2,Y2,diameter,frameWidth,frameHeight:CGFloat?;
-        var edgeFrame:CGRect?;
-        var w:Vert!;
+        let diameter=graphView!.gwv.diameter;
         
-        for vert in v.neighbors {
-            // check (1) that the class is correct (2) the verts v and w are not equal 3) the neighbors of v have not 
-            // been drawn already
-            if vert is Vert {
-                w=vert as! Vert;
+        for edge in graph!.edges {
+            if edge is Edge {
+                e=edge as? Edge;
             }
             else {
-                println("CoreController: drawEdges: v.neighbors has an element that is not a vert");
+                println("CoreController: drawEdges: graph has an element that is not an edge");
             }
             
-            // if v is not in the same place as w
-            if !v.isPositionEqual(w) {
-                // check this flag so edges are not drawn twice
-                if !v.freshEdges {
-                    //TODO: get edge by id
-                    /*
-                    if(edgeView != nil) {
-                        // remove the old view
-                        edgeView!.removeFromSuperview();
-                        // add the new view
-                        graphView!.gwv.addSubview(edgeView!);
-                        edgeView!.setNeedsDisplay();
-                    }
-                    else {
-                        X1=CGFloat(v.x);
-                        Y1=CGFloat(v.y);
-                        X2=CGFloat(w.x);
-                        Y2=CGFloat(w.y);
-                        diameter=graphView!.gwv.diameter;
-                        frameWidth=fabs(X1!-X2!)+diameter!;
-                        frameHeight=fabs(Y1!-Y2!)+diameter!;
-                        // adjust the frame based on the least coordinate for the xval and yval for the pair of points
-                        let minX=min(X1!,X2!);
-                        let minY=min(Y1!,Y2!);
-                        edgeFrame=CGRectMake(minX, minY, frameWidth!, frameHeight!);
-                        
-                        // there are four cases to consider. Two cases of each type
-                        if (X1<X2 && Y1<Y2) || (X1>=X2 && Y1>=Y2) {
-                            graphView!.gwv.addEdgeWithFrame(edgeFrame!, topLeftToBotRight: true);
-                        }
-                        else {
-                            graphView!.gwv.addEdgeWithFrame(edgeFrame!, topLeftToBotRight: false);
-                        }
-                        
-                        //TODO: set edge view
-                    }
-                    */
+            (v,w)=e!.Connects();
+            if v == nil || w == nil {
+                println("CoreController: DrawEdges: edge is incomplete")
+            }
+            if !v!.freshEdges || !w!.freshEdges {
+                (X1,Y1,X2,Y2) = (CGFloat(v!.x),CGFloat(v!.y),CGFloat(w!.x),CGFloat(w!.y));
+                (frameWidth,frameHeight) = (fabs(X1!-X2!)+diameter,fabs(Y1!-Y2!)+diameter);
+                (minX,minY) = (min(X1!,X2!),min(Y1!,Y2!));
+                // adjust the frame based on the least coordinate for the xval and yval for the pair of points
+
+                edgeFrame = CGRectMake(minX!, minY!, frameWidth!, frameHeight!);
+                // there are four cases to consider. Two are topLeftToBotRight, other two are not
+                if (X1<X2 && Y1<Y2) || (X1>=X2 && Y1>=Y2) {
+                    edgeDir=true;
                 }
+                else {
+                    edgeDir=false;
+                }
+                
+                // getEdgeView()
+                var edgeView:EdgeView? = graphView!.gwv.getEdgeViewById(e!.edgeViewId);
+                if(edgeView != nil) {
+                    // remove the old view
+                    edgeView!.removeFromSuperview();
+                    // fix the frame
+                    edgeView!.frame=edgeFrame!;
+                    graphView!.gwv.setEdge(edgeView!, topLeftToBotRight: edgeDir!);
+                }
+                else {
+                    // init the new view in setEdge() input
+                    edgeView=graphView!.gwv.setEdge(EdgeView(frame: edgeFrame!), topLeftToBotRight: edgeDir!);
+                    // do any additional setup
+                    edgeView!.edgeViewId=e!.edgeViewId;
+                }
+                // redraw the edge
+                edgeView!.setNeedsDisplay();
             }
         }
     }
+    //MARK: UIScrollViewDelegateProtocol
+    func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+        return graphView!.gwv ;
+    }
 
-    // MARK: deinit
+    //MARK: deinit (for KVO)
     deinit {
         for vert in graph!.verts {
             if vert is Vert {
@@ -296,9 +314,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
     }
 
-    // MARK: protocol conformance
-    // public
-    // this method is called the -(void)pan in VertView
+    //MARK: protocol conformance
+    //called by pan() in VertView
     func drawGraphAfterMovingVert(viewId:Int32, toXPos endX:Float, toYPos endY:Float) {
         if graph != nil {
             // cast the number of verts in the array to an Int32

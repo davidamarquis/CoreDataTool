@@ -130,7 +130,9 @@ func distance(other:Vert)->Float{
 
 // change Fresh flags so VC must redraw (i.e. trigger a redraw of corresponding view)
 func invalidateViews() {
-    freshEdges=false;
+    if edges.count > 0 {
+        freshEdges=false;
+    }
     freshViews=false;
 }
 
