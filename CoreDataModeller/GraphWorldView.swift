@@ -96,6 +96,9 @@ class GraphWorldView: UIView {
                 let vertView:VertView=subview as! VertView;
                 if(vertView.vertViewId == vertViewId) {return vertView;}
             }
+            else {
+                // probably subview is an Edge
+            }
         }
         return nil;
     }

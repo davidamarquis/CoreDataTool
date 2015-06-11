@@ -34,6 +34,8 @@
 		4882F58D1B1E4046002F6A01 /* GraphExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58C1B1E4046002F6A01 /* GraphExtension.swift */; };
 		4882F58F1B1E4391002F6A01 /* EdgeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58E1B1E4391002F6A01 /* EdgeExtension.swift */; };
 		489039241B1B8E0C005E0992 /* CoreController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489039231B1B8E0C005E0992 /* CoreController.swift */; };
+		48BEF91A1B2A038000DC51A4 /* AttributeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9191B2A038000DC51A4 /* AttributeTable.swift */; };
+		48BEF91B1B2A185C00DC51A4 /* AttributeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9191B2A038000DC51A4 /* AttributeTable.swift */; };
 		48E92AB61B1E226700110510 /* NSSet + Edit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487FDD001B1A6BC60087C0AF /* NSSet + Edit.swift */; };
 		48E92ABB1B1E226700110510 /* VertExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48282EB91B17AED100BDA782 /* VertExtension.swift */; };
 		48E92ABC1B1E226700110510 /* CoreDataModeller-Bridging-Header.h in Sources */ = {isa = PBXBuildFile; fileRef = 4810E37A1B17494000F72097 /* CoreDataModeller-Bridging-Header.h */; };
@@ -83,6 +85,7 @@
 		4882F58C1B1E4046002F6A01 /* GraphExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphExtension.swift; sourceTree = "<group>"; };
 		4882F58E1B1E4391002F6A01 /* EdgeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeExtension.swift; sourceTree = "<group>"; };
 		489039231B1B8E0C005E0992 /* CoreController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreController.swift; sourceTree = "<group>"; };
+		48BEF9191B2A038000DC51A4 /* AttributeTable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeTable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -202,6 +205,7 @@
 			isa = PBXGroup;
 			children = (
 				489039231B1B8E0C005E0992 /* CoreController.swift */,
+				48BEF9191B2A038000DC51A4 /* AttributeTable.swift */,
 				4812E3CE1B1D04BC0061EAB1 /* LandingVC.swift */,
 			);
 			name = Controller;
@@ -318,6 +322,7 @@
 				4810E3771B17454A00F72097 /* Cows.swift in Sources */,
 				4812E3CD1B1D048C0061EAB1 /* EdgeView.swift in Sources */,
 				4812E3CF1B1D04BC0061EAB1 /* LandingVC.swift in Sources */,
+				48BEF91A1B2A038000DC51A4 /* AttributeTable.swift in Sources */,
 				483DAFCB1B1FE912007A532E /* Edge.swift in Sources */,
 				4810E3551B1744C300F72097 /* AppDelegate.swift in Sources */,
 				487FDD011B1A6BC60087C0AF /* NSSet + Edit.swift in Sources */,
@@ -342,6 +347,7 @@
 				48E92ABF1B1E226700110510 /* VertView.swift in Sources */,
 				484DE27C1B1FE9F50035B674 /* Graph.swift in Sources */,
 				484DE27A1B1FE9F10035B674 /* Edge.swift in Sources */,
+				48BEF91B1B2A185C00DC51A4 /* AttributeTable.swift in Sources */,
 				48E92AC01B1E226700110510 /* EdgeView.swift in Sources */,
 				48E92AC11B1E226700110510 /* CoreController.swift in Sources */,
 				48E92AC21B1E226700110510 /* LandingVC.swift in Sources */,

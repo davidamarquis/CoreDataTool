@@ -10,6 +10,7 @@ import UIKit
 
 protocol VertViewWasTouchedProtocol {
     func drawGraphAfterMovingVert(viewId:Int32, toXPos endX:Float, toYPos endY:Float);
+    func performSegueWithIdentifier(identifier: String?, sender: AnyObject?);
 }
 
 class VertView: UIView {
@@ -127,6 +128,17 @@ class VertView: UIView {
         let newCGP:CGPoint = CGPointMake(cgp.x-xorig,cgp.y-yorig);
         
         let pointWithin:Bool = bz.containsPoint(newCGP);
+        
+        // if hit then perform segue
+        if pointWithin {
+        
+            if delegate != nil {
+                delegate!.performSegueWithIdentifier("VertInfo", sender: self);
+            }
+            else {
+            
+            }
+        }
         
         if(!pointWithin && selected) {
             selected=false;
