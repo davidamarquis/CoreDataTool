@@ -477,6 +477,13 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
     }
     
+    func addAttrToVert(newAttr:AttributeString, newVert:Vert) {
+        var manyRelation:AnyObject? = newVert.valueForKeyPath("attributeStrings") ;
+        if manyRelation is NSMutableSet {
+            (manyRelation as! NSMutableSet).addObject(newAttr);
+        }
+    }
+    
     //MARK:testing
     // create some variables in the managedObjectModel and send them to the model for setup
     private func testGraph() {
@@ -491,16 +498,34 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             let attrDescription = NSEntityDescription.entityForName("AttributeString",inManagedObjectContext: context!);
             let attr:AttributeString = AttributeString(entity: attrDescription!,insertIntoManagedObjectContext: context);
             attr.string="test";
-            
-            verts[0].attributeStrings = verts[0].attributeStrings.setByAddingObject(attr);
+            // cause is that an optional is returned by setByAddingObject
+            /*
+            verts[0].attributeStrings = (verts[0].attributeStrings).setByAddingObject(attr);
             verts[1].attributeStrings = verts[1].attributeStrings.setByAddingObject(attr);
             verts[2].attributeStrings = verts[2].attributeStrings.setByAddingObject(attr);
             verts[3].attributeStrings = verts[3].attributeStrings.setByAddingObject(attr);
+            */
+            /*
+            let temp:NSSet=verts[0].attributeStrings.setByAddingObject(attr);
+            verts[0].attributeStrings = temp;
             
-            var temp:NSSet=verts[0].attributeStrings.setByAddingObject(attr);
-            var cat:NSSet=NSSet();
-            cat = cat.setByAddingObject(attr);
+            let temp2:NSSet=verts[1].attributeStrings.setByAddingObject(attr);
+            verts[1].attributeStrings = temp2;
             
+            let temp3:NSSet=verts[2].attributeStrings.setByAddingObject(attr);
+            verts[2].attributeStrings = temp3;
+            
+            let temp4:NSSet=verts[3].attributeStrings.setByAddingObject(attr);
+            verts[3].attributeStrings = temp4;
+            */
+            addAttrToVert(attr, newVert:verts[0]);
+            addAttrToVert(attr, newVert:verts[1]);
+            addAttrToVert(attr, newVert:verts[2]);
+            addAttrToVert(attr, newVert:verts[3]);
+            
+            
+            //var cat:NSSet=NSSet();
+            //cat = cat.setByAddingObject(attr);
             
             graph!.SetupVert(verts[0], AtX:10, AtY:70 );
             graph!.SetupVert(verts[1], AtX:100, AtY:200 );

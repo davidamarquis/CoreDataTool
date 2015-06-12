@@ -12,8 +12,10 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
   
     // this vert will be assigned before we segue to this view
     var vert:Vert?;
-    var attrsOrNil:NSArray?;
-    var attrStrings:NSArray?;
+    // attrsOrNil an array holding AttributeString managed objects
+    var attrsOrNil:Array<AttributeString>?;
+    // an array holding each of the string properties of attrsOrNil
+    var attrStringsOrNil:Array<String>?;
     
     //MARK: view lifecycle
     override func viewDidLoad() {
@@ -35,15 +37,18 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
         view.addSubview(tableView);
     }
     override func viewWillAppear(animated: Bool) {
-        attrsOrNil=vert?.attributeStrings.allObjects;
+        attrsOrNil=vert?.attributeStrings.allObjects as? Array<AttributeString>;
+        
+        // init the array that will hold the strings
+        attrStringsOrNil = Array<String>();
         if attrsOrNil != nil {
-            let attrs=attrsOrNil!;
-            println(attrs[0]);
+            for attr in attrsOrNil! {
+                attrStringsOrNil!.append(attr.string);
+            }
         }
         else {
-
+            println("AttributeTable: viewWillAppear: no attributes found on the given vert");
         }
-        
     }
 
     override func didReceiveMemoryWarning() {
@@ -62,8 +67,8 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        if attrStrings != nil {
-            return attrStrings!.count;
+        if attrsOrNil != nil {
+            return attrsOrNil!.count;
         }
         else {
             return 0;
@@ -71,17 +76,17 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
     }
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
+
         let cellIdentifier:String="AttributeCell";
         let cell:UITableViewCell? = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as? UITableViewCell
-        if cell == nil {
-            
-        }
-        let elem:AnyObject = attrStrings![indexPath.row];
+        if cell == nil { println("AttributeTable: tableView cellForRowAtIndexPath: TODO create cell") ;}
+        
+        // config cell by extracting element from attrStrings at given row
+        let elem:AnyObject = attrStringsOrNil![indexPath.row];
         if elem is String {
             cell!.textLabel!.text=elem as? String;
         }
-        // Configure the cell...
+        else {println("AttributeTable: tableView cellForRowAtIndexPath: elem stored in attribute.string is not a string");}
 
         return cell!
     }
