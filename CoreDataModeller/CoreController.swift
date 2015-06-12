@@ -142,7 +142,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         view.addSubview(button);
         return button;
     }
-    
+    /*
     func makeVert() {
         let vertDescription = NSEntityDescription.entityForName("Vert",inManagedObjectContext: context!);
         let vert:Vert = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
@@ -152,6 +152,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     func killVert() {
     
     }
+    */
 
     // main view is graphView
     // use a closure to contain the initialization logic
@@ -477,7 +478,29 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
     }
     
-    func addAttrToVert(newAttr:AttributeString, newVert:Vert) {
+    // use vert id to get a vert and add an attribute to it
+    func addAttributeById(vertId:Int32, withString attrString:String) {
+        // get vert
+        let vert:Vert? = graph!.getVertById(vertId);
+        // get attr
+        let attrDescription = NSEntityDescription.entityForName("AttributeString",inManagedObjectContext: context!);
+        let attr:AttributeString = AttributeString(entity: attrDescription!,insertIntoManagedObjectContext: context);
+        // set the attr string to be the input string
+        attr.string=attrString;
+        
+        if vert != nil {
+            addAttrToVert(attr, newVert: vert!);
+        }
+        
+        if navigationController == nil {println("CoreController: addAttributeById: nav controller is nil");}
+        for vc in navigationController!.viewControllers {
+            if vc is AttributeTable {
+                (vc as! AttributeTable).getStringsFromVert();
+            }
+        }
+    }
+    
+    private func addAttrToVert(newAttr:AttributeString, newVert:Vert) {
         var manyRelation:AnyObject? = newVert.valueForKeyPath("attributeStrings") ;
         if manyRelation is NSMutableSet {
             (manyRelation as! NSMutableSet).addObject(newAttr);
@@ -491,38 +514,16 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         var verts=testVertsArray(4);
         var edges=testEdgesArray(4);
         if graph != nil {
-   
-            //let test:String="cat";
-            //let test2:NSString=NSString.init(string: "hello");
-            
+     
             let attrDescription = NSEntityDescription.entityForName("AttributeString",inManagedObjectContext: context!);
             let attr:AttributeString = AttributeString(entity: attrDescription!,insertIntoManagedObjectContext: context);
             attr.string="test";
+            
             // cause is that an optional is returned by setByAddingObject
-            /*
-            verts[0].attributeStrings = (verts[0].attributeStrings).setByAddingObject(attr);
-            verts[1].attributeStrings = verts[1].attributeStrings.setByAddingObject(attr);
-            verts[2].attributeStrings = verts[2].attributeStrings.setByAddingObject(attr);
-            verts[3].attributeStrings = verts[3].attributeStrings.setByAddingObject(attr);
-            */
-            /*
-            let temp:NSSet=verts[0].attributeStrings.setByAddingObject(attr);
-            verts[0].attributeStrings = temp;
-            
-            let temp2:NSSet=verts[1].attributeStrings.setByAddingObject(attr);
-            verts[1].attributeStrings = temp2;
-            
-            let temp3:NSSet=verts[2].attributeStrings.setByAddingObject(attr);
-            verts[2].attributeStrings = temp3;
-            
-            let temp4:NSSet=verts[3].attributeStrings.setByAddingObject(attr);
-            verts[3].attributeStrings = temp4;
-            */
             addAttrToVert(attr, newVert:verts[0]);
             addAttrToVert(attr, newVert:verts[1]);
             addAttrToVert(attr, newVert:verts[2]);
             addAttrToVert(attr, newVert:verts[3]);
-            
             
             //var cat:NSSet=NSSet();
             //cat = cat.setByAddingObject(attr);
@@ -571,14 +572,4 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
         return edges;
     }
-    /*
-
-    // public
-    // the method addVertToModel is triggered whenever the user hits the button
-    - (void)addVertToModel {
-        // TO DO
-        [self testVertAtX:200 AtY:300];
-    }
-    */
-
 }

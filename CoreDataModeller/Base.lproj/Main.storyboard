@@ -5,7 +5,7 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--A nice bar-->
+        <!--Core Data Modeller-->
         <scene sceneID="wjC-d6-rxi">
             <objects>
                 <viewController id="8qZ-gR-bVn" customClass="CoreController" customModule="CoreDataModeller" customModuleProvider="target" sceneMemberID="viewController">
@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="A nice bar" id="mWU-rW-26I"/>
+                    <navigationItem key="navigationItem" title="Core Data Modeller" id="mWU-rW-26I"/>
                     <connections>
                         <segue destination="2NL-fe-8oU" kind="show" identifier="VertInfo" id="mzh-W5-Ftp"/>
                     </connections>

@@ -17,7 +17,7 @@ class VertView: UIView {
 
     // MARK: VARS
     var bz:UIBezierPath = UIBezierPath();
-    var selected:Bool;
+    var selected:Bool = false;
     var x,y:CGFloat;
     // variables that are set after initialization
     var positionBeforePan:CGPoint?;
@@ -124,9 +124,7 @@ class VertView: UIView {
 
         let xorig:CGFloat=frame.origin.x;
         let yorig:CGFloat=frame.origin.y;
-        
         let newCGP:CGPoint = CGPointMake(cgp.x-xorig,cgp.y-yorig);
-        
         let pointWithin:Bool = bz.containsPoint(newCGP);
         
         // if hit then perform segue
@@ -138,38 +136,31 @@ class VertView: UIView {
             else {
             
             }
-        }
-        
-        if(!pointWithin && selected) {
-            selected=false;
-            return false;
-        }
-        // if there is a hit and the point is selected then unselect it
-        else if(pointWithin && self.selected) {
-            selected=false;
-            // indicate that a selected point has been found
-            return true;
-        }
-        // if there is a hit and the point is not selected then select it
-        else if(pointWithin && !self.selected) {
-            selected=true;
-            // indicate that a selected point has been found
-            return true;
-        }
-        // if there is not a hit return NO
-        else if(!pointWithin && !self.selected) {
-            return false;
+            if selected {
+                selected = !selected;
+                setNeedsDisplay();
+                // indicate that a selected point has been found
+                return true;
+            }
+            else {
+            
+                selected = !selected;
+                setNeedsDisplay();
+                // indicate that a selected point has been found
+                return true;
+            }
         }
         else {
-            print("VertView: updateIfHit: err");
-            return false;
+            if selected {
+                return false;
+            }
+            // if there is not a hit return
+            else {
+                return false;
+            }
         }
-        
     }
-    func selected(sel:Bool) {
-        selected=sel;
-        setNeedsDisplay();
-    }
+
     // switch selected changes the selected property to its negation
     func switchSelected() {
         selected = !selected;
