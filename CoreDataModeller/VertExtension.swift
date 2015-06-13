@@ -79,10 +79,14 @@ func AddEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
     if(edgeOrNil != nil && vertOrNil != nil) {
         
         // neighbors is a bidirectional relationship
-        neighbors=neighbors.setByAddingObject(vertOrNil!);
+        //TODO: 9:30pm June 12 neighbors=neighbors.setByAddingObject(vertOrNil!);
+        var manyRelation:AnyObject? = self.valueForKeyPath("neighbors") ;
+        if manyRelation is NSMutableSet {
+            (manyRelation as! NSMutableSet).addObject(vertOrNil!);
+        }
+        
         // joinedTo updated by next line
         edges=edges.setByAddingObject(edgeOrNil!);
-        
         
         // joinedTo updated by next line
         vertOrNil!.edges=vertOrNil!.edges.setByAddingObject(edgeOrNil!);
@@ -100,16 +104,33 @@ func AddEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
     }
 }
 
-func removeEdge(edge:Edge, vert:Vert) {
-    /*
-    // CD will handle removal of self from v2 automatically
-    neighbors.setByRemovingObject(vert);
-    edges.setByRemovingObject(edge);
-    vert.edges.setByRemovingObject(edge);
+func removeEdge(edgeOrNil:Edge?, vertOrNil:Vert?) {
+    if(edgeOrNil != nil && vertOrNil != nil) {
+        
+        // neighbors is a bidirectional relationship
+        //TODO: 9:30pm June 12 neighbors=neighbors.setByAddingObject(vertOrNil!);
+        var manyRelation:AnyObject? = self.valueForKeyPath("neighbors") ;
+        if manyRelation is NSMutableSet {
+            (manyRelation as! NSMutableSet).removeObject(vertOrNil!);
+        }
+        
+        // joinedTo updated by next line
+        edges=edges.setByRemovingObject(edgeOrNil!);
+        
+        // joinedTo updated by next line
+        vertOrNil!.edges=vertOrNil!.edges.setByRemovingObject(edgeOrNil!);
+        
+        edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByRemovingObject(vertOrNil!);
+        edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByRemovingObject(self);
+        
+        freshEdges=false;
+        vertOrNil!.freshEdges=false;
+        finishedObservedMethod=true;
+        vertOrNil!.finishedObservedMethod=true;
+    }
+    else {
     
-    freshEdges=false;
-    finishedObservedMethod=true;
-    */
+    }
 }
 
 func distance(other:Vert)->Float{

@@ -51,6 +51,19 @@ class GraphWorldView: UIView {
             s.removeFromSuperview();
         }
     }
+    
+    // removeVertById
+    // access the view controller using the delegate of the view that is passed to it
+    func removeVertByVertView(vv:VertView) {
+    
+        if vv.vertViewId != nil && vv.delegate != nil {
+            vv.delegate!.removeVertById(vv.vertViewId!);
+        }
+        else {
+            println("GraphWorldView: removeVertByVertView: ");
+        }
+    }
+    
     // MARK: gesture recognizers
     func pan(recognizer:UIPanGestureRecognizer) {
         let translation:CGPoint=recognizer.translationInView(self);
@@ -92,18 +105,17 @@ class GraphWorldView: UIView {
                 // set the end position so that we can figure out where we parked
                 let endPos:CGPoint=gestureVV!.frame.origin;
             
-                // cur is the vert that has been hit
-                // assumption: can't hit more than one vert
+                // cur is the vert that has been hit (Assumption: can't hit more than one vert)
                 // case 1 = vert ended hitting the delete button
-                
                 if CGRectIntersectsRect(gestureVV!.frame, remVert!.frame) {
-                    println("fat cows are coming");
+                    // remove the vert in the model
+                    removeVertByVertView(gestureVV!);
                 }
                 else {
                     if gestureVV!.delegate != nil && gestureVV!.vertViewId != nil {
-                        
                         // call the drawGraphAfterMovingVert method on the parent
                         gestureVV!.delegate!.drawGraphAfterMovingVert(gestureVV!.vertViewId!, toXPos: Float(endPos.x), toYPos: Float(endPos.y) );
+                        gestureVV = nil;
                     }
                 }
             }
@@ -112,7 +124,7 @@ class GraphWorldView: UIView {
             println("VertView: pan: err state is not valid");
         }
     }
-
+    
     func tap(recognizer:UITapGestureRecognizer) {
 
         let cgp:CGPoint=recognizer.locationInView(self);

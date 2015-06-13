@@ -10,9 +10,9 @@ import Foundation
 
 extension NSSet {
 
-    func setByRemovingObject(object:AnyObject)->NSSet? {
+    func setByRemovingObject(object:AnyObject)->NSSet {
         var newSet:NSMutableSet! ;
-        var set:NSSet! ;
+        var set:NSSet = NSSet() ;
         for x in self {
             if(x !== object) {
                 newSet.addObject(x);
@@ -25,7 +25,7 @@ extension NSSet {
         else {
             
         }
-        return nil;
+        return set;
     }
 
 }

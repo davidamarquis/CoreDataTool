@@ -11,6 +11,7 @@ import UIKit
 protocol VertViewWasTouchedProtocol {
     func drawGraphAfterMovingVert(viewId:Int32, toXPos endX:Float, toYPos endY:Float);
     func performSegueWithIdentifier(identifier: String?, sender: AnyObject?);
+    func removeVertById(vertId:Int32);
 }
 
 class VertView: UIView {
@@ -56,36 +57,6 @@ class VertView: UIView {
     }
 
     // MARK: methods
-    /*
-    func pan(recognizer:UIPanGestureRecognizer) {
-        let translation:CGPoint=recognizer.translationInView(self);
-        
-        // smooth panning requires handling StateBegan and StateChanged
-        if(recognizer.state==UIGestureRecognizerState.Began) {
-            positionBeforePan=frame.origin;
-        }
-        
-        else if(recognizer.state == UIGestureRecognizerState.Changed ) {
-            center=CGPointMake(self.center.x+translation.x,self.center.y+translation.y);
-            recognizer.setTranslation(CGPointMake(0,0), inView:recognizer.view);
-        }
-        else if(recognizer.state==UIGestureRecognizerState.Ended) {
-            let endPos:CGPoint=frame.origin;
-            if delegate != nil && vertViewId != nil {
-            
-                // call the drawGraphAfterMovingVert method on the parent
-                delegate!.drawGraphAfterMovingVert(vertViewId!, toXPos: Float(endPos.x), toYPos: Float(endPos.y) );
-            }
-            else {
-                println("VertView: pan: err delegate is nil or vertViewId is nil");
-            }
-        }
-        else {
-            println("VertView: pan: err state is not valid");
-        }
-    }
-    */
-
     override func drawRect(rect:CGRect) {
         // fill the rect
         let cont:CGContextRef = UIGraphicsGetCurrentContext();

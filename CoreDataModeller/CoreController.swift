@@ -13,7 +13,6 @@ import CoreData
 class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol {
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
-    
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil);    
     }
 
@@ -70,33 +69,56 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         setupVertButtons();
         
         testGraph();
+        
+        let noteCenter:NSNotificationCenter = NSNotificationCenter.defaultCenter();
+        let mainQueue:NSOperationQueue=NSOperationQueue.mainQueue();
+        noteCenter.addObserverForName( NSManagedObjectContextObjectsDidChangeNotification, object: nil, queue: mainQueue, usingBlock:
+        {(notification:NSNotification!) -> Void in
+            if notification.object! is NSManagedObjectContext {
+                let con=notification.object! as! NSManagedObjectContext;
+                
+                let objs=con.deletedObjects;
+                for obj in objs {
+                    // case 1: object is VertView
+                    if obj is Vert {
+                        // get the view id from the vert
+                        let vertId:Int32? = (obj as! Vert).vertViewId;
+                        if vertId != nil {
+                            self.deleteVertViewById(vertId!);
+                        }
+                        else {println("CoreController: viewDidLoad(): vertId is nil"); }
+                    }
+                    else if obj is Edge {
+                        // get the view id from the vert
+                        let edgeId:Int32? = (obj as! Edge).edgeViewId;
+                        if edgeId != nil {
+                            self.deleteEdgeViewById(edgeId!);
+                        }
+                        else {println("CoreController: viewDidLoad(): edgeId is nil"); }
+                    }
+                    else {println("CoreController: viewDidLoad(): object to be deleted has unknown type");}
+                }
+            }
+        });
     }
-    private func printSomeTests() {
-        let edgeIds:Array<Array<Int32>> = graph!.edgeIdArray();
-        println(edgeIds);
-        let sortedEdgeIds:Array<Array<Int32>> = graph!.sortedEdgeIdArray();
-        println(sortedEdgeIds);
-    }
-    
     override func viewWillAppear(animated: Bool) {
     
-        // now is the time to set view order
-        if addVert != nil {
-            view.bringSubviewToFront(addVert!);
-        }
-        // finally set the mode
+        //TODO: if needed arrange views into final order here 
+        /* ... */
+
+        // starting mode is one of moveMode(), vertMode(), edgeMode()
         moveMode();
     }
     
     //MARK: Setup
     func setupVertButtons() {
         // init a button
-        addVert=clearButton("+");
+        addVert=setupClearButton("+");
         addVert!.frame=CGRectMake(wdth*0.666,hght*(1-2*vscale),wdth*0.334,hght*vscale);
         //addVert!.addTarget(self, action: "killVert", forControlEvents:.TouchUpInside);
 
         // init a button
-        remVert=clearButton("X");
+        remVert=setupClearButton("X");
         remVert!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
         if graphView != nil {
             graphView!.gwv.addVert=addVert;
@@ -119,26 +141,14 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         vertButton!.frame=CGRectMake(wdth*0.666,hght*(1-vscale),wdth*0.334,hght*vscale);
         vertButton!.addTarget(self, action: "vertMode", forControlEvents:.TouchUpInside);
     }
-    
-    func clearButton(title:String)->UILabel {
-        //font
-        let buttonFont:UIFont=UIFont.systemFontOfSize(60);
+    // sets a label with transparent background. Does not add to view
+    func setupClearButton(title:String)->UILabel {
         //init
-        //TODO: 3:20pm let button=UIButton.buttonWithType(.System) as! UIButton;
         let button=UILabel();
-        //UI
-        /*
-        button.setTitle(title, forState:UIControlState.Normal);
-        button.setTitleColor(unselectedTextColor, forState:.Normal);
-        button.titleLabel!.font=buttonFont;
-        */
-        button.text=title;
-        button.textColor=unselectedTextColor;
-        button.backgroundColor=UIColor.clearColor();
-        button.font=buttonFont;
+        (button.text,button.textColor,button.backgroundColor,button.font) = (title, unselectedTextColor, UIColor.clearColor(),UIFont.systemFontOfSize(60));
         return button;
     }
-    // creates an individual button
+    // button with black background. adds to view
     func barButton(title:String) -> UIButton {
         // bcol is color of back of button, tcol of the text on the button
         let bcol:UIColor=UIColor.blackColor();
@@ -148,11 +158,41 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         button.backgroundColor=bcol;
         button.setTitle(title, forState:UIControlState.Normal);
         button.setTitleColor(unselectedTextColor, forState:.Normal);
-        if let label=button.titleLabel {
-             label.font=buttonFont;
-        }
+        if button.titleLabel != nil {button.titleLabel!.font=buttonFont;}
+        else {println("CoreController: barButton: titleLabel is nil");}
+        
         view.addSubview(button);
         return button;
+    }
+    
+    //MARK: vert-vertView interface
+    private func deleteVertViewById(vertId:Int32) {
+        let vv:VertView? = graphView!.gwv.getVertViewById(vertId);
+        if vv != nil {
+            vv!.removeFromSuperview();
+            //TODO: is setNeedsDisplay call needed?
+            vv!.setNeedsDisplay();
+        }
+        else { println("CoreController: deleteVertViewById: could not find vert to delete"); }
+    }
+    //MARK: edge-edgeView interface
+    private func deleteEdgeViewById(edgeId:Int32) {
+    
+        let ev:EdgeView? = graphView!.gwv.getEdgeViewById(edgeId);
+        if ev != nil {
+        
+            ev!.removeFromSuperview();
+            ev!.setNeedsDisplay();
+        }
+        else { println("CoreController: deleteEdgeViewById: could not find edge to delete"); }
+    }
+
+    //TODO: remove this test function
+    private func printSomeTests() {
+        let edgeIds:Array<Array<Int32>> = graph!.edgeIdArray();
+        println(edgeIds);
+        let sortedEdgeIds:Array<Array<Int32>> = graph!.sortedEdgeIdArray();
+        println(sortedEdgeIds);
     }
 
     // main view is graphView
@@ -285,36 +325,38 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         else {
             println("CoreController: observeValueForKeyPath: object is not Vert");
         }
-        if( keyPath=="finishedObservedMethod" && graphView != nil ) {
-        
-            if(!v!.freshViews) {
-                // check if a view exists corresponding to the vert instance. (1) if no view is found then vertView is nil and
-                // we init a vertView and paste it to view. (2) otherwise model and view are out of date
-                // VC updates the view by removing the outdated VertView and adding a correct one
-                let vertView:VertView? = graphView!.gwv.getVertViewById(v!.vertViewId);
-                if(vertView != nil) {
-                    // remove the old view
-                    // set the new position
-                    (vertView!.frame.origin.x, vertView!.frame.origin.y) = (CGFloat(v!.x), CGFloat(v!.y));
-                    // add the new view
-                    vertView!.setNeedsDisplay();
-                }
-                else {
-                    let vv:VertView = graphView!.gwv.addVertAtPoint(CGPointMake(CGFloat(v!.x), CGFloat(v!.y)) );
-                    vv.delegate=self;
-                    // set the view id to match the model id
-                    vv.vertViewId=v!.vertViewId;
-                    
-                }
-                // vert instance now fresh
-                v!.freshViews=true;
+        if( keyPath=="finishedObservedMethod" && graphView != nil && v != nil) {
+            drawVert(v!);
+        }
+    }
+    private func drawVert(v:Vert) {
+        if(!v.freshViews) {
+            // check if a view exists corresponding to the vert instance. (1) if no view is found then vertView is nil and
+            // we init a vertView and paste it to view. (2) otherwise model and view are out of date
+            // VC updates the view by removing the outdated VertView and adding a correct one
+            let vertView:VertView? = graphView!.gwv.getVertViewById(v.vertViewId);
+            if(vertView != nil) {
+                // remove the old view
+                // set the new position
+                (vertView!.frame.origin.x, vertView!.frame.origin.y) = (CGFloat(v.x), CGFloat(v.y));
+                // add the new view
+                vertView!.setNeedsDisplay();
             }
-            if(!v!.freshEdges) {
-                // call drawEdges to prepare for the drawing of the edges of v
-                drawEdges();
-                // edge instance now fresh
-                v!.freshEdges=true;
+            else {
+                let vv:VertView = graphView!.gwv.addVertAtPoint(CGPointMake(CGFloat(v.x), CGFloat(v.y)) );
+                vv.delegate=self;
+                // set the view id to match the model id
+                vv.vertViewId=v.vertViewId;
+                
             }
+            // vert instance now fresh
+            v.freshViews=true;
+        }
+        if(!v.freshEdges) {
+            // call drawEdges to prepare for the drawing of the edges of v
+            drawEdges();
+            // edge instance now fresh
+            v.freshEdges=true;
         }
     }
     
@@ -342,7 +384,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             if v == nil || w == nil {
                 println("CoreController: DrawEdges: edge is incomplete")
             }
-            if !v!.freshEdges || !w!.freshEdges {
+            else if !v!.freshEdges || !w!.freshEdges {
                 (X1,Y1,X2,Y2) = (CGFloat(v!.x),CGFloat(v!.y),CGFloat(w!.x),CGFloat(w!.y));
                 (frameWidth,frameHeight) = (fabs(X1!-X2!)+diameter,fabs(Y1!-Y2!)+diameter);
                 (minX,minY) = (min(X1!,X2!),min(Y1!,Y2!));
@@ -421,7 +463,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
 
     lazy var managedObjectModel: NSManagedObjectModel = {
         // The managed object model for the application. This property is not optional. It is a fatal error for the application not to be able to find and load its model.
-        // TODO: change "CoreDataTest" using grep
         //let modelURL = NSBundle.mainBundle().URLForResource("CoreDataModeller", withExtension: "momd")!
         
         let modelURL = NSBundle.mainBundle().URLForResource("Model", withExtension: "momd");
@@ -465,20 +506,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         newContext.persistentStoreCoordinator = coordinator;
         return newContext
     }()
-
-    //MARK: - Core Data Saving support
-
-    func saveContext () {
-        if let moc = context {
-            var error: NSError? = nil
-            if moc.hasChanges && !moc.save(&error) {
-                // Replace this implementation with code to handle the error appropriately.
-                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                NSLog("Unresolved error \(error), \(error!.userInfo)")
-                abort()
-            }
-        }
-    }
     
     // use vert id to get a vert and add an attribute to it
     func addAttributeById(vertId:Int32, withString attrString:String) {
@@ -506,6 +533,47 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         var manyRelation:AnyObject? = newVert.valueForKeyPath("attributeStrings") ;
         if manyRelation is NSMutableSet {
             (manyRelation as! NSMutableSet).addObject(newAttr);
+        }
+    }
+    
+    func removeVertById(vertId:Int32) {
+    
+        // save current context
+        saveContext();
+        // get a vert
+        let vert:Vert? = graph!.getVertById(vertId);
+        
+        if context != nil && vert != nil {
+             for e in vert!.edges {
+                 if e is Edge {
+                     let edge=e as! Edge;
+                     //TODO: remove observers of the edge
+                     context!.deleteObject(edge);
+                 }
+             }
+             for elem in vert!.neighbors {
+                 if elem is Vert {
+                     let vert=elem as! Vert;
+                     vert.freshViews=false;
+                 }
+             }
+            
+             //TODO: remove observers of the vert
+             context!.deleteObject(vert!);
+        }
+        else { println("removeVertById: err"); }
+    }
+
+    //MARK: - Core Data Saving support
+    func saveContext() {
+        if let moc = context {
+            var error: NSError? = nil
+            if moc.hasChanges && !moc.save(&error) {
+                // Replace this implementation with code to handle the error appropriately.
+                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                NSLog("Unresolved error \(error), \(error!.userInfo)")
+                abort()
+            }
         }
     }
     
