@@ -28,8 +28,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     var edgeButton:UIButton?;
     var moveButton:UIButton?;
     var vertButton:UIButton?;
-    var addVert:UIButton?;
-    var remVert:UIButton?;
+    var addVert:UILabel?;
+    var remVert:UILabel?;
     
     var unselectedTextColor = UIColor.grayColor();
     var selectedTextColor = UIColor.whiteColor();
@@ -60,7 +60,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
     
     }
-
+    
     //MARK: view lifecycle
     override func viewDidLoad() {
 
@@ -70,7 +70,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         setupVertButtons();
         
         testGraph();
-        
+    }
+    private func printSomeTests() {
         let edgeIds:Array<Array<Int32>> = graph!.edgeIdArray();
         println(edgeIds);
         let sortedEdgeIds:Array<Array<Int32>> = graph!.sortedEdgeIdArray();
@@ -86,17 +87,22 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         // finally set the mode
         moveMode();
     }
-        //MARK: Setup
+    
+    //MARK: Setup
     func setupVertButtons() {
         // init a button
-        addVert=clearButton("X");
-        addVert!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
-        addVert!.addTarget(self, action: "killVert", forControlEvents:.TouchUpInside);
+        addVert=clearButton("+");
+        addVert!.frame=CGRectMake(wdth*0.666,hght*(1-2*vscale),wdth*0.334,hght*vscale);
+        //addVert!.addTarget(self, action: "killVert", forControlEvents:.TouchUpInside);
 
         // init a button
-        remVert=clearButton("+");
-        remVert!.frame=CGRectMake(wdth*0.666,hght*(1-2*vscale),wdth*0.334,hght*vscale);
-        remVert!.addTarget(self, action: "makeVert", forControlEvents:.TouchUpInside);
+        remVert=clearButton("X");
+        remVert!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
+        if graphView != nil {
+            graphView!.gwv.addVert=addVert;
+            graphView!.gwv.remVert=remVert;
+        }
+        //remVert!.addTarget(self, action: "makeVert", forControlEvents:.TouchUpInside);
     }
     // sets up 3 buttons for the view controllers UI states
     func barButtons() {
@@ -114,16 +120,22 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         vertButton!.addTarget(self, action: "vertMode", forControlEvents:.TouchUpInside);
     }
     
-    func clearButton(title:String)->UIButton {
+    func clearButton(title:String)->UILabel {
         //font
         let buttonFont:UIFont=UIFont.systemFontOfSize(60);
         //init
-        let button=UIButton.buttonWithType(.System) as! UIButton;
+        //TODO: 3:20pm let button=UIButton.buttonWithType(.System) as! UIButton;
+        let button=UILabel();
         //UI
+        /*
         button.setTitle(title, forState:UIControlState.Normal);
         button.setTitleColor(unselectedTextColor, forState:.Normal);
         button.titleLabel!.font=buttonFont;
+        */
+        button.text=title;
+        button.textColor=unselectedTextColor;
         button.backgroundColor=UIColor.clearColor();
+        button.font=buttonFont;
         return button;
     }
     // creates an individual button
@@ -142,17 +154,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         view.addSubview(button);
         return button;
     }
-    /*
-    func makeVert() {
-        let vertDescription = NSEntityDescription.entityForName("Vert",inManagedObjectContext: context!);
-        let vert:Vert = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
-        vert.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
-        graph!.SetupVert(vert, AtX:100, AtY:100);
-    }
-    func killVert() {
-    
-    }
-    */
 
     // main view is graphView
     // use a closure to contain the initialization logic
@@ -227,8 +228,9 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         moveButton!.setTitleColor(unselectedTextColor, forState:.Normal);
         scrollOff();
         if addVert == nil && remVert == nil {println("CoreController: vertMode: addVert or remVert buttons are nil");}
-        view.addSubview(addVert!);
-        view.addSubview(remVert!);
+        //TODO:
+        graphView!.gwv.addSubview(addVert!);
+        graphView!.gwv.addSubview(remVert!);
         
         // enable gesture recognizers
         enableOrDisableGestureRecognizers(true);

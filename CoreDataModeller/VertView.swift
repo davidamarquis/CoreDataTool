@@ -38,7 +38,7 @@ class VertView: UIView {
         
         // step 3:
         opaque=false;
-        addGestureRecognizer(UIPanGestureRecognizer(target:self, action:"pan:" ));
+        //addGestureRecognizer(UIPanGestureRecognizer(target:self, action:"pan:" ));
         setNeedsDisplay();
     }
 
@@ -51,11 +51,12 @@ class VertView: UIView {
         super.init(coder: aDecoder);
         // step 3:
         opaque=false;
-        addGestureRecognizer(UIPanGestureRecognizer(target:self, action:"pan:" ));
+        //addGestureRecognizer(UIPanGestureRecognizer(target:self, action:"pan:" ));
         setNeedsDisplay();
     }
 
     // MARK: methods
+    /*
     func pan(recognizer:UIPanGestureRecognizer) {
         let translation:CGPoint=recognizer.translationInView(self);
         
@@ -65,7 +66,6 @@ class VertView: UIView {
         }
         
         else if(recognizer.state == UIGestureRecognizerState.Changed ) {
-            //CGPoint endPos=CGPointMake(self.frame.origin.x+translation.x,self.center+translation.y);
             center=CGPointMake(self.center.x+translation.x,self.center.y+translation.y);
             recognizer.setTranslation(CGPointMake(0,0), inView:recognizer.view);
         }
@@ -79,12 +79,12 @@ class VertView: UIView {
             else {
                 println("VertView: pan: err delegate is nil or vertViewId is nil");
             }
-            // we do not detach the view yet from the superview yet. If we did that we would no longer have a strong reference to it that is needed by the VC
         }
         else {
             println("VertView: pan: err state is not valid");
         }
     }
+    */
 
     override func drawRect(rect:CGRect) {
         // fill the rect
@@ -117,6 +117,18 @@ class VertView: UIView {
         // stroke and fill
         bz.stroke();
         bz.fill();
+    }
+    
+    func contains(cgp:CGPoint)->Bool {
+
+        let xorig:CGFloat=frame.origin.x;
+        let yorig:CGFloat=frame.origin.y;
+        let newCGP:CGPoint = CGPointMake(cgp.x-xorig,cgp.y-yorig);
+        let pointWithin:Bool = bz.containsPoint(newCGP);
+        if pointWithin {
+            return true;
+        }
+        return false;
     }
 
     // hit changes the selected property to its negation if cgp is within the BZ
