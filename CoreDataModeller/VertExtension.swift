@@ -77,18 +77,18 @@ func isPositionEqual(other: Vert)->Bool {
 func AddEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
 
     if(edgeOrNil != nil && vertOrNil != nil) {
+        // check if the verts already have an edge
+        if (neighbors as Set).contains(vertOrNil!) {
+            //
+        }
         
-        // neighbors is a bidirectional relationship
-        //TODO: 9:30pm June 12 neighbors=neighbors.setByAddingObject(vertOrNil!);
         var manyRelation:AnyObject? = self.valueForKeyPath("neighbors") ;
         if manyRelation is NSMutableSet {
             (manyRelation as! NSMutableSet).addObject(vertOrNil!);
         }
         
-        // joinedTo updated by next line
+        // update edges on self and other
         edges=edges.setByAddingObject(edgeOrNil!);
-        
-        // joinedTo updated by next line
         vertOrNil!.edges=vertOrNil!.edges.setByAddingObject(edgeOrNil!);
         
         edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByAddingObject(vertOrNil!);

@@ -18,7 +18,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Core Data Modeller" id="mWU-rW-26I"/>
+                    <navigationItem key="navigationItem" title="Core Data Modeller" id="mWU-rW-26I">
+                        <barButtonItem key="rightBarButtonItem" title="Grid" id="17t-ik-CXc">
+                            <connections>
+                                <action selector="turnOffGrid:" destination="8qZ-gR-bVn" id="OsO-Rd-QXe"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <segue destination="2NL-fe-8oU" kind="show" identifier="VertInfo" id="mzh-W5-Ftp"/>
                     </connections>

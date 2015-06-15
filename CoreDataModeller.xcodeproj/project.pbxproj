@@ -137,7 +137,7 @@
 				489039251B1B8E13005E0992 /* Controller */,
 				4810E3541B1744C300F72097 /* AppDelegate.swift */,
 				48282E901B179DF400BDA782 /* Model.xcdatamodeld */,
-				4810E3581B1744C300F72097 /* Main.storyboard */,
+				4849E31D1B2DBD93000934CE /* Storyboard */,
 				4810E35B1B1744C300F72097 /* Images.xcassets */,
 				4810E35D1B1744C300F72097 /* LaunchScreen.xib */,
 				4810E3521B1744C300F72097 /* Supporting Files */,
@@ -203,6 +203,14 @@
 				4882F58C1B1E4046002F6A01 /* GraphExtension.swift */,
 			);
 			name = Categories;
+			sourceTree = "<group>";
+		};
+		4849E31D1B2DBD93000934CE /* Storyboard */ = {
+			isa = PBXGroup;
+			children = (
+				4810E3581B1744C300F72097 /* Main.storyboard */,
+			);
+			name = Storyboard;
 			sourceTree = "<group>";
 		};
 		489039251B1B8E13005E0992 /* Controller */ = {

@@ -11,7 +11,15 @@ import UIKit
 protocol VertViewWasTouchedProtocol {
     func drawGraphAfterMovingVert(viewId:Int32, toXPos endX:Float, toYPos endY:Float);
     func performSegueWithIdentifier(identifier: String?, sender: AnyObject?);
-    func removeVertById(vertId:Int32);
+    var inEdgeMode:Bool {get};
+    var inVertMode:Bool {get};
+    var inMoveMode:Bool {get};
+    func curMode()->Int;
+    
+    func remVertById(vertId:Int32);
+    func addEdgeById(vertId1:Int32, vertId2:Int32);
+    func remEdgeById(edgeId:Int32);
+    func addVertById();
 }
 
 class VertView: UIView {
