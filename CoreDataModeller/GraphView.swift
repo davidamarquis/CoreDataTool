@@ -73,6 +73,11 @@ class GraphView: UIScrollView {
         }
     }
     
+    convenience init(frame: CGRect, graphWorldViewDeleg: CoreController) {
+        self.init(frame: frame);
+        self.gwv!.gestureResponseDelegate=graphWorldViewDeleg;
+    }
+    
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder);
         setup();

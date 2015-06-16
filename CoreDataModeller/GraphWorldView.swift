@@ -17,7 +17,7 @@ protocol GestureResponse {
     
 class GraphWorldView: UIView {
 
-    var delegate:GestureResponse?;
+    var gestureResponseDelegate:GestureResponse?;
     
     // MARK: vars
     var circSize,edgeSize,strokeSize: CGFloat?;
@@ -66,16 +66,16 @@ class GraphWorldView: UIView {
         let translation:CGPoint=recognizer.translationInView(self);
         let cgp:CGPoint=recognizer.locationInView(self);
         
-        if delegate == nil {println("GraphView: pan: delegate is nil");}
+        if gestureResponseDelegate == nil {println("GraphView: pan: delegate is nil");}
         
         if(recognizer.state==UIGestureRecognizerState.Began) {
-            delegate!.handleStateBegan(recognizer);
+            gestureResponseDelegate!.handleStateBegan(recognizer);
         }
         else if(recognizer.state == UIGestureRecognizerState.Changed ) {
-            delegate!.handleStateChanged(recognizer);
+            gestureResponseDelegate!.handleStateChanged(recognizer);
         }
         else if(recognizer.state==UIGestureRecognizerState.Ended) {
-            delegate!.handleStateEnded(recognizer);
+            gestureResponseDelegate!.handleStateEnded(recognizer);
         }
         else {
             println("VertView: pan(): err state is not valid");
