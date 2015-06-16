@@ -58,7 +58,6 @@ class GraphView: UIScrollView {
         }
         
         while curY < contentSize.height {
-        
             while curX < contentSize.width {
                 // create a UIImageView
                 let gridView = UIImageView(image: UIImage(named:str));

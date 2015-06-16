@@ -109,13 +109,10 @@ func makeVertsArray(numVerts:Int) {
     if(verts != nil && context != nil) {
         for var i=0;i<numVerts;i++ {
             var vert:Vert? = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
-            
             verts!.append(vert!);
         }
     }
-    else {
-    
-    }
+    else {println("CoreController: makeVertsArray(): verts is nil or context is nil");}
 }
 
 func makeEdgesArray(numEdges:Int) {
@@ -131,9 +128,7 @@ func makeEdgesArray(numEdges:Int) {
             else { println("tests: makeEdgesArray: edge is nil"); }
         }
     }
-    else {
-    
-    }
+    else {println("CoreController: makeEdgesArray(): edges is nil or context is nil");}
 }
 
 func makeGraph1() {

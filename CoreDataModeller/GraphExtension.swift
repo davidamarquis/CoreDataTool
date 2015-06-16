@@ -114,8 +114,8 @@ extension Graph {
 
         // check id
         let vertCount:Int32 = Int32(self.verts.count);
-        if((vertId < Int32(0) ) || (vertCount <= vertId)) {
-            print("getVertById: err id argument is too large or small");
+        if vertId < Int32(0)  {
+            println("Graph cat: getVertById: err id argument is too large or small");
             return nil;
         }
         // search for matching id

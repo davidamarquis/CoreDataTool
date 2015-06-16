@@ -10,7 +10,10 @@ import UIKit
 import Foundation
 import CoreData
 
-class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol {
+class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, GestureResponse {
+func handleStateBegan(recog:UIPanGestureRecognizer) {}
+func handleStateChanged(recog:UIPanGestureRecognizer) {}
+func handleStateEnded(recog:UIPanGestureRecognizer) {}
 
     @IBAction func turnOffGrid(sender: AnyObject) {
         if graphView != nil {
@@ -18,14 +21,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
     }
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil);    
-    }
-
-    required init(coder aDecoder: NSCoder) {
-        super.init(coder:aDecoder);
-    }
-
     let vscale:CGFloat=0.15;
     var hght:CGFloat=CGFloat();
     var wdth:CGFloat=CGFloat();
@@ -33,36 +28,25 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     var edgeButton:UIButton?;
     var moveButton:UIButton?;
     var vertButton:UIButton?;
-    var addVert:UILabel?;
-    var remVert:UILabel?;
+    
+    var addVertControl:UILabel?;
+    var remVertControl:UILabel?;
     
     var inEdgeMode:Bool = false;
     var inVertMode:Bool = false;
     var inMoveMode:Bool = false;
+    var vertViewFound=false;
+    
+    var gestureVV:VertView?;
+    var shiftedOrigin:CGPoint?;
     
     var unselectedTextColor = UIColor.grayColor();
     var selectedTextColor = UIColor.whiteColor();
     
-    // returns an int with current mode
-    func curMode()->Int {
-        if inEdgeMode {
-            return 0;
-        }
-        else if inMoveMode {
-            return 1;
-        }
-        else if inVertMode {
-            return 2;
-        }
-        else {
-            return -1;
-        }
-    }
-    
+    ////MARK: Setup
+    //Setup: view lifecycle
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if sender == nil {
-        
-        }
+    
         if sender is VertView {
             let vv:VertView = sender as! VertView;
             if graph != nil {
@@ -72,21 +56,12 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                         (segue.destinationViewController as! AttributeTable).vert=vert;
                     }
                 }
-                else {
-                
-                }
+                else { println("CoreController: prepareForSegue: vert is nil"); }
             }
-            else {
-            
-            }
+            else { println("CoreController: prepareForSegue: graph is nil");}
         }
-        else {
-        
-        }
-    
     }
-    
-    //MARK: view lifecycle
+
     override func viewDidLoad() {
 
         hght=view.bounds.size.height;
@@ -104,29 +79,36 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                 let con=notification.object! as! NSManagedObjectContext;
                 
                 let objs=con.deletedObjects;
-                for obj in objs {
-                    // case 1: object is VertView
-                    if obj is Vert {
-                        // get the view id from the vert
-                        let vertId:Int32? = (obj as! Vert).vertViewId;
-                        if vertId != nil {
-                            self.deleteVertViewById(vertId!);
-                        }
-                        else {println("CoreController: viewDidLoad(): vertId is nil"); }
-                    }
-                    else if obj is Edge {
-                        // get the view id from the vert
-                        let edgeId:Int32? = (obj as! Edge).edgeViewId;
-                        if edgeId != nil {
-                            self.remEdgeViewById(edgeId!);
-                        }
-                        else {println("CoreController: viewDidLoad(): edgeId is nil"); }
-                    }
-                    else {println("CoreController: viewDidLoad(): object to be deleted has unknown type");}
-                }
+                self.respondToDeletion(objs);
             }
         });
     }
+    
+    private func respondToDeletion(deletedObjs:Set<NSObject>) {
+        if deletedObjs.count > 0 {
+            for obj in deletedObjs {
+                // case 1: object is VertView
+                if obj is Vert {
+                    // get the view id from the vert
+                    let vertId:Int32? = (obj as! Vert).vertViewId;
+                    if vertId != nil {
+                        self.remVertView(vertId!);
+                    }
+                    else {println("CoreController: viewDidLoad(): vertId is nil"); }
+                }
+                else if obj is Edge {
+                    // get the view id from the vert
+                    let edgeId:Int32? = (obj as! Edge).edgeViewId;
+                    if edgeId != nil {
+                        self.remEdgeView(edgeId!);
+                    }
+                    else {println("CoreController: respondToDeletion(): edgeId is nil"); }
+                }
+                else {println("CoreController: respondToDeletion(): object to be deleted has unknown type");}
+            }
+        }
+    }
+    
     override func viewWillAppear(animated: Bool) {
     
         //TODO: if needed arrange views into final order here 
@@ -136,20 +118,23 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         moveMode();
     }
     
-    //MARK: Setup
+    //Setup: buttons
     func setupVertButtons() {
         // init a button
-        addVert=setupClearButton("+");
-        addVert!.frame=CGRectMake(wdth*0.666,hght*(1-2*vscale),wdth*0.334,hght*vscale);
+        addVertControl=setupClearButton("+");
+        addVertControl!.frame=CGRectMake(wdth*0.666,hght*(1-2*vscale),wdth*0.334,hght*vscale);
         //addVert!.addTarget(self, action: "killVert", forControlEvents:.TouchUpInside);
 
         // init a button
-        remVert=setupClearButton("X");
-        remVert!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
+        remVertControl=setupClearButton("X");
+        remVertControl!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
         if graphView != nil {
-            graphView!.gwv!.addVert=addVert;
-            graphView!.gwv!.remVert=remVert;
+            if graphView!.gwv != nil {
+                graphView!.gwv!.addVert = addVertControl;
+                graphView!.gwv!.remVert = remVertControl;
+            }
         }
+        else {println("CoreController: setupVertButtons: one of graphView or gwv is nil");}
         //remVert!.addTarget(self, action: "makeVert", forControlEvents:.TouchUpInside);
     }
     // sets up 3 buttons for the view controllers UI states
@@ -191,12 +176,58 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         return button;
     }
     
+    //Setup: lazy init
+    //graphView property subclasses UIScrollView. It contains all the non-interface views as subviews.
+    lazy var graphView:GraphView? = {
+        var gv=GraphView(frame: CGRectMake(CGFloat(0), CGFloat(0), self.wdth, self.hght*(1-self.vscale)));
+        
+        gv.backgroundColor=UIColor( red:CGFloat(0),green:CGFloat(0),blue:CGFloat(0),alpha:CGFloat(0) );
+        gv.delegate=self;
+        gv.gwv!.delegate = self;
+        
+        self.view.addSubview(gv);
+        
+        return gv;
+    }()
+
+    // graph is the application model
+    lazy var graph:Graph?={
+        var graph:Graph?;
+        if self.context != nil {
+            let graphDescription = NSEntityDescription.entityForName("Graph",inManagedObjectContext: self.context!);
+            graph = Graph(entity: graphDescription!,insertIntoManagedObjectContext: self.context!);
+            graph?.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
+        }
+        else {
+            println("CoreController: graph: cannot create graph, context is nil");
+        }
+        return graph;
+    }()
+    
+    //
     //MARK: vert-vertView interface
-    func addVertById() {
+    //
+    private func addVertView() {
     
     }
     
-    func remVertById(vertId:Int32) {
+    private func remVertView(vertId:Int32) {
+        // get the corresponding view by its id. Not finding this view is not necessarily an error as the deleted managed objects list in context is sticky
+        let vv:VertView? = graphView!.gwv!.getVertViewById(vertId);
+        if vv != nil {
+            vv!.removeFromSuperview();
+            vv!.setNeedsDisplay();
+        }
+        else {
+            println("CoreController: remVertView: could not find vert to delete");
+        }
+    }
+    
+    func addVert() {
+    
+    }
+    
+    func remVert(vertId:Int32) {
         // save current context
         saveContext();
         // get a vert
@@ -206,7 +237,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
              for e in vert!.edges {
                  if e is Edge {
                      let edge=e as! Edge;
-                     
+                    
                      context!.deleteObject(edge);
                  }
              }
@@ -217,29 +248,18 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                  }
              }
             
-             //TODO: remove observers of the vert
              context!.deleteObject(vert!);
         }
         else { println("removeVertById: err"); }
     }
     
-    private func deleteVertViewById(vertId:Int32) {
-        // get the corresponding view by its id. Not finding this view is not necessarily an error as the deleted managed objects list in context is sticky
-        let vv:VertView? = graphView!.gwv!.getVertViewById(vertId);
-        if vv != nil {
-            vv!.removeFromSuperview();
-            //TODO: is setNeedsDisplay call needed?
-            vv!.setNeedsDisplay();
-        }
-        else {
-            println("CoreController: deleteVertViewById: could not find vert to delete");
-        }
-    }
-    
     //
     //MARK: edge-edgeView interface
     //
-    private func remEdgeViewById(edgeId:Int32) {
+    private func addEdgeView() {
+
+    }
+    private func remEdgeView(edgeId:Int32) {
     
         // get the corresponding view by its id. Not finding this view is not necessarily an error as the deleted managed objects list in context is sticky
         let ev:EdgeView? = graphView!.gwv!.getEdgeViewById(edgeId);
@@ -253,7 +273,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
     }
     
-    func addEdgeById(vertId1:Int32, vertId2:Int32) {
+    func addEdge(vertId1:Int32, vertId2:Int32) {
         let vert1:Vert? = graph!.getVertById(vertId1);
         let vert2:Vert? = graph!.getVertById(vertId2);
         
@@ -265,6 +285,10 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
     }
     
+    func remEdge(edgeId: Int32) {
+        
+    }
+    
     //MARK: unsorted
     //TODO: remove this test function
     private func printSomeTests() {
@@ -274,53 +298,47 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         println(sortedEdgeIds);
     }
 
-    // main view is graphView
-    // use a closure to contain the initialization logic
-    lazy var graphView:GraphView? = {
-        // this is how designated initializers are called in swift
-        var gv=GraphView(frame: CGRectMake(CGFloat(0), CGFloat(0), self.wdth, self.hght*(1-self.vscale)));
-        
-        gv.backgroundColor=UIColor( red:CGFloat(0),green:CGFloat(0),blue:CGFloat(0),alpha:CGFloat(0) );
-        gv.delegate=self;
-        self.view.addSubview(gv);
-        return gv;
-    }()
-
-    // the graph property is our model
-    // Controller owns so the model so we maintain a strong reference
-    lazy var graph:Graph?={
-        var graph:Graph?;
-        if self.context != nil {
-            let graphDescription = NSEntityDescription.entityForName("Graph",inManagedObjectContext: self.context!);
-            graph = Graph(entity: graphDescription!,insertIntoManagedObjectContext: self.context!);
-            graph?.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
+    //MARK: modes
+    
+    // curMode() returns an int with current mode
+    func curMode()->Int {
+        if inEdgeMode {
+            return 0;
+        }
+        else if inMoveMode {
+            return 1;
+        }
+        else if inVertMode {
+            return 2;
         }
         else {
-            println("CoreController: graph: cannot create graph, context is nil");
+            return -1;
         }
-        return graph;
-    }()
-
-    func scrollOff() {
+    }
+    
+    private func scrollOff() {
         if graphView == nil {println("CoreController: scrollOff: graphView is nil");}
         (graphView!.maximumZoomScale,graphView!.minimumZoomScale) = (1.0,1.0);
         graphView!.panGestureRecognizer.enabled=false;
     }
     
-    func scrollOn() {
+    private func scrollOn() {
         if graphView == nil {println("CoreController: scrollOn: graphView is nil");}
         (graphView!.maximumZoomScale,graphView!.minimumZoomScale) = (2.0,0.2);
         graphView!.panGestureRecognizer.enabled=true;
     }
     
+    // edgeMode() holds logic for switching from vertMode() or moveMode()
     func edgeMode() {
+        // method cannot be private, called by action
+        
         edgeButton!.setTitleColor(selectedTextColor, forState:.Normal);
         vertButton!.setTitleColor(unselectedTextColor, forState:.Normal);
         moveButton!.setTitleColor(unselectedTextColor, forState:.Normal);
         scrollOff();
-        if addVert != nil && remVert != nil {
-            addVert!.removeFromSuperview();
-            remVert!.removeFromSuperview();
+        if addVertControl != nil && remVertControl != nil {
+            addVertControl!.removeFromSuperview();
+            remVertControl!.removeFromSuperview();
         }
         
         // enable gesture recognizers
@@ -331,15 +349,17 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         inEdgeMode=true;
     }
     func moveMode() {
+        // method cannot be private, called by action
+        
         edgeButton!.setTitleColor(unselectedTextColor, forState:.Normal);
         vertButton!.setTitleColor(unselectedTextColor, forState:.Normal);
         moveButton!.setTitleColor(selectedTextColor, forState:.Normal);
         scrollOn();
-        if addVert != nil && remVert != nil {
-            addVert!.removeFromSuperview();
-            remVert!.removeFromSuperview();
+        if addVertControl != nil && remVertControl != nil {
+            addVertControl!.removeFromSuperview();
+            remVertControl!.removeFromSuperview();
         }
-        if addVert == nil && remVert == nil {println("CoreController: vertMode: addVert or remVert buttons are nil");}
+        if addVertControl == nil && remVertControl == nil {println("CoreController: vertMode: addVert or remVert buttons are nil");}
         
         // disable gesture recognizers
         enableOrDisableGestureRecognizers(false);
@@ -350,15 +370,24 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     }
     
     func vertMode() {
-        edgeButton!.setTitleColor(unselectedTextColor, forState:.Normal);
-        vertButton!.setTitleColor(selectedTextColor, forState:.Normal);
-        moveButton!.setTitleColor(unselectedTextColor, forState:.Normal);
+        // method cannot be private, called by action
+    
+        if edgeButton == nil || vertButton == nil || moveButton == nil {
+            println("CoreController: vertMode: one of the buttons is nil");
+        }
+        else {
+            edgeButton!.setTitleColor(unselectedTextColor, forState:.Normal);
+            vertButton!.setTitleColor(selectedTextColor, forState:.Normal);
+            moveButton!.setTitleColor(unselectedTextColor, forState:.Normal);
+        }
         scrollOff();
-        if addVert == nil && remVert == nil {println("CoreController: vertMode: addVert or remVert buttons are nil");}
-        //TODO:
-        view.addSubview(addVert!);
-        view.addSubview(remVert!);
         
+        if addVertControl == nil || remVertControl == nil {println("CoreController: vertMode: addVert or remVert buttons are nil");}
+        else {
+            view.addSubview(addVertControl!);
+            view.addSubview(remVertControl!);
+        }
+
         // enable gesture recognizers
         enableOrDisableGestureRecognizers(true);
         
