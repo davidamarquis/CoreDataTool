@@ -36,6 +36,29 @@ override var description:String {
     return desc;
 }
 
+// computed property
+func length()->Float? {
+    let v:Vert?;
+    let w:Vert?;
+    (v,w)=Connects();
+    if v != nil && w != nil {
+        return v!.distance(w!);
+    }
+    println("Edge cat: length: v or w is nil");
+    return nil;
+}
+
+func angle()->Float? {
+    let v:Vert?;
+    let w:Vert?;
+    (v,w)=Connects();
+    if v != nil && w != nil {
+        return Float(atan2(v!.y - w!.y, v!.x-w!.x ));
+    }
+        println("Edge cat: length: v or w is nil");
+        return nil;
+}
+
 // returns the two verts that an edge is connected to
 func Connects()->(v:Vert?,w:Vert?) {
     
@@ -73,8 +96,12 @@ func Connects()->(v:Vert?,w:Vert?) {
             count++;
         }
     }
-    
-    return (v,w);
+    if v!.x < w!.x {
+        return (v,w);
+    }
+    else {
+        return (w,v);
+    }
 }
 
 }

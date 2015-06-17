@@ -32,10 +32,10 @@ class gestureCC:CoreController, GestureResponse
     func handleStateEnded(recog:UIPanGestureRecognizer) {
         
         let id1,id2:Int32;
-        // case 1 = vert started on addVertControl
-        // case 2 = vert ended hitting the remove button
-        // case 3 = vert ended hitting another vert
-        // case 4 = vert ended hitting nothing interesting
+        // case 1 = gesture started on addVertControl and ended somewhere
+        // case 2 = gesture started on vertView and ended hitting the remove button
+        // case 3 = gesture started on vertView and ended hitting another vert
+        // case 4 = gesture started on vertView and ended hitting nothing
         // each case follows these steps: check what the gesture, check the state that CoreController is in, if the given gesture
         //does anything in this state then assign any vert or edge ids and get CoreController to respond
         // Style Warning: the bool *guards* are responsible for printing an error message if a variable needed inside the guard is nil
@@ -54,7 +54,7 @@ class gestureCC:CoreController, GestureResponse
             (id1,id2)=(gestureVV!.vertViewId!, getHitVertId());
             addEdge(id1, vertId2: id2);
         }
-        else {
+        else if inVertMode && gestureDidStartOnVert() {
             respondToNoHit();
         }
         
@@ -64,9 +64,9 @@ class gestureCC:CoreController, GestureResponse
     
     ////
     // All helper methods below called by handleStateEnded() at some point
-    //TODO: should be a guard for each case
+    //MARK: guards
     private func vertEndsOnVert()->Bool {
-        if inEdgeMode {
+        if inEdgeMode && gestureDidStartOnVert() {
             // error checking
             if shiftedOrigin == nil {println("CoreController gestures: vertEndsOnVert: shiftedOrigin nil when it is needed in edge mode");}
             if gestureVV == nil {println("CoreController gestures: vertEndsOnVert: gestureVV is nil when it is needed");}
@@ -82,36 +82,39 @@ class gestureCC:CoreController, GestureResponse
     
     // vertEndsOnRemControl() returns true if we are in vert mode and vv has ended on the control for removing verts
     private func vertEndsOnRemControl()->Bool {
-        if inVertMode {
+        if inVertMode && gestureDidStartOnVert() {
+            if gestureVV == nil {println("Graph extension: vertEndsOnRemControl: gestureVV is nil");}
+            if remVertControl == nil {println("Graph extension: vertEndsOnRemControl: remVertControl is nil");}
+            
             return CGRectIntersectsRect(gestureVV!.frame, remVertControl!.frame);
         }
-        else {
-            return false;
-        }
+        return false;
     }
     
     // getHitVertId() returns the id of the vertView that was hit by the vertView that was moved by the user
     private func getHitVertId()->Int32 {
-        let retId:Int32?;
-        let finalVertViewFrame:CGRect = CGRectMake(shiftedOrigin!.x, shiftedOrigin!.y, gestureVV!.frame.width, gestureVV!.frame.height);
-        
+        // vertEndsOnVert() checks that we are in Edge mode
         if vertEndsOnVert() {
-            retId = getIntersectingVert(finalVertViewFrame, vv: gestureVV! )?.vertViewId;
-            if retId == nil { println("CoreController sub: getHitVertId: err found nil vert id inside of guard"); }
+            let finalVertViewFrame:CGRect = CGRectMake(shiftedOrigin!.x, shiftedOrigin!.y, gestureVV!.frame.width, gestureVV!.frame.height);
+            let vv:VertView? = getIntersectingVert(finalVertViewFrame, vv: gestureVV!);
+            if vv == nil {println("CoreData gestures: getHitVertId: could not find intersecting vert");}
+            
+            if let retId = vv!.vertViewId {
+                return retId;
+            }
+            else {println("CoreController sub: getHitVertId: err found nil vert id inside of guard");}
         }
-        else {
-            println("CoreController sub: getHitVertId: err failed to set id");
-            retId=0;
-        }
-        return retId!;
+        else { println("CoreController sub: getHitVertId: err failed to set id"); }
+        return 0;
     }
     
+    //MARK: helpers
     private func respondToNoHit() {
-        if inVertMode {
-            if gestureVV!.vertViewId != nil {
-                let endPos=gestureVV!.frame.origin;
-                drawGraphAfterMovingVert(gestureVV!.vertViewId!, toXPos: Float(endPos.x), toYPos: Float(endPos.y) );
-            }
+        if inVertMode && gestureDidStartOnVert() {
+            if gestureVV!.vertViewId == nil { println(); }
+            
+            let endPos=gestureVV!.frame.origin;
+            drawGraphAfterMovingVert(gestureVV!.vertViewId!, toXPos: Float(endPos.x), toYPos: Float(endPos.y) );
         }
     }
     

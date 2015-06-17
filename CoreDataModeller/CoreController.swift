@@ -211,7 +211,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             vv!.setNeedsDisplay();
         }
         else {
-            println("CoreController: remVertView: could not find vert to delete");
+            println("CoreController: remVertView: could not find vert to delete. Id to delete is \(vertId)");
         }
     }
     
@@ -533,8 +533,14 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                 else {
                     // init the new view in setEdge() input
                     edgeView=graphView!.gwv!.setEdge(EdgeView(frame: edgeFrame!), topLeftToBotRight: edgeDir!);
+                    
                     // do any additional setup
+                    //(1): id
                     edgeView!.edgeViewId=e!.edgeViewId;
+                    //(2): length
+                    edgeView!.length=e!.CGFloat(length());
+                    //(3): angle
+                    edgeView!.angle=e!.CGFloat(angle());
                 }
                 // redraw the edge
                 edgeView!.setNeedsDisplay();
@@ -559,9 +565,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     //called by pan() in VertView
     func drawGraphAfterMovingVert(viewId:Int32, toXPos endX:Float, toYPos endY:Float) {
         if graph != nil {
-            // cast the number of verts in the array to an Int32
-            let vertCount:Int32 = Int32(graph!.verts.count);
-            if( viewId < 0 || vertCount < viewId ) {
+            if( viewId < 0 || graph!.curVertId < viewId ) {
                 print("drawGraphAfterMovingVert: view id too large or small");
             }
             else {
@@ -701,6 +705,9 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             graph!.SetupEdge(edges[2], From:verts[1], To:verts[2]);
             graph!.SetupEdge(edges[3], From:verts[2], To:verts[3]);
             // add an observer of the graph object
+            
+            
+            let testArr:Array<Int32> = graph!.getIds();
         }
         else {
             println("CoreController: testGraph: err graph is nil");

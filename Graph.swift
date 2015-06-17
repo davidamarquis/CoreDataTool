@@ -2,7 +2,7 @@
 //  Graph.swift
 //  CoreDataModeller
 //
-//  Created by David Marquis on 2015-06-11.
+//  Created by David Marquis on 2015-06-16.
 //  Copyright (c) 2015 David Marquis. All rights reserved.
 //
 
@@ -11,6 +11,7 @@ import CoreData
 
 class Graph: NSManagedObject {
 
+    @NSManaged var curVertId: Int32
     @NSManaged var edges: NSSet
     @NSManaged var verts: NSSet
 

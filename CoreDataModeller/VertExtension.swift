@@ -82,6 +82,7 @@ func AddEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
             //
         }
         
+        
         var manyRelation:AnyObject? = self.valueForKeyPath("neighbors") ;
         if manyRelation is NSMutableSet {
             (manyRelation as! NSMutableSet).addObject(vertOrNil!);

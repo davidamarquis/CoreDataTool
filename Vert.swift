@@ -2,7 +2,7 @@
 //  Vert.swift
 //  CoreDataModeller
 //
-//  Created by David Marquis on 2015-06-11.
+//  Created by David Marquis on 2015-06-16.
 //  Copyright (c) 2015 David Marquis. All rights reserved.
 //
 
@@ -19,10 +19,9 @@ class Vert: NSManagedObject {
     @NSManaged var vertViewId: Int32
     @NSManaged var x: Float
     @NSManaged var y: Float
+    @NSManaged var attributeStrings: NSSet
     @NSManaged var edges: NSSet
     @NSManaged var graph: Graph
     @NSManaged var neighbors: NSSet
-    
-    @NSManaged var attributeStrings: NSSet
 
 }

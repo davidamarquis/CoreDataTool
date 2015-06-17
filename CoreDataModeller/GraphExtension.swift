@@ -21,6 +21,20 @@ extension Graph {
     }
     */
     
+    // getIds() is a debugging method
+    // not tested
+    func getIds()->Array<Int32> {
+    
+        var idArray:Array<Int32>=Array<Int32>();
+        
+        for v in verts {
+            if v is Vert {
+                idArray.append((v as! Vert).vertViewId);
+            }
+        }
+        return idArray;
+    }
+    
     func SetupVert(vertOrNil:Vert?, AtX xPos:Float, AtY yPos:Float ) {
         // Warning: setting of ids should be guarded against the deletion of managed verts from but is not currently
       
@@ -28,7 +42,9 @@ extension Graph {
             // add to set within graph
             verts=verts.setByAddingObject(vert);
             // set the id property
-            let vertId:Int32=Int32(self.verts.count-1);
+            curVertId++;
+            let vertId:Int32=curVertId;
+            
             vert.vertViewId=vertId;
             // 
             vert.moveVertTo(xPos, yPos);

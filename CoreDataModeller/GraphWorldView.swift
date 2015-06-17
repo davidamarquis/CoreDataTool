@@ -67,9 +67,18 @@ class GraphWorldView: UIView {
     func pan(recognizer:UIPanGestureRecognizer) {
         panCount++;
         let translation:CGPoint=recognizer.translationInView(self);
-        let cgp:CGPoint=recognizer.locationInView(self);
+        let loc:CGPoint=recognizer.locationInView(self);
         
         if gestureResponseDelegate == nil {println("GraphView: pan: delegate is nil");}
+        
+        for e in subviews {
+            if e is EdgeView {
+                let edge=e as! EdgeView;
+                if edge.pointInside(loc, withEvent: nil) {
+
+                }
+            }
+        }
         
         if(recognizer.state==UIGestureRecognizerState.Began) {
         
@@ -156,6 +165,9 @@ class GraphWorldView: UIView {
 
         addSubview(ev);
         sendSubviewToBack(ev);
+        
+        //let recog:UIPanGestureRecognizer = UIPanGestureRecognizer(target: ev, action: "pan:");
+        //ev.addGestureRecognizer(recog);
         return ev;
     }
 
