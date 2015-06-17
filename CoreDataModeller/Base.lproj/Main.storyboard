@@ -8,7 +8,7 @@
         <!--Core Data Modeller-->
         <scene sceneID="wjC-d6-rxi">
             <objects>
-                <viewController id="8qZ-gR-bVn" customClass="CoreController" customModule="CoreDataModeller" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="8qZ-gR-bVn" customClass="gestureCC" customModule="CoreDataModeller" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="p1T-tW-KxP"/>
                         <viewControllerLayoutGuide type="bottom" id="rq9-lN-JRT"/>

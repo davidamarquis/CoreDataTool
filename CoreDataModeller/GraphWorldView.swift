@@ -30,6 +30,8 @@ class GraphWorldView: UIView {
     var gestureVV:VertView?;
     var shiftedOrigin:CGPoint?;
     
+    var panCount=0;
+    
     override init(frame: CGRect) {
     
         // step1: set non-inherited properties
@@ -63,12 +65,14 @@ class GraphWorldView: UIView {
     
     // MARK: gesture recognizers
     func pan(recognizer:UIPanGestureRecognizer) {
+        panCount++;
         let translation:CGPoint=recognizer.translationInView(self);
         let cgp:CGPoint=recognizer.locationInView(self);
         
         if gestureResponseDelegate == nil {println("GraphView: pan: delegate is nil");}
         
         if(recognizer.state==UIGestureRecognizerState.Began) {
+        
             gestureResponseDelegate!.handleStateBegan(recognizer);
         }
         else if(recognizer.state == UIGestureRecognizerState.Changed ) {
@@ -76,10 +80,14 @@ class GraphWorldView: UIView {
         }
         else if(recognizer.state==UIGestureRecognizerState.Ended) {
             gestureResponseDelegate!.handleStateEnded(recognizer);
+            
+            //reset panCount;
+            panCount=0;
         }
         else {
             println("VertView: pan(): err state is not valid");
         }
+        
     }
     
     func tap(recognizer:UITapGestureRecognizer) {

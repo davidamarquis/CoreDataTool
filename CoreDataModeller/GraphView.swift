@@ -75,7 +75,12 @@ class GraphView: UIScrollView {
     
     convenience init(frame: CGRect, graphWorldViewDeleg: CoreController) {
         self.init(frame: frame);
-        self.gwv!.gestureResponseDelegate=graphWorldViewDeleg;
+        if graphWorldViewDeleg is gestureCC {
+            gwv!.gestureResponseDelegate=(graphWorldViewDeleg as! gestureCC);
+        }
+        else {
+            println("GraphView: init: could not set gwv delegate");
+        }
     }
     
     required init(coder aDecoder: NSCoder) {

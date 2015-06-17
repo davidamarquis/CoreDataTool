@@ -22,11 +22,12 @@
 		48282EBA1B17AED100BDA782 /* VertExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48282EB91B17AED100BDA782 /* VertExtension.swift */; };
 		483DAFB11B1E8D40007A532E /* GraphExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58C1B1E4046002F6A01 /* GraphExtension.swift */; };
 		483DAFB21B1E8D42007A532E /* EdgeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58E1B1E4391002F6A01 /* EdgeExtension.swift */; };
+		484C8FFE1B306AD90051CDC1 /* Gestures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484C8FFD1B306AD90051CDC1 /* Gestures.swift */; };
+		484C8FFF1B3078F20051CDC1 /* Gestures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484C8FFD1B306AD90051CDC1 /* Gestures.swift */; };
 		487FDD011B1A6BC60087C0AF /* NSSet + Edit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487FDD001B1A6BC60087C0AF /* NSSet + Edit.swift */; };
 		4882F58D1B1E4046002F6A01 /* GraphExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58C1B1E4046002F6A01 /* GraphExtension.swift */; };
 		4882F58F1B1E4391002F6A01 /* EdgeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58E1B1E4391002F6A01 /* EdgeExtension.swift */; };
 		489039241B1B8E0C005E0992 /* CoreController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489039231B1B8E0C005E0992 /* CoreController.swift */; };
-		48AE0F5F1B2FAB76008B6697 /* CoreControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48AE0F5E1B2FAB76008B6697 /* CoreControllerExtension.swift */; };
 		48BEF91A1B2A038000DC51A4 /* AttributeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9191B2A038000DC51A4 /* AttributeTable.swift */; };
 		48BEF91B1B2A185C00DC51A4 /* AttributeTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9191B2A038000DC51A4 /* AttributeTable.swift */; };
 		48BEF9311B2A255500DC51A4 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9301B2A255500DC51A4 /* Vert.swift */; };
@@ -80,11 +81,11 @@
 		4812E3CE1B1D04BC0061EAB1 /* LandingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
 		48282E911B179DF400BDA782 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		48282EB91B17AED100BDA782 /* VertExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertExtension.swift; sourceTree = "<group>"; };
+		484C8FFD1B306AD90051CDC1 /* Gestures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Gestures.swift; sourceTree = "<group>"; };
 		487FDD001B1A6BC60087C0AF /* NSSet + Edit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSSet + Edit.swift"; sourceTree = "<group>"; };
 		4882F58C1B1E4046002F6A01 /* GraphExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphExtension.swift; sourceTree = "<group>"; };
 		4882F58E1B1E4391002F6A01 /* EdgeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeExtension.swift; sourceTree = "<group>"; };
 		489039231B1B8E0C005E0992 /* CoreController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreController.swift; sourceTree = "<group>"; };
-		48AE0F5E1B2FAB76008B6697 /* CoreControllerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreControllerExtension.swift; sourceTree = "<group>"; };
 		48BEF9191B2A038000DC51A4 /* AttributeTable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeTable.swift; sourceTree = "<group>"; };
 		48BEF9301B2A255500DC51A4 /* Vert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Vert.swift; path = ../Vert.swift; sourceTree = "<group>"; };
 		48BEF9321B2A255500DC51A4 /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Edge.swift; path = ../Edge.swift; sourceTree = "<group>"; };
@@ -219,9 +220,9 @@
 			isa = PBXGroup;
 			children = (
 				489039231B1B8E0C005E0992 /* CoreController.swift */,
-				48AE0F5E1B2FAB76008B6697 /* CoreControllerExtension.swift */,
 				48BEF9191B2A038000DC51A4 /* AttributeTable.swift */,
 				4812E3CE1B1D04BC0061EAB1 /* LandingVC.swift */,
+				484C8FFD1B306AD90051CDC1 /* Gestures.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -327,8 +328,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				48BEF9351B2A255600DC51A4 /* AttributeString.swift in Sources */,
+				484C8FFE1B306AD90051CDC1 /* Gestures.swift in Sources */,
 				4882F58F1B1E4391002F6A01 /* EdgeExtension.swift in Sources */,
-				48AE0F5F1B2FAB76008B6697 /* CoreControllerExtension.swift in Sources */,
 				48282EBA1B17AED100BDA782 /* VertExtension.swift in Sources */,
 				4812E3CB1B1D047C0061EAB1 /* VertView.swift in Sources */,
 				4812E3C91B1D046F0061EAB1 /* GraphWorldView.swift in Sources */,
@@ -360,6 +361,7 @@
 				48E92ABC1B1E226700110510 /* CoreDataModeller-Bridging-Header.h in Sources */,
 				48BEF93B1B2A2A4B00DC51A4 /* Entity.swift in Sources */,
 				48E92ABD1B1E226700110510 /* GraphView.swift in Sources */,
+				484C8FFF1B3078F20051CDC1 /* Gestures.swift in Sources */,
 				48E92ABE1B1E226700110510 /* GraphWorldView.swift in Sources */,
 				48BEF93D1B2A2A5000DC51A4 /* Edge.swift in Sources */,
 				48E92ABF1B1E226700110510 /* VertView.swift in Sources */,
