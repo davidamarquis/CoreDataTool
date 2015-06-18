@@ -28,6 +28,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     
     var addVertControl:UILabel?;
     var remVertControl:UILabel?;
+    var remEdgeControl:UILabel?;
     
     var inEdgeMode:Bool = false;
     var inVertMode:Bool = false;
@@ -113,14 +114,20 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     
     //Setup: buttons
     func setupVertButtons() {
-        // init a button
+        // init and set frame
         addVertControl=setupClearButton("+");
         addVertControl!.frame=CGRectMake(wdth*0.666,hght*(1-2*vscale),wdth*0.334,hght*vscale);
         //addVert!.addTarget(self, action: "killVert", forControlEvents:.TouchUpInside);
 
-        // init a button
+        // init and set frame
         remVertControl=setupClearButton("X");
         remVertControl!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
+        
+        // init and set frame
+        remEdgeControl=setupClearButton("X");
+        remEdgeControl!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
+        
+        //
         if graphView != nil {
             if graphView!.gwv != nil {
                 graphView!.gwv!.addVert = addVertControl;
@@ -341,6 +348,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         if addVertControl != nil && remVertControl != nil {
             addVertControl!.removeFromSuperview();
             remVertControl!.removeFromSuperview();
+            view.addSubview(remEdgeControl!);
         }
         
         // enable gesture recognizers
@@ -360,6 +368,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         if addVertControl != nil && remVertControl != nil {
             addVertControl!.removeFromSuperview();
             remVertControl!.removeFromSuperview();
+            remEdgeControl!.removeFromSuperview();
         }
         if addVertControl == nil && remVertControl == nil {println("CoreController: vertMode: addVert or remVert buttons are nil");}
         
@@ -388,6 +397,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         else {
             view.addSubview(addVertControl!);
             view.addSubview(remVertControl!);
+            view.addSubview(remEdgeControl!);
         }
 
         // enable gesture recognizers
@@ -538,9 +548,9 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                     //(1): id
                     edgeView!.edgeViewId=e!.edgeViewId;
                     //(2): length
-                    edgeView!.length=e!.CGFloat(length());
+                    edgeView!.length=CGFloat(e!.length()!);
                     //(3): angle
-                    edgeView!.angle=e!.CGFloat(angle());
+                    edgeView!.angle=CGFloat(e!.angle()!);
                 }
                 // redraw the edge
                 edgeView!.setNeedsDisplay();

@@ -57,9 +57,35 @@ class gestureCC:CoreController, GestureResponse
         else if inVertMode && gestureDidStartOnVert() {
             respondToNoHit();
         }
+        else if inEdgeMode {
+            let loc = recog.locationInView(graphView!.gwv!);
+            for e in graphView!.gwv!.subviews {
+                if e is EdgeView {
+                    let edge=e as! EdgeView;
+                    if testSubviews(edge,loc: loc) {
+
+                    }
+                }
+            }
+        }
         
         // remove the gestureVV it exists
         gestureVV = nil;
+    }
+    
+    // returns true if any of the subviews of the input view are hit
+    func testSubviews(view:UIView,loc:CGPoint)->Bool {
+        if view.pointInside(loc, withEvent: nil) {
+            return true;
+        }
+        for x in view.subviews {
+            if x is UIView {
+                if (x as! UIView).pointInside(loc, withEvent: nil) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     ////

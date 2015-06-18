@@ -71,17 +71,7 @@ class GraphWorldView: UIView {
         
         if gestureResponseDelegate == nil {println("GraphView: pan: delegate is nil");}
         
-        for e in subviews {
-            if e is EdgeView {
-                let edge=e as! EdgeView;
-                if edge.pointInside(loc, withEvent: nil) {
-
-                }
-            }
-        }
-        
         if(recognizer.state==UIGestureRecognizerState.Began) {
-        
             gestureResponseDelegate!.handleStateBegan(recognizer);
         }
         else if(recognizer.state == UIGestureRecognizerState.Changed ) {
