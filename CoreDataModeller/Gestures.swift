@@ -31,7 +31,11 @@ class gestureCC:CoreController, GestureResponse
     ////
     //MARK: state ended methods
     func handleStateEnded(recog:UIPanGestureRecognizer) {
+        // get location
         let loc = recog.locationInView(graphView!.gwv!);
+        // get the relative location. This is used for testing if the gesture ended on a button
+        let relLoc = CGPointMake(loc.x - graphView!.contentOffset.x,loc.y - graphView!.contentOffset.y);
+        
         let id1,id2:Int32;
         // case 1 = gesture started on addVertControl and ended somewhere
         // case 2 = gesture started on vertView and ended hitting the remove button
@@ -60,8 +64,12 @@ class gestureCC:CoreController, GestureResponse
             respondToNoHit();
         }
         else if inEdgeMode && edgeViewToCheckRem != nil {
+            //println("Preparing to delete edge");
+            //println("loc is \(loc)");
+            //println("remEdgeControl frame is \(remEdgeControl!.frame)");
+            
             if remEdgeControl == nil {println("CoreController gestures: handleStateEnded: trying to remove edge but remEdgeControl is nil");}
-            if CGRectContainsPoint(remEdgeControl!.frame, loc) {
+            if CGRectContainsPoint(remEdgeControl!.frame, relLoc) {
             
                 if edgeViewToCheckRem!.edgeViewId == nil {println("CoreController gestures: handleStateEnded: trying to remove edge but id is nil")}
                 remEdge(edgeViewToCheckRem!.edgeViewId!);
@@ -75,7 +83,8 @@ class gestureCC:CoreController, GestureResponse
     
     // returns true if any of the subviews of the input view are hit
     func testSubviews(view:UIView,loc:CGPoint)->Bool {
-        if view.pointInside(loc, withEvent: nil) {
+        // TODO: 3:26pm changed pointInside to contains()
+        if view.frame.contains(loc) {
             return true;
         }
         for x in view.subviews {
@@ -112,7 +121,16 @@ class gestureCC:CoreController, GestureResponse
             if gestureVV == nil {println("Graph extension: vertEndsOnRemControl: gestureVV is nil");}
             if remVertControl == nil {println("Graph extension: vertEndsOnRemControl: remVertControl is nil");}
             
-            return CGRectIntersectsRect(gestureVV!.frame, remVertControl!.frame);
+            let relFrame = CGRectMake(gestureVV!.frame.origin.x - graphView!.contentOffset.x,
+            gestureVV!.frame.origin.y - graphView!.contentOffset.y,
+            gestureVV!.frame.size.width,
+            gestureVV!.frame.size.height);
+            
+            //TODO: change at 3:15pm
+            //println("VertEndsOnRemControl: gestureVV.frame is \(gestureVV!.frame)");
+            //println("VertEndsOnRemControl: rel frame is \(relFrame))");
+            
+            return CGRectIntersectsRect(relFrame, remVertControl!.frame);
         }
         return false;
     }
@@ -212,13 +230,15 @@ class gestureCC:CoreController, GestureResponse
         mustAddVert = false;
         edgeViewToCheckRem = nil;
         let startPos:CGPoint=recog.locationInView(graphView!.gwv!);
+        // TODO: 3:15pm relative start
+        let relStart = CGPointMake(startPos.x - graphView!.contentOffset.x,startPos.y - graphView!.contentOffset.y);
         
         if graphView == nil {println("CoreController gestures: handleStateBegan: graphView is nil");}
         if graphView!.gwv == nil {println("CoreController gestures: handleStateBegan: gwv is nil");}
         
         if addVertControl != nil {
             // if we started on the addVertControl then we set the flag for adding vert
-            if CGRectContainsPoint(addVertControl!.frame, startPos) {
+            if CGRectContainsPoint(addVertControl!.frame, relStart) {
             
                 mustAddVert=true;
             }

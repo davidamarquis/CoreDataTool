@@ -141,7 +141,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     // sets up 3 buttons for the view controllers UI states
     func barButtons() {
         
-        edgeButton = barButton("E");
+        edgeButton = barButton("R");
         edgeButton!.frame=CGRectMake(0,hght*(1-vscale),wdth*0.333,hght*vscale);
         edgeButton!.addTarget(self, action: "edgeMode", forControlEvents:.TouchUpInside);
 
@@ -149,7 +149,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         moveButton!.frame=CGRectMake(wdth*0.333,hght*(1-vscale),wdth*0.333,hght*vscale);
         moveButton!.addTarget(self, action: "moveMode", forControlEvents:.TouchUpInside);
 
-        vertButton = barButton("V");
+        vertButton = barButton("A");
         vertButton!.frame=CGRectMake(wdth*0.666,hght*(1-vscale),wdth*0.334,hght*vscale);
         vertButton!.addTarget(self, action: "vertMode", forControlEvents:.TouchUpInside);
     }

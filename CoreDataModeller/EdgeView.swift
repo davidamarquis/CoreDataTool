@@ -21,27 +21,42 @@ class EdgeView: UIView {
     var angle:CGFloat?;
     let hitbox=UIView();
     
+    let numberOfHitboxes = 5;
+    var scaleOfBox:CGFloat?;
+    
     //MARK: init
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder);
-        opaque=false;
+        setupEdgeView();
     }
     override init(frame:CGRect) {
         super.init(frame:frame);
+        setupEdgeView();
+    }
+    func setupEdgeView() {
         opaque=false;
+        addSubview(hitbox);
+        var i=0;
+        for (i=0; i<numberOfHitboxes; i++) {
+            let subview:UIView=UIView();
+            hitbox.addSubview(subview);
+        }
+        
+        let numBox = CGFloat(numberOfHitboxes);
+        scaleOfBox = 1/numBox;
     }
     
     //MARK: custom drawing
     override func drawRect(rect:CGRect) {
+    
+        // reset any global variables containing bezier paths
+        bz=UIBezierPath();
         
         let cont:CGContextRef = UIGraphicsGetCurrentContext();
         CGContextSaveGState(cont);
         CGContextSetRGBFillColor(cont, 1.0, 1.0, 0.0, 1.0);
-        CGContextStrokeRect(cont, rect);
+        //CGContextStrokeRect(cont, rect);
         
-        let numberOfHitboxes = 5;
-        let scaleOfBox:CGFloat = 1/CGFloat(numberOfHitboxes);
-
         let wdth:CGFloat = bounds.size.width;
         let hght:CGFloat = bounds.size.height;
         var p1,p2:CGPoint?;
@@ -53,20 +68,23 @@ class EdgeView: UIView {
         // topLeftToBotRight is a description of the edge direction starting from the leftmost vert
         if topLeftToBotRight != nil {
             
-            if topLeftToBotRight!==true {
+            if topLeftToBotRight! == true {
                 // handling a case like X1<X2 && Y1<Y2
                 p1=CGPointMake(radius!,radius!);
                 p2=CGPointMake(wdth-radius!,hght-radius!);
                 
-                hitbox.frame=CGRectMake(0,0,scaleOfBox*frame.width,scaleOfBox*frame.height);
-                addSubview(hitbox);
-                var i=0;
-                for (i=1; i<numberOfHitboxes; i++) {
-                    let xOrg = scaleOfBox*CGFloat(i)*self.frame.width;
-                    let yOrg = scaleOfBox*CGFloat(i)*frame.height
-                    let subview:UIView = UIView(frame: CGRectMake(xOrg,yOrg, scaleOfBox*frame.width, scaleOfBox*frame.height));
-                    hitbox.addSubview(subview);
+                //(1) set hitbox frame
+                //hitbox.frame=CGRectMake(0,0, scaleOfBox!*frame.width, scaleOfBox!*frame.height);
+                //(2) set subhitbox frames
+                hitbox.frame=CGRectMake(0,0,0,0);
+                for var i=0; i<self.numberOfHitboxes; i++ {
+                
+                    //println("ev: drawRect: printing \(numberOfHitboxes) views");
+                    let xOrg = scaleOfBox!*CGFloat(i)*frame.width;
+                    let yOrg = scaleOfBox!*CGFloat(i)*frame.height;
+                    (hitbox.subviews[i] as! UIView).frame = CGRectMake(xOrg, yOrg, scaleOfBox!*frame.width, scaleOfBox!*frame.height);
                 }
+            
             }
             else {
                 // handling a case like X1<X2 && Y1>=Y2
@@ -75,16 +93,17 @@ class EdgeView: UIView {
                 
                 let hght:CGFloat = self.frame.height;
                 
-                hitbox.frame=CGRectMake(0,hght-scaleOfBox*frame.height,scaleOfBox*frame.width, scaleOfBox*frame.height);
-                addSubview(hitbox);
-                var i=0;
-                for (i=1; i<numberOfHitboxes; i++) {
-                    let xOrg = scaleOfBox*CGFloat(i)*self.frame.width;
-                    let yOrg = scaleOfBox*CGFloat(i)*frame.height
+                //(1) set hitbox frame
+                //hitbox.frame=CGRectMake(0,hght-scaleOfBox!*frame.height,scaleOfBox!*frame.width, scaleOfBox!*frame.height);
+                //(2) set subhitbox frames
+                hitbox.frame=CGRectMake(0,hght-scaleOfBox!*frame.height,0,0);
+                for var i=0; i<self.numberOfHitboxes; i++ {
+                    let xOrg = scaleOfBox!*CGFloat(i)*frame.width;
+                    let yOrg = scaleOfBox!*CGFloat(i)*frame.height
                     // x and y position displacement are relative to the parent view's position
-                    let subview:UIView = UIView(frame: CGRectMake(xOrg, -yOrg, scaleOfBox*frame.width, scaleOfBox*frame.height));
-                    hitbox.addSubview(subview);
+                    (hitbox.subviews[i] as! UIView).frame = CGRectMake(xOrg, -yOrg, scaleOfBox!*frame.width, scaleOfBox!*frame.height);
                 }
+                
             }
 
         }

@@ -65,7 +65,7 @@ class VertView: UIView {
         let cont:CGContextRef = UIGraphicsGetCurrentContext();
         CGContextSaveGState(cont);
         CGContextSetRGBFillColor(cont, 0.0, 0.5, 0.5, 1.0);
-        CGContextStrokeRect(cont, rect);
+        //CGContextStrokeRect(cont, rect);
         // do the rest of the custom drawing
         drawPoint();
     }
@@ -107,7 +107,8 @@ class VertView: UIView {
 
     // hit changes the selected property to its negation if cgp is within the BZ
     func updateIfHit(cgp:CGPoint)->Bool {
-
+        //TODO: June 18th disable color change
+        /*
         let xorig:CGFloat=frame.origin.x;
         let yorig:CGFloat=frame.origin.y;
         let newCGP:CGPoint = CGPointMake(cgp.x-xorig,cgp.y-yorig);
@@ -145,6 +146,8 @@ class VertView: UIView {
                 return false;
             }
         }
+        */
+        return false;
     }
 
     // switch selected changes the selected property to its negation
