@@ -2,6 +2,21 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:../Entity.swift">
+   </FileRef>
+   <FileRef
+      location = "group:../Edge.swift">
+   </FileRef>
+   <FileRef
+      location = "group:../AttributeString.swift">
+   </FileRef>
+   <FileRef
+      location = "group:../Graph.swift">
+   </FileRef>
+   <FileRef
+      location = "group:../Vert.swift">
+   </FileRef>
+   <FileRef
       location = "self:CoreDataModeller.xcodeproj">
    </FileRef>
 </Workspace>

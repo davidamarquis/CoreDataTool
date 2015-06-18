@@ -167,7 +167,10 @@ class GraphWorldView: UIView {
             if subview is EdgeView {
             
                 let edgeView:EdgeView=subview as! EdgeView;
-                if(edgeView.edgeViewId == edgeViewId) {return edgeView;}
+                if(edgeView.edgeViewId == edgeViewId) {
+                    println("GraphWorldView: getEdgeViewById: got edge with id \(edgeViewId)");
+                    return edgeView;
+                }
             }
         }
         return nil;

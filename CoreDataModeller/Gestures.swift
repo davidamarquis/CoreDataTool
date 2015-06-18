@@ -16,6 +16,7 @@ class gestureCC:CoreController, GestureResponse
     var gestureVV:VertView?;
     var shiftedOrigin:CGPoint?;
     var mustAddVert=false;
+    var edgeViewToCheckRem:EdgeView?;
   
     //computed properties
     private func gestureDidStartOnVert()->Bool {
@@ -30,18 +31,19 @@ class gestureCC:CoreController, GestureResponse
     ////
     //MARK: state ended methods
     func handleStateEnded(recog:UIPanGestureRecognizer) {
-        
+        let loc = recog.locationInView(graphView!.gwv!);
         let id1,id2:Int32;
         // case 1 = gesture started on addVertControl and ended somewhere
         // case 2 = gesture started on vertView and ended hitting the remove button
         // case 3 = gesture started on vertView and ended hitting another vert
         // case 4 = gesture started on vertView and ended hitting nothing
+        // case 5 = gesture started on edgeView and ended hitting remEdgeControl
+        
         // each case follows these steps: check what the gesture, check the state that CoreController is in, if the given gesture
         //does anything in this state then assign any vert or edge ids and get CoreController to respond
         // Style Warning: the bool *guards* are responsible for printing an error message if a variable needed inside the guard is nil
         //this makes the code below more readible
         if mustAddVert {
-            let loc = recog.locationInView(graphView!.gwv!)
             addVert(loc);
         }
         else if vertEndsOnRemControl() {
@@ -57,19 +59,17 @@ class gestureCC:CoreController, GestureResponse
         else if inVertMode && gestureDidStartOnVert() {
             respondToNoHit();
         }
-        else if inEdgeMode {
-            let loc = recog.locationInView(graphView!.gwv!);
-            for e in graphView!.gwv!.subviews {
-                if e is EdgeView {
-                    let edge=e as! EdgeView;
-                    if testSubviews(edge,loc: loc) {
-
-                    }
-                }
+        else if inEdgeMode && edgeViewToCheckRem != nil {
+            if remEdgeControl == nil {println("CoreController gestures: handleStateEnded: trying to remove edge but remEdgeControl is nil");}
+            if CGRectContainsPoint(remEdgeControl!.frame, loc) {
+            
+                if edgeViewToCheckRem!.edgeViewId == nil {println("CoreController gestures: handleStateEnded: trying to remove edge but id is nil")}
+                remEdge(edgeViewToCheckRem!.edgeViewId!);
             }
         }
+
         
-        // remove the gestureVV it exists
+        //TODO: rem this? remove the gestureVV it exists
         gestureVV = nil;
     }
     
@@ -210,6 +210,7 @@ class gestureCC:CoreController, GestureResponse
         gestureVV = nil;
         shiftedOrigin = nil;
         mustAddVert = false;
+        edgeViewToCheckRem = nil;
         let startPos:CGPoint=recog.locationInView(graphView!.gwv!);
         
         if graphView == nil {println("CoreController gestures: handleStateBegan: graphView is nil");}
@@ -244,6 +245,22 @@ class gestureCC:CoreController, GestureResponse
         // at this point mustAddVert is true iff was contained in the frame and false otherwise
         // gestureVV is nil iff the user started the pan on a vert
         // shiftedOrigin is nil
+        
+        if inEdgeMode {
+            let loc = recog.locationInView(graphView!.gwv!);
+            for e in graphView!.gwv!.subviews {
+                if e is EdgeView {
+                    let edge=e as! EdgeView;
+                    if testSubviews(edge,loc: loc) {
+                        if edge.edgeViewId != nil {
+                        
+                            edgeViewToCheckRem=edge;
+                        }
+                        else {println("CoreController: handleStateEnded: edgeViewId is nil");}
+                    }
+                }
+            }
+        }
     }
     
 }

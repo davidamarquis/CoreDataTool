@@ -20,35 +20,28 @@ class EdgeView: UIView {
     var length:CGFloat?;
     var angle:CGFloat?;
     let hitbox=UIView();
-        let hitbox2=UIView();
-            let hitbox3=UIView();
-    let hbHeight=CGFloat(44);
     
     //MARK: init
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder);
         opaque=false;
-        addSubview(hitbox);
     }
     override init(frame:CGRect) {
         super.init(frame:frame);
         opaque=false;
-        addSubview(hitbox);
-        addSubview(hitbox2);
-        addSubview(hitbox3);
     }
     
     //MARK: custom drawing
     override func drawRect(rect:CGRect) {
-        /*
+        
         let cont:CGContextRef = UIGraphicsGetCurrentContext();
         CGContextSaveGState(cont);
         CGContextSetRGBFillColor(cont, 1.0, 1.0, 0.0, 1.0);
         CGContextStrokeRect(cont, rect);
-        */
+        
         let numberOfHitboxes = 5;
         let scaleOfBox:CGFloat = 1/CGFloat(numberOfHitboxes);
-        
+
         let wdth:CGFloat = bounds.size.width;
         let hght:CGFloat = bounds.size.height;
         var p1,p2:CGPoint?;
@@ -93,6 +86,7 @@ class EdgeView: UIView {
                     hitbox.addSubview(subview);
                 }
             }
+
         }
         else {
             println("EdgeView: drawRect: err");
@@ -101,6 +95,7 @@ class EdgeView: UIView {
         bz.addLineToPoint(p2!);
         bz.stroke();
         bz.fill();
+        CGContextRestoreGState(cont);
     }
 
 }

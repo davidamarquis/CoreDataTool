@@ -57,7 +57,9 @@ extension Graph {
     func SetupEdge(edgeOrNil:Edge?, From vertOrNil1:Vert?, To vertOrNil2:Vert?) {
         if edgeOrNil != nil {
             edges=edges.setByAddingObject(edgeOrNil!) ;
-            let edgeId:Int32=Int32(edges.count-1);
+            
+            curEdgeId++;
+            let edgeId:Int32=curEdgeId;
             
             edgeOrNil!.edgeViewId=edgeId;
             // adding an edge sets vert1 and vert2 to be neighbors joined by the edge e
@@ -124,12 +126,29 @@ extension Graph {
 
         return sortArray;
     }
+    
+    //MARK: edge inferface
+    func getEdgeById(edgeId:Int32)->Edge? {
+
+        if edgeId < Int32(0)  {
+            println("Graph cat: getEdgeById: err id argument is too large or small");
+            return nil;
+        }
+        // search for matching id
+        for e in edges {
+            if e is Edge {
+                let edge:Edge=e as! Edge;
+                if edge.edgeViewId == edgeId {
+                    return edge;
+                }
+            }
+        }
+        return nil;
+    }
 
     //MARK: vert inferface
     func getVertById(vertId:Int32)->Vert? {
 
-        // check id
-        let vertCount:Int32 = Int32(self.verts.count);
         if vertId < Int32(0)  {
             println("Graph cat: getVertById: err id argument is too large or small");
             return nil;

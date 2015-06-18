@@ -105,24 +105,47 @@ func AddEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
     }
 }
 
+// prepare for the removal of an edge from the context
 func removeEdge(edgeOrNil:Edge?, vertOrNil:Vert?) {
     if(edgeOrNil != nil && vertOrNil != nil) {
         
         // neighbors is a bidirectional relationship
         //TODO: 9:30pm June 12 neighbors=neighbors.setByAddingObject(vertOrNil!);
-        var manyRelation:AnyObject? = self.valueForKeyPath("neighbors") ;
+        var manyRelation:AnyObject?
+        
+        manyRelation = self.valueForKeyPath("neighbors") ;
         if manyRelation is NSMutableSet {
+        
             (manyRelation as! NSMutableSet).removeObject(vertOrNil!);
+            
+        }
+        
+        //manyRelation = vertOrNil!.valueForKeyPath("neighbors") ;
+        
+        /*
+        if manyRelation is NSMutableSet {
+        
+            (manyRelation as! NSMutableSet).removeObject(vertOrNil!);
+            
+        }
+        */
+        
+        // joinedTo updated by next line
+        //edges=edges.setByRemovingObject(edgeOrNil!);
+        manyRelation = self.valueForKeyPath("edges") ;
+        if manyRelation is NSMutableSet {
+            (manyRelation as! NSMutableSet).removeObject(edgeOrNil!);
         }
         
         // joinedTo updated by next line
-        edges=edges.setByRemovingObject(edgeOrNil!);
+        //vertOrNil!.edges=vertOrNil!.edges.setByRemovingObject(edgeOrNil!);
+        manyRelation = vertOrNil!.valueForKeyPath("edges") ;
+        if manyRelation is NSMutableSet {
+            (manyRelation as! NSMutableSet).removeObject(edgeOrNil!);
+        }
         
-        // joinedTo updated by next line
-        vertOrNil!.edges=vertOrNil!.edges.setByRemovingObject(edgeOrNil!);
-        
-        edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByRemovingObject(vertOrNil!);
-        edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByRemovingObject(self);
+        //edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByRemovingObject(vertOrNil!);
+        //edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByRemovingObject(self);
         
         freshEdges=false;
         vertOrNil!.freshEdges=false;
@@ -130,7 +153,7 @@ func removeEdge(edgeOrNil:Edge?, vertOrNil:Vert?) {
         vertOrNil!.finishedObservedMethod=true;
     }
     else {
-    
+        println("Vert cat: removeEdge: one of the inputs is nil");
     }
 }
 

@@ -91,6 +91,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                     else {println("CoreController: viewDidLoad(): vertId is nil"); }
                 }
                 else if obj is Edge {
+                
                     // get the view id from the vert
                     let edgeId:Int32? = (obj as! Edge).edgeViewId;
                     if edgeId != nil {
@@ -295,7 +296,32 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     }
     
     func remEdge(edgeId: Int32) {
+        // save current context
+        saveContext();
+        // get a vert
+        if graph != nil && context != nil {
         
+            let edge:Edge? = graph!.getEdgeById(edgeId);
+            if edge != nil {
+                let v:Vert?;
+                let w:Vert?;
+                
+                (v,w)=edge!.Connects();
+                if v != nil && w != nil {
+                    // core data update bidirectional relationships so it should be necc to call removeEdge on v
+                    v!.removeEdge(edge, vertOrNil:w);
+                    
+                    
+                }
+                else {
+                    println("CoreController: remEdge: v or w is nil");
+                }
+                context!.deleteObject(edge!);
+            }
+            else {println("CoreController: remEdge: edge to delete could not be found");}
+            
+        }
+        else {println("removeEdgeById: err");}
     }
     
     //MARK: unsorted
@@ -465,11 +491,11 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         if(!v.freshViews) {
             // check if a view exists corresponding to the vert instance. (1) if no view is found then vertView is nil and
             // we init a vertView and paste it to view. (2) otherwise model and view are out of date
-            // VC updates the view by removing the outdated VertView and adding a correct one
+            // VC updates the view by changing the frame of the view
             let vertView:VertView? = graphView!.gwv!.getVertViewById(v.vertViewId);
             if(vertView != nil) {
-                // remove the old view
-                // set the new position
+                // set the new frame
+                // this only requires changing the origin
                 (vertView!.frame.origin.x, vertView!.frame.origin.y) = (CGFloat(v.x), CGFloat(v.y));
                 // add the new view
                 vertView!.setNeedsDisplay();
@@ -517,11 +543,12 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                 println("CoreController: DrawEdges: edge is incomplete")
             }
             else if !v!.freshEdges || !w!.freshEdges {
+                // step 1: setup
                 (X1,Y1,X2,Y2) = (CGFloat(v!.x),CGFloat(v!.y),CGFloat(w!.x),CGFloat(w!.y));
                 (frameWidth,frameHeight) = (fabs(X1!-X2!)+diameter,fabs(Y1!-Y2!)+diameter);
                 (minX,minY) = (min(X1!,X2!),min(Y1!,Y2!));
-                // adjust the frame based on the least coordinate for the xval and yval for the pair of points
-
+                
+                // step 2: adjust the frame based on the least coordinate for the xval and yval for the pair of points
                 edgeFrame = CGRectMake(minX!, minY!, frameWidth!, frameHeight!);
                 // there are four cases to consider. Two are topLeftToBotRight, other two are not
                 if (X1<X2 && Y1<Y2) || (X1>=X2 && Y1>=Y2) {
@@ -531,14 +558,18 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                     edgeDir=false;
                 }
                 
-                // getEdgeView()
+                // step 3: getEdgeView()
                 var edgeView:EdgeView? = graphView!.gwv!.getEdgeViewById(e!.edgeViewId);
                 if(edgeView != nil) {
-                    // remove the old view
-                    edgeView!.removeFromSuperview();
+
                     // fix the frame
                     edgeView!.frame=edgeFrame!;
-                    graphView!.gwv!.setEdge(edgeView!, topLeftToBotRight: edgeDir!);
+                    // fix the path direction
+                    edgeView!.topLeftToBotRight = edgeDir!
+                    // redraw the bez path
+                    edgeView!.setNeedsDisplay();
+                    
+                    //graphView!.gwv!.setEdge(edgeView!, topLeftToBotRight: edgeDir!);
                 }
                 else {
                     // init the new view in setEdge() input
