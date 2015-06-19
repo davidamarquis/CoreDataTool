@@ -237,6 +237,7 @@ class gestureCC:CoreController, GestureResponse
         if graphView!.gwv == nil {println("CoreController gestures: handleStateBegan: gwv is nil");}
         
         if addVertControl != nil {
+        
             // if we started on the addVertControl then we set the flag for adding vert
             if CGRectContainsPoint(addVertControl!.frame, relStart) {
             

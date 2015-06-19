@@ -9,7 +9,6 @@
 import UIKit
 
 protocol GestureResponse {
-    // 4 methods for changing the model
     func handleStateBegan(recog:UIPanGestureRecognizer);
     func handleStateChanged(recog:UIPanGestureRecognizer);
     func handleStateEnded(recog:UIPanGestureRecognizer);
@@ -17,39 +16,29 @@ protocol GestureResponse {
     
 class GraphWorldView: UIView {
 
+    // MARK: vars and inits
     var gestureResponseDelegate:GestureResponse?;
-    
-    // MARK: vars
     var circSize,edgeSize,strokeSize: CGFloat?;
-    // not used
-    var x1,x2,y1,y2: Double?;
-    var radius: CGFloat {return (circSize!+edgeSize!)/2; }
-    var diameter: CGFloat {return (circSize!+edgeSize!); }
-    var addVert:UILabel?;
-    var remVert:UILabel?;
+
     var gestureVV:VertView?;
     var shiftedOrigin:CGPoint?;
-    
+    // panCount is for debug
     var panCount=0;
+    var radius: CGFloat {return (circSize!+edgeSize!)/2; }
+    var diameter: CGFloat {return (circSize!+edgeSize!); }
     
     override init(frame: CGRect) {
     
-        // step1: set non-inherited properties
+        //(1) set non-inherited properties
         circSize=50;
         edgeSize=10;
         strokeSize=5;
         
-        // step 2: delegate to superclass
+        //(2) delegate to superclass
         super.init(frame: frame);
         
-        // make the graph recognize taps
-        let recog = UITapGestureRecognizer(target:self, action:"tap:");
-        // step 3: set inherited properties
-        addGestureRecognizer(recog);
-        
-        // add a gesture recognizer to the view
+        //(3) add a gesture recognizer to the view
         addGestureRecognizer(UIPanGestureRecognizer(target:self, action:"pan:" ));
-
     }
 
     required init(coder aDecoder: NSCoder) {
@@ -65,30 +54,21 @@ class GraphWorldView: UIView {
     
     // MARK: gesture recognizers
     func pan(recognizer:UIPanGestureRecognizer) {
+    
         panCount++;
-        let translation:CGPoint=recognizer.translationInView(self);
-        let loc:CGPoint=recognizer.locationInView(self);
-        
         if gestureResponseDelegate == nil {println("GraphView: pan: delegate is nil");}
         
-        if(recognizer.state==UIGestureRecognizerState.Began) {
-            gestureResponseDelegate!.handleStateBegan(recognizer);
-        }
-        else if(recognizer.state == UIGestureRecognizerState.Changed ) {
-            gestureResponseDelegate!.handleStateChanged(recognizer);
-        }
+        if(recognizer.state==UIGestureRecognizerState.Began) {gestureResponseDelegate!.handleStateBegan(recognizer);}
+        else if(recognizer.state == UIGestureRecognizerState.Changed ) {gestureResponseDelegate!.handleStateChanged(recognizer);}
         else if(recognizer.state==UIGestureRecognizerState.Ended) {
             gestureResponseDelegate!.handleStateEnded(recognizer);
             
             //reset panCount;
             panCount=0;
         }
-        else {
-            println("VertView: pan(): err state is not valid");
-        }
-        
+        else {println("VertView: pan(): err state is not valid");}
     }
-    
+    /*
     func tap(recognizer:UITapGestureRecognizer) {
 
         let cgp:CGPoint=recognizer.locationInView(self);
@@ -121,7 +101,7 @@ class GraphWorldView: UIView {
             }
         }
     }
-
+    */
     //MARK: Vert Interface
     func addVertAtPoint(cgp:CGPoint)->VertView {
         let diameter:CGFloat=circSize!+edgeSize!;
@@ -130,8 +110,7 @@ class GraphWorldView: UIView {
         addSubview(vert);
         return vert;
     }
-    // return the VertView corresponding to a particular id
-    // or nil if such a VertView does not exist
+    //getVertViewById() returns the VertView corresponding to a particular id or nil if such a VertView does not exist
     func getVertViewById(vertViewId:Int32) -> VertView? {
 
         for subview in subviews {
@@ -147,7 +126,7 @@ class GraphWorldView: UIView {
     }
 
     //MARK: Edge Interface
-    // setEdge sets the properties of an EdgeView. Returns a reference to this in case this view had init() in setEdge input
+    //setEdge() sets the properties of an EdgeView and returns a ref to it (ref is needed if for example the edgeView init() was in setEdge input)
     func setEdge(ev:EdgeView, topLeftToBotRight:Bool)->EdgeView {
         ev.topLeftToBotRight=topLeftToBotRight;
         // fill in the radius
@@ -155,9 +134,7 @@ class GraphWorldView: UIView {
 
         addSubview(ev);
         sendSubviewToBack(ev);
-        
-        //let recog:UIPanGestureRecognizer = UIPanGestureRecognizer(target: ev, action: "pan:");
-        //ev.addGestureRecognizer(recog);
+
         return ev;
     }
 

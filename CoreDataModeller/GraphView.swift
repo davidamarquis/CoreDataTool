@@ -20,12 +20,14 @@ class GraphView: UIScrollView {
             if gridOn {
                 gridBack!.removeFromSuperview();
                 gridBack!.setNeedsDisplay();
+                setNeedsDisplay();
                 gridOn = !gridOn;
             }
             else {
                 addSubview(gridBack!);
                 gridBack!.setNeedsDisplay();
                 sendSubviewToBack(gridBack!);
+                setNeedsDisplay();
                 gridOn = !gridOn;
             }
         }

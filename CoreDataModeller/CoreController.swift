@@ -15,6 +15,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     @IBAction func turnOffGrid(sender: AnyObject) {
         if graphView != nil {
             graphView!.switchGraphState();
+            view.sendSubviewToBack(graphView!.gridBack!);
+            view.setNeedsDisplay();
         }
     }
     
@@ -22,13 +24,13 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     var hght:CGFloat=CGFloat();
     var wdth:CGFloat=CGFloat();
     var vertViewCount:Int=Int();
-    var edgeButton:UIButton?;
-    var moveButton:UIButton?;
-    var vertButton:UIButton?;
+    var edgeButton:imgTextButton?;
+    var moveButton:imgTextButton?;
+    var vertButton:imgTextButton?;
     
-    var addVertControl:UILabel?;
-    var remVertControl:UILabel?;
-    var remEdgeControl:UILabel?;
+    var addVertControl:UIView?;
+    var remVertControl:UIView?;
+    var remEdgeControl:UIView?;
     
     var inEdgeMode:Bool = false;
     var inVertMode:Bool = false;
@@ -64,6 +66,17 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         setupVertButtons();
         
         testGraph();
+        
+        /*
+        if addVertControl != nil && remVertControl != nil && remEdgeControl != nil {
+            view.sendSubviewToBack(addVertControl!);
+            view.sendSubviewToBack(remVertControl!);
+            view.sendSubviewToBack(remEdgeControl!);
+        }
+        view.sendSubviewToBack(graphView!.gridBack!);
+
+        view.setNeedsDisplay();
+        */
         
         let noteCenter:NSNotificationCenter = NSNotificationCenter.defaultCenter();
         let mainQueue:NSOperationQueue=NSOperationQueue.mainQueue();
@@ -111,70 +124,87 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
 
         // starting mode is one of moveMode(), vertMode(), edgeMode()
         moveMode();
+        // want the adder/remover controls to be almost in the back, followed by graphBack
     }
     
     //Setup: buttons
     func setupVertButtons() {
+        //
         // init and set frame
-        addVertControl=setupClearButton("+");
-        addVertControl!.frame=CGRectMake(wdth*0.666,hght*(1-2*vscale),wdth*0.334,hght*vscale);
-        //addVert!.addTarget(self, action: "killVert", forControlEvents:.TouchUpInside);
-
-        // init and set frame
-        remVertControl=setupClearButton("X");
-        remVertControl!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
         
-        // init and set frame
-        remEdgeControl=setupClearButton("X");
-        remEdgeControl!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
+        addVertControl=UIView();
+        if addVertControl == nil {println("CoreController: setupVertButtons: could not create addVertController");}
+        
+        addVertControl!.frame=CGRectMake(wdth*0.666,hght*(1-2*vscale),wdth*0.334,hght*vscale);
+
+        let circ:UIImage? = UIImage(named:"addCircle");
+        if circ != nil {
+            let circView=UIImageView(image: circ! );
+            circView.center=CGPointMake(addVertControl!.frame.width/2, addVertControl!.frame.height/2);
+            addVertControl!.addSubview(circView);
+        }
+        else {println("CoreController: setupVertButtons: could not get button image for adding circle");}
+
+        //
+        // remove vert
+        remVertControl=UIView();
+        if remVertControl == nil {println("CoreController: setupVertButtons: could not create remVertController");}
+        
+        remVertControl!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
+
+        let circ2:UIImage? = UIImage(named:"remCircle");
+        if circ2 != nil {
+            let circView=UIImageView(image: circ2! );
+            circView.center=CGPointMake(remVertControl!.frame.width/2, remVertControl!.frame.height/2);
+            remVertControl!.addSubview(circView);
+        }
+        else {println("CoreController: setupVertButtons: could not get button image for removing vert");}
+        
+        remEdgeControl=UIView();
         
         //
-        if graphView != nil {
-            if graphView!.gwv != nil {
-                graphView!.gwv!.addVert = addVertControl;
-                graphView!.gwv!.remVert = remVertControl;
-            }
+        // remove edge
+        remEdgeControl=UIView();
+        if remEdgeControl == nil {println("CoreController: setupVertButtons: could not create remVertController");}
+        
+        remEdgeControl!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
+
+        let circ3:UIImage? = UIImage(named:"remCircle");
+        if circ3 != nil {
+            let circView=UIImageView(image: circ3! );
+            circView.center=CGPointMake(remEdgeControl!.frame.width/2, remEdgeControl!.frame.height/2);
+            remEdgeControl!.addSubview(circView);
         }
-        else {println("CoreController: setupVertButtons: one of graphView or gwv is nil");}
-        //remVert!.addTarget(self, action: "makeVert", forControlEvents:.TouchUpInside);
+        else {println("CoreController: setupVertButtons: could not get button image for removing edge");}
     }
+    
+
+    
     // sets up 3 buttons for the view controllers UI states
     func barButtons() {
         
-        edgeButton = barButton("R");
+        edgeButton = imgTextButton.buttonWithType(.System) as? imgTextButton;
+        view.addSubview(edgeButton!);
         edgeButton!.frame=CGRectMake(0,hght*(1-vscale),wdth*0.333,hght*vscale);
         edgeButton!.addTarget(self, action: "edgeMode", forControlEvents:.TouchUpInside);
-
-        moveButton = barButton("M");
+        edgeButton!.setImage( UIImage(named:"link"), forState:UIControlState.Normal );
+        edgeButton!.setTitle("relationship", forState: UIControlState.Normal);
+        
+        //moveButton = barButton("M");
+        moveButton = imgTextButton.buttonWithType(.System) as? imgTextButton;
+        view.addSubview(moveButton!);
         moveButton!.frame=CGRectMake(wdth*0.333,hght*(1-vscale),wdth*0.333,hght*vscale);
         moveButton!.addTarget(self, action: "moveMode", forControlEvents:.TouchUpInside);
+        moveButton!.setImage( UIImage(named:"scroll"), forState:UIControlState.Normal );
+        moveButton!.setTitle("move", forState: UIControlState.Normal);
 
-        vertButton = barButton("A");
+        //vertButton
+        vertButton = imgTextButton.buttonWithType(.System) as? imgTextButton;
+        view.addSubview(vertButton!);
         vertButton!.frame=CGRectMake(wdth*0.666,hght*(1-vscale),wdth*0.334,hght*vscale);
         vertButton!.addTarget(self, action: "vertMode", forControlEvents:.TouchUpInside);
-    }
-    // sets a label with transparent background. Does not add to view
-    func setupClearButton(title:String)->UILabel {
-        //init
-        let button=UILabel();
-        (button.text,button.textColor, button.backgroundColor,button.font, button.textAlignment) = (title, unselectedTextColor, UIColor.clearColor(), UIFont.systemFontOfSize(60), NSTextAlignment.Center);
-        return button;
-    }
-    // button with black background. adds to view
-    func barButton(title:String) -> UIButton {
-        // bcol is color of back of button, tcol of the text on the button
-        let bcol:UIColor=UIColor.blackColor();
-        let buttonFont:UIFont=UIFont.systemFontOfSize(60);
-        
-        let button:UIButton=UIButton.buttonWithType(.System) as! UIButton;
-        button.backgroundColor=bcol;
-        button.setTitle(title, forState:UIControlState.Normal);
-        button.setTitleColor(unselectedTextColor, forState:.Normal);
-        if button.titleLabel != nil {button.titleLabel!.font=buttonFont;}
-        else {println("CoreController: barButton: titleLabel is nil");}
-        
-        view.addSubview(button);
-        return button;
+        vertButton!.setImage( UIImage(named:"share"), forState:UIControlState.Normal );
+        vertButton!.setTitle("entity", forState: UIControlState.Normal);
     }
     
     //Setup: lazy init
@@ -375,6 +405,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             addVertControl!.removeFromSuperview();
             remVertControl!.removeFromSuperview();
             view.addSubview(remEdgeControl!);
+            view.sendSubviewToBack(remEdgeControl!);
+            view.sendSubviewToBack(graphView!.gridBack!);
         }
         
         // enable gesture recognizers
@@ -423,7 +455,11 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         else {
             view.addSubview(addVertControl!);
             view.addSubview(remVertControl!);
-            view.addSubview(remEdgeControl!);
+            //TODO:
+            remEdgeControl!.removeFromSuperview();
+            view.sendSubviewToBack(addVertControl!);
+            view.sendSubviewToBack(remVertControl!);
+            view.sendSubviewToBack(graphView!.gridBack!);
         }
 
         // enable gesture recognizers
