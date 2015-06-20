@@ -82,8 +82,11 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 
         let cellIdentifier:String="AttributeCell";
-        let cell:UITableViewCell? = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as? UITableViewCell
-        if cell == nil { println("AttributeTable: tableView cellForRowAtIndexPath: TODO create cell") ;}
+        var cell:CustomCell? = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as? CustomCell
+        if cell == nil {
+            cell = CustomCell(style:UITableViewCellStyle.Default, reuseIdentifier: cellIdentifier);
+            println("AttributeTable: tableView cellForRowAtIndexPath: TODO create cell") ;
+        }
         
         // config cell by extracting element from attrStrings at given row
         if indexPath.row < attrsOrNil!.count {

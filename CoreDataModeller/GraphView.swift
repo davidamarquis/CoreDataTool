@@ -13,6 +13,10 @@ class GraphView: UIScrollView {
     var gridOn:Bool=true;
     var gwv:GraphWorldView?;
     var gridBack:UIView?;
+    
+    /*var addVertButton:UIView?;
+    var remVertButton:UIView?;
+    var addEdgeButton:UIView?;*/
 
     func switchGraphState() {
     
@@ -20,14 +24,14 @@ class GraphView: UIScrollView {
             if gridOn {
                 gridBack!.removeFromSuperview();
                 gridBack!.setNeedsDisplay();
-                setNeedsDisplay();
+                //setNeedsDisplay();
                 gridOn = !gridOn;
             }
             else {
                 addSubview(gridBack!);
                 gridBack!.setNeedsDisplay();
                 sendSubviewToBack(gridBack!);
-                setNeedsDisplay();
+                //setNeedsDisplay();
                 gridOn = !gridOn;
             }
         }

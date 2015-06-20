@@ -256,17 +256,16 @@ class gestureCC:CoreController, GestureResponse
             // get a view
             if(graphView!.gwv!.subviews[i] is VertView) {
                 // check if view is hit
-                if (graphView!.gwv!.subviews[i] as! VertView).contains(startPos) {
+                if (graphView!.gwv!.subviews[i] as! VertView).frame.contains(startPos) {
                     // store a reference to the view
                     gestureVV = graphView!.gwv!.subviews[i] as? VertView;
                     break;
                 }
             }
         }
-        // at this point mustAddVert is true iff was contained in the frame and false otherwise
-        // gestureVV is nil iff the user started the pan on a vert
+        // at this point mustAddVert is true if and only if relLoc was contained in the frame
+        // gestureVV is nil if and only if the user started the pan on a vert
         // shiftedOrigin is nil
-        
         if inEdgeMode {
             let loc = recog.locationInView(graphView!.gwv!);
             for e in graphView!.gwv!.subviews {

@@ -39,11 +39,7 @@ class VertView: UIView {
         y=frame.origin.y ;
         // step 2:
         super.init(frame: frame);
-        
-        // step 3:
-        opaque=false;
-        //addGestureRecognizer(UIPanGestureRecognizer(target:self, action:"pan:" ));
-        setNeedsDisplay();
+        postInit();
     }
 
     required init(coder aDecoder: NSCoder) {
@@ -53,10 +49,12 @@ class VertView: UIView {
         y=0 ;
         // step 2:
         super.init(coder: aDecoder);
-        // step 3:
+        postInit();
+    }
+    
+    func postInit() {
         opaque=false;
-        //addGestureRecognizer(UIPanGestureRecognizer(target:self, action:"pan:" ));
-        setNeedsDisplay();
+        addGestureRecognizer(UITapGestureRecognizer(target:self, action:"tap:" ));
     }
 
     // MARK: methods
@@ -93,63 +91,16 @@ class VertView: UIView {
         bz.fill();
     }
     
-    func contains(cgp:CGPoint)->Bool {
-
-        let xorig:CGFloat=frame.origin.x;
-        let yorig:CGFloat=frame.origin.y;
-        let newCGP:CGPoint = CGPointMake(cgp.x-xorig,cgp.y-yorig);
-        let pointWithin:Bool = bz.containsPoint(newCGP);
-        if pointWithin {
-            return true;
-        }
-        return false;
-    }
-
     // hit changes the selected property to its negation if cgp is within the BZ
-    func updateIfHit(cgp:CGPoint)->Bool {
-        //TODO: June 18th disable color change
-        /*
-        let xorig:CGFloat=frame.origin.x;
-        let yorig:CGFloat=frame.origin.y;
-        let newCGP:CGPoint = CGPointMake(cgp.x-xorig,cgp.y-yorig);
-        let pointWithin:Bool = bz.containsPoint(newCGP);
-        
-        // if hit then perform segue
-        if pointWithin {
-        
-            if delegate != nil {
-                delegate!.performSegueWithIdentifier("VertInfo", sender: self);
-            }
-            else {
-            
-            }
-            if selected {
-                selected = !selected;
-                setNeedsDisplay();
-                // indicate that a selected point has been found
-                return true;
-            }
-            else {
-            
-                selected = !selected;
-                setNeedsDisplay();
-                // indicate that a selected point has been found
-                return true;
-            }
+    func tap(recognizer:UITapGestureRecognizer) {
+        if delegate != nil {
+            delegate!.performSegueWithIdentifier("VertInfo", sender: self);
         }
         else {
-            if selected {
-                return false;
-            }
-            // if there is not a hit return
-            else {
-                return false;
-            }
+            println("VertView: tap: vv delegate is nil");
         }
-        */
-        return false;
     }
-
+ 
     // switch selected changes the selected property to its negation
     func switchSelected() {
         selected = !selected;

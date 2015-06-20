@@ -21,6 +21,8 @@
 		48282EBA1B17AED100BDA782 /* VertExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48282EB91B17AED100BDA782 /* VertExtension.swift */; };
 		483DAFB11B1E8D40007A532E /* GraphExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58C1B1E4046002F6A01 /* GraphExtension.swift */; };
 		483DAFB21B1E8D42007A532E /* EdgeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58E1B1E4391002F6A01 /* EdgeExtension.swift */; };
+		484983361B35D31C00E5D7FE /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484983351B35D31C00E5D7FE /* CustomCell.swift */; };
+		484983371B35DAEC00E5D7FE /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484983351B35D31C00E5D7FE /* CustomCell.swift */; };
 		484C8FFE1B306AD90051CDC1 /* Gestures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484C8FFD1B306AD90051CDC1 /* Gestures.swift */; };
 		484C8FFF1B3078F20051CDC1 /* Gestures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484C8FFD1B306AD90051CDC1 /* Gestures.swift */; };
 		487FDD011B1A6BC60087C0AF /* NSSet + Edit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487FDD001B1A6BC60087C0AF /* NSSet + Edit.swift */; };
@@ -79,6 +81,8 @@
 		4812E3CE1B1D04BC0061EAB1 /* LandingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
 		48282E911B179DF400BDA782 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		48282EB91B17AED100BDA782 /* VertExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertExtension.swift; sourceTree = "<group>"; };
+		48472E7D1B34B1FC00CF9030 /* CoreDataModeller-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoreDataModeller-Bridging-Header.h"; sourceTree = "<group>"; };
+		484983351B35D31C00E5D7FE /* CustomCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
 		484C8FFD1B306AD90051CDC1 /* Gestures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Gestures.swift; sourceTree = "<group>"; };
 		487FDD001B1A6BC60087C0AF /* NSSet + Edit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSSet + Edit.swift"; sourceTree = "<group>"; };
 		4882F58C1B1E4046002F6A01 /* GraphExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphExtension.swift; sourceTree = "<group>"; };
@@ -133,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				487FDD001B1A6BC60087C0AF /* NSSet + Edit.swift */,
+				48472E7D1B34B1FC00CF9030 /* CoreDataModeller-Bridging-Header.h */,
 				4810E3741B1744DE00F72097 /* Model */,
 				4810E3751B17450D00F72097 /* View */,
 				489039251B1B8E13005E0992 /* Controller */,
@@ -219,6 +224,7 @@
 				489039231B1B8E0C005E0992 /* CoreController.swift */,
 				48C1AFAB1B3373AC00F99336 /* imgTextButton.swift */,
 				48BEF9191B2A038000DC51A4 /* AttributeTable.swift */,
+				484983351B35D31C00E5D7FE /* CustomCell.swift */,
 				4812E3CE1B1D04BC0061EAB1 /* LandingVC.swift */,
 				484C8FFD1B306AD90051CDC1 /* Gestures.swift */,
 			);
@@ -342,6 +348,7 @@
 				487FDD011B1A6BC60087C0AF /* NSSet + Edit.swift in Sources */,
 				48C1AF731B3265CD00F99336 /* Entity.swift in Sources */,
 				48C1AF751B3265CE00F99336 /* AttributeString.swift in Sources */,
+				484983361B35D31C00E5D7FE /* CustomCell.swift in Sources */,
 				48282E921B179DF400BDA782 /* Model.xcdatamodeld in Sources */,
 				4882F58D1B1E4046002F6A01 /* GraphExtension.swift in Sources */,
 				489039241B1B8E0C005E0992 /* CoreController.swift in Sources */,
@@ -371,6 +378,7 @@
 				48C1AF7B1B32695F00F99336 /* Entity.swift in Sources */,
 				483DAFB11B1E8D40007A532E /* GraphExtension.swift in Sources */,
 				48C1AF7C1B32696300F99336 /* Edge.swift in Sources */,
+				484983371B35DAEC00E5D7FE /* CustomCell.swift in Sources */,
 				4810E36B1B1744C400F72097 /* CoreDataModellerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

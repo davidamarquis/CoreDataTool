@@ -15,8 +15,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     @IBAction func turnOffGrid(sender: AnyObject) {
         if graphView != nil {
             graphView!.switchGraphState();
-            view.sendSubviewToBack(graphView!.gridBack!);
-            view.setNeedsDisplay();
         }
     }
     
@@ -35,7 +33,12 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     var inEdgeMode:Bool = false;
     var inVertMode:Bool = false;
     var inMoveMode:Bool = false;
-
+    
+    var graphViewContentOffsetDeltaX:CGFloat = 0;
+    var graphViewContentOffsetDeltaY:CGFloat = 0;
+    var graphViewPrevContentOffsetX:CGFloat = 0;
+    var graphViewPrevContentOffsetY:CGFloat = 0;
+    
     var unselectedTextColor = UIColor.grayColor();
     var selectedTextColor = UIColor.whiteColor();
     
@@ -65,19 +68,10 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         barButtons();
         setupVertButtons();
         
+        // set a test model
         testGraph();
         
-        /*
-        if addVertControl != nil && remVertControl != nil && remEdgeControl != nil {
-            view.sendSubviewToBack(addVertControl!);
-            view.sendSubviewToBack(remVertControl!);
-            view.sendSubviewToBack(remEdgeControl!);
-        }
-        view.sendSubviewToBack(graphView!.gridBack!);
-
-        view.setNeedsDisplay();
-        */
-        
+        // set observer for object deletion
         let noteCenter:NSNotificationCenter = NSNotificationCenter.defaultCenter();
         let mainQueue:NSOperationQueue=NSOperationQueue.mainQueue();
         noteCenter.addObserverForName( NSManagedObjectContextObjectsDidChangeNotification, object: nil, queue: mainQueue, usingBlock:
@@ -124,58 +118,40 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
 
         // starting mode is one of moveMode(), vertMode(), edgeMode()
         moveMode();
-        // want the adder/remover controls to be almost in the back, followed by graphBack
     }
     
-    //Setup: buttons
+    func addCenteredImageToView(view:UIView?, image:UIImage?) {
+        if image != nil && view != nil {
+            let circView=UIImageView(image: image! );
+            circView.center=CGPointMake(view!.frame.width/2, view!.frame.height/2);
+            view!.addSubview(circView);
+        }
+        else {println("CoreController: addCenteredImageToView: one of the inputs is nil");}
+    }
+    
+    //Setup: 
+    //setupVertButtons: buttons for adding vert, removing vert, and removing edge
     func setupVertButtons() {
-        //
-        // init and set frame
         
+        // add vert "button"
         addVertControl=UIView();
         if addVertControl == nil {println("CoreController: setupVertButtons: could not create addVertController");}
-        
         addVertControl!.frame=CGRectMake(wdth*0.666,hght*(1-2*vscale),wdth*0.334,hght*vscale);
-
-        let circ:UIImage? = UIImage(named:"addCircle");
-        if circ != nil {
-            let circView=UIImageView(image: circ! );
-            circView.center=CGPointMake(addVertControl!.frame.width/2, addVertControl!.frame.height/2);
-            addVertControl!.addSubview(circView);
-        }
-        else {println("CoreController: setupVertButtons: could not get button image for adding circle");}
-
-        //
-        // remove vert
+        addCenteredImageToView(addVertControl, image:UIImage(named:"addCircle"));
+        
+        // rem vert "button"
         remVertControl=UIView();
-        if remVertControl == nil {println("CoreController: setupVertButtons: could not create remVertController");}
-        
+        if remVertControl == nil {println("CoreController: setupVertButtons: could not create addVertController");}
         remVertControl!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
-
-        let circ2:UIImage? = UIImage(named:"remCircle");
-        if circ2 != nil {
-            let circView=UIImageView(image: circ2! );
-            circView.center=CGPointMake(remVertControl!.frame.width/2, remVertControl!.frame.height/2);
-            remVertControl!.addSubview(circView);
-        }
-        else {println("CoreController: setupVertButtons: could not get button image for removing vert");}
+        addCenteredImageToView(remVertControl, image:UIImage(named:"remCircle"));
         
+        // rem edge "button"
         remEdgeControl=UIView();
-        
-        //
-        // remove edge
-        remEdgeControl=UIView();
-        if remEdgeControl == nil {println("CoreController: setupVertButtons: could not create remVertController");}
-        
+        if remEdgeControl == nil {println("CoreController: setupVertButtons: could not create addVertController");}
         remEdgeControl!.frame=CGRectMake(0,hght*(1-2*vscale),wdth*0.333,hght*vscale);
+        addCenteredImageToView(remEdgeControl, image:UIImage(named:"remCircle"));
+        
 
-        let circ3:UIImage? = UIImage(named:"remCircle");
-        if circ3 != nil {
-            let circView=UIImageView(image: circ3! );
-            circView.center=CGPointMake(remEdgeControl!.frame.width/2, remEdgeControl!.frame.height/2);
-            remEdgeControl!.addSubview(circView);
-        }
-        else {println("CoreController: setupVertButtons: could not get button image for removing edge");}
     }
     
 
@@ -393,6 +369,19 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         graphView!.panGestureRecognizer.enabled=true;
     }
     
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+    
+    
+        (graphViewContentOffsetDeltaX,graphViewContentOffsetDeltaY) = (scrollView.contentOffset.x - graphViewPrevContentOffsetX, scrollView.contentOffset.y - graphViewPrevContentOffsetY);
+        // reset the stored offset values
+        (graphViewPrevContentOffsetX, graphViewPrevContentOffsetY) = (scrollView.contentOffset.x, scrollView.contentOffset.y);
+        
+        // adjust x and y positions by delta
+        addVertControl!.center = CGPointMake(addVertControl!.center.x + graphViewContentOffsetDeltaX, addVertControl!.center.y + graphViewContentOffsetDeltaY);
+        remVertControl!.center = CGPointMake(remVertControl!.center.x + graphViewContentOffsetDeltaX, remVertControl!.center.y + graphViewContentOffsetDeltaY);
+        remEdgeControl!.center = CGPointMake(remEdgeControl!.center.x + graphViewContentOffsetDeltaX, remEdgeControl!.center.y + graphViewContentOffsetDeltaY);
+    }
+    
     // edgeMode() holds logic for switching from vertMode() or moveMode()
     func edgeMode() {
         // method cannot be private, called by action
@@ -404,9 +393,9 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         if addVertControl != nil && remVertControl != nil {
             addVertControl!.removeFromSuperview();
             remVertControl!.removeFromSuperview();
-            view.addSubview(remEdgeControl!);
-            view.sendSubviewToBack(remEdgeControl!);
-            view.sendSubviewToBack(graphView!.gridBack!);
+            //TODO: 10am june20
+            graphView!.addSubview(remEdgeControl!);
+            //view.sendSubviewToBack(remEdgeControl!);
         }
         
         // enable gesture recognizers
@@ -453,13 +442,11 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         
         if addVertControl == nil || remVertControl == nil {println("CoreController: vertMode: addVert or remVert buttons are nil");}
         else {
-            view.addSubview(addVertControl!);
-            view.addSubview(remVertControl!);
+        
+            graphView!.addSubview(addVertControl!);
+            graphView!.addSubview(remVertControl!);
             //TODO:
             remEdgeControl!.removeFromSuperview();
-            view.sendSubviewToBack(addVertControl!);
-            view.sendSubviewToBack(remVertControl!);
-            view.sendSubviewToBack(graphView!.gridBack!);
         }
 
         // enable gesture recognizers
@@ -469,42 +456,35 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         inMoveMode=false;
         inEdgeMode=false;
     }
-    
+
+    // enableOrDisableGestureRecognizersForView() turns all gesture recognizers on gwv except for tap recognizer on the view on or off
     func enableOrDisableGestureRecognizers(isEnabled: Bool) {
-        // remove gesture recognizers
-        if graphView!.gwv!.gestureRecognizers == nil {
-            println("gestureRecognizers is nil");
-        }
-        else {
-            for recog in graphView!.gwv!.gestureRecognizers! {
-            
-                // tap gestures are maintained in all modes so don't modify them here
-                if !(recog is UITapGestureRecognizer) {
-                    let recognizer = recog as! UIGestureRecognizer;
-                    recognizer.enabled = isEnabled;
-                }
-            }
-        }
-        // remove gestures recognizers on subviews
-        for sub in graphView!.gwv!.subviews {
+        if graphView == nil { println("CoreController: enableOrDisableGestureRecognizers: graphView is nil");}
+        if graphView!.gwv == nil { println("CoreController: enableOrDisableGestureRecognizers: graphView.gwv is nil");}
         
-            let subview=sub as! UIView;
-            if subview.gestureRecognizers == nil {
-                //println("CoreController: moveMode: gestureRecognizers are nil");
-            }
-            else {
-                for recog in subview.gestureRecognizers! {
-                    let recognizer = recog as! UIGestureRecognizer;
-                    recognizer.enabled = isEnabled;
-                }
+        // enable or disable on current view
+        enableOrDisableGestureRecognizersForView(graphView!.gwv!, isEnabled:isEnabled);
+
+        // enable or disable on subviews
+        for sub in graphView!.gwv!.subviews {
+            enableOrDisableGestureRecognizersForView((sub as! UIView), isEnabled:isEnabled);
+        }
+    }
+    
+    // enableOrDisableGestureRecognizersForView() turns all gesture recognizers on the view except for tap recognizer on the view on or off
+    func enableOrDisableGestureRecognizersForView(view:UIView, isEnabled:Bool) {
+        if view.gestureRecognizers != nil {
+            for recog in view.gestureRecognizers! {
+                if !(recog is UITapGestureRecognizer) { (recog as! UIGestureRecognizer).enabled = isEnabled;}
             }
         }
     }
     
+    // entry point from other view controllers
     func onResumeGraph() {
         // TO DO
     }
-
+    // entry point from other view controllers
     func onNewGraph() {
         testGraph();
     }
