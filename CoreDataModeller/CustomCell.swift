@@ -11,6 +11,10 @@ import Foundation
 
 class CustomCell: UITableViewCell {
 
+    var descriptionLabel:UILabel?;
+    // pickerView's delegate is AttributeTable
+    var picker:UIPickerView?;
+
     override init(style:UITableViewCellStyle, reuseIdentifier:String?) {
         super.init(style: style, reuseIdentifier:reuseIdentifier);
         postInitSetup();
@@ -18,11 +22,16 @@ class CustomCell: UITableViewCell {
     
     func postInitSetup() {
         // configure control(s)
-        let descriptionLabel = UILabel(frame: CGRectMake(5, 10, 300, 30));
-        descriptionLabel.textColor = UIColor.blackColor();
-        descriptionLabel.font = UIFont(name:"Arial", size:12.0);
+        descriptionLabel = UILabel(frame: CGRectMake(0, 0, 60, 25));
+        descriptionLabel!.textColor = UIColor.blackColor();
+        descriptionLabel!.font = UIFont(name:"Arial", size:12.0);
 
-        addSubview(descriptionLabel);
+        contentView.addSubview(descriptionLabel!);
+        
+        picker=UIPickerView();
+        if picker == nil {println("CustomCell: postInitSetup: picker is nil");}
+        picker!.frame = CGRectMake(160,0,140,self.frame.height);
+        contentView.addSubview(picker!);
     }
     
     required init(coder decoder: NSCoder) {

@@ -8,8 +8,10 @@
 
 import UIKit
 
-class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
-  
+class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
+    
+    var pickerTest=["Undefined","Integer 16","Integer 32","Integer 64","Decimal","Double","Float","String","Boolean","Date","Binary Data","Transformable"];
+    
     // vert will be assigned before we segue to this view
     //TODO: release this vert when view disappears
     var vert:Vert?;
@@ -23,12 +25,24 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
     //MARK: view lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        attrView!.frame = CGRectMake(10,30,320,400);
+        
+        let titleHeight:CGFloat=48;
+        let titleField = UITextField(frame: CGRectMake( CGFloat(0), CGFloat(20+44), view.frame.width, titleHeight ));
+        view.addSubview(titleField);
+        titleField.backgroundColor=UIColor.blueColor();
+        setTextField(titleField, placeholder:"Add title");
+        
+        attrView!.frame = CGRectMake(CGFloat(0),CGFloat(20+44)+titleHeight,view.frame.width,view.frame.height-CGFloat(titleHeight));
         attrView!.dataSource = self;
         attrView!.delegate = self;
-        attrView!.registerClass(UITableViewCell.self, forCellReuseIdentifier:"AttributeCell");
+        
+        // register class will allow new cells to be initialized properly at launch
+        // an incorrect class name will cause cells to not be shown at launch
+        attrView!.registerClass(CustomCell.self, forCellReuseIdentifier:"AttributeCell");
         attrView!.reloadData();
         view.addSubview(attrView!);
+        
+        
     }
     override func viewWillAppear(animated: Bool) {
         getStringsFromVert();
@@ -47,21 +61,42 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
         attrView!.reloadData();
     }
     
+    //MARK: pickerView interface
+    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+        return 1;
+    }
+    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return pickerTest.count
+    }
+    
+    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
+        return pickerTest[row];
+    }
+    func pickerView(pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return 20;
+    }
+    
     //MARK: UITextFieldDelegate methods
     func textFieldShouldReturn(textField: UITextField)->Bool {
         textField.resignFirstResponder();
         
-        if vert == nil {println("AttributeTable: testFieldShouldReturn: vert is nil");};
-        if navigationController == nil {println("AttributeTable: testFieldShouldReturn: nav controller is nil");}
-        for vc in navigationController!.viewControllers {
-            if vc is CoreController {
-                (vc as! CoreController).addAttributeById(vert!.vertViewId, withString: textField.text);
+        if textField is attributeTextField {
+            if vert == nil {println("AttributeTable: testFieldShouldReturn: vert is nil");};
+            if navigationController == nil {println("AttributeTable: testFieldShouldReturn: nav controller is nil");}
+            for vc in navigationController!.viewControllers {
+                if vc is CoreController {
+                    (vc as! CoreController).addAttributeById(vert!.vertViewId, withString: textField.text);
+                }
             }
         }
         return true;
     }
     
-    //MARK: table view data source
+    //MARK: table view data source and delegate
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 162;
+    }
+    
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
@@ -84,77 +119,46 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
         let cellIdentifier:String="AttributeCell";
         var cell:CustomCell? = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as? CustomCell
         if cell == nil {
+            // init a custom cell
             cell = CustomCell(style:UITableViewCellStyle.Default, reuseIdentifier: cellIdentifier);
-            println("AttributeTable: tableView cellForRowAtIndexPath: TODO create cell") ;
+            
+            if cell == nil {
+                println("AttributeTable: tableView cellForRowAtIndexPath: failed to create cell")
+            }
+            
+            // do any additional setup of the cell
+     
         }
+        // set the delegate and datasource of the picker view on the table
+        cell!.picker!.delegate = self;
+        cell!.picker!.dataSource = self;
         
         // config cell by extracting element from attrStrings at given row
         if indexPath.row < attrsOrNil!.count {
             let elem:AnyObject = attrStringsOrNil![indexPath.row];
             if elem is String {
-                cell!.textLabel!.text=elem as? String;
+            
+                cell!.descriptionLabel!.text=elem as? String;
+                
             }
             else {println("AttributeTable: tableView cellForRowAtIndexPath: elem stored in attribute.string is not a string");}
         }
         else {
             // init a UITextField
-            let textField:UITextField  = UITextField(frame: CGRectMake(110, 10, 185, 30) );
-            // config the textfield
-            textField.adjustsFontSizeToFitWidth = true;
-            textField.textColor = UIColor.blackColor();
-            textField.placeholder = "Add attribute";
-            textField.keyboardType = UIKeyboardType.EmailAddress;
-            //TODO: missing return key type
+            let textField=attributeTextField(frame: CGRectMake(110, 10, 185, 30) );
             textField.backgroundColor=UIColor.clearColor();
-            textField.delegate = self;
-            
             cell!.contentView.addSubview(textField);
+            setTextField(textField, placeholder:"Add attribute");
         }
         return cell!
     }
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return NO if you do not want the specified item to be editable.
-        return true
+    
+    //MARK: helper methods
+    private func setTextField(textField:UITextField, placeholder:String) {
+        textField.adjustsFontSizeToFitWidth = true;
+        textField.textColor = UIColor.blackColor();
+        textField.placeholder = placeholder;
+        textField.keyboardType = UIKeyboardType.EmailAddress;
+        textField.delegate = self;
     }
-    */
-    /*
-    // Override to support editing the table view.
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            // Delete the row from the data source
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return NO if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
