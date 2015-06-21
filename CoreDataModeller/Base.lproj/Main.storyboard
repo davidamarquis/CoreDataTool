@@ -18,7 +18,11 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Core Data Modeller" id="mWU-rW-26I">
-                        <barButtonItem key="leftBarButtonItem" title="Email" id="hP7-pv-2ve"/>
+                        <barButtonItem key="leftBarButtonItem" title="Email" id="hP7-pv-2ve">
+                            <connections>
+                                <action selector="emailPressed:" destination="8qZ-gR-bVn" id="qgJ-VF-4rI"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Grid" id="17t-ik-CXc">
                             <connections>
                                 <action selector="turnOffGrid:" destination="8qZ-gR-bVn" id="OsO-Rd-QXe"/>
@@ -26,6 +30,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="emailButtonPressed" destination="hP7-pv-2ve" id="gF3-H8-7Us"/>
                         <segue destination="2NL-fe-8oU" kind="show" identifier="VertInfo" id="mzh-W5-Ftp"/>
                     </connections>
                 </viewController>

@@ -9,14 +9,11 @@
 import UIKit
 import Foundation
 import CoreData
+import MessageUI
 
-class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol {
+class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, MFMailComposeViewControllerDelegate {
 
-    @IBAction func turnOffGrid(sender: AnyObject) {
-        if graphView != nil {
-            graphView!.switchGraphState();
-        }
-    }
+    let mailVC:MFMailComposeViewController = MFMailComposeViewController();
     
     let vscale:CGFloat=0.15;
     var hght:CGFloat=CGFloat();
@@ -30,10 +27,10 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     var remVertControl:UIView?;
     var remEdgeControl:UIView?;
     
-    var inEdgeMode:Bool = false;
-    var inVertMode:Bool = false;
-    var inMoveMode:Bool = false;
-    
+    var inEdgeMode=false;
+    var inVertMode=false;
+    var inMoveMode=false;
+
     var graphViewContentOffsetDeltaX:CGFloat = 0;
     var graphViewContentOffsetDeltaY:CGFloat = 0;
     var graphViewPrevContentOffsetX:CGFloat = 0;
@@ -120,6 +117,61 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         moveMode();
     }
     
+    /*
+    func mailComposeController(controller:MFMailComposeViewController, didFinishWithResult result:MFMailComposeResult, error:NSError) {
+    switch result {
+    case MFMailComposeResultCancelled:
+        NSLog("Mail cancelled")
+    case MFMailComposeResultSaved:
+        NSLog("Mail saved")
+    case MFMailComposeResultSent:
+        NSLog("Mail sent")
+    case MFMailComposeResultFailed:
+        NSLog("Mail sent failure: %@", [error.localizedDescription])
+    default:
+        break
+    }
+    self.dismissViewControllerAnimated(false, completion: nil)
+}
+*/
+    //MARK: nav bar
+    @IBAction func emailPressed(sender: AnyObject) {
+        // mailVC is of type
+        if mailVC.mailComposeDelegate == nil {
+            mailVC.mailComposeDelegate = self;
+        }
+        mailVC.modalTransitionStyle = UIModalTransitionStyle.CoverVertical;
+        
+        mailVC.setSubject("test file");
+        mailVC.setToRecipients(["david.a.marquis@gmail.com"]);
+        
+        // TODO: let myData:NSData = NSKeyedArchiver.archivedDataWithRootObject("cake is good for taste but bad for weight");
+        // http://stackoverflow.com/questions/901357/how-do-i-convert-an-nsstring-value-to-nsdata
+        let test="give me more dogs";
+        let myData:NSData?=test.dataUsingEncoding(NSUTF8StringEncoding);
+        if myData != nil {
+            mailVC.addAttachmentData(myData, mimeType:"text/rtf", fileName:"testForYou");
+        }
+        
+        // dismiss the VC
+        presentViewController(mailVC, animated: true, completion: nil);
+    }
+    
+    func mailComposeController(controller: MFMailComposeViewController!, didFinishWithResult result: MFMailComposeResult, error: NSError!) {
+        if error != nil {
+            println("CoreController: mailComposeController: error sending email");
+            println(error.localizedDescription);
+        }
+        self.dismissViewControllerAnimated(true, completion: nil);
+    }
+    
+    @IBAction func turnOffGrid(sender: AnyObject) {
+        if graphView != nil {
+            graphView!.switchGraphState();
+        }
+    }
+    
+    //Setup: 
     func addCenteredImageToView(view:UIView?, image:UIImage?) {
         if image != nil && view != nil {
             let circView=UIImageView(image: image! );
@@ -129,7 +181,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         else {println("CoreController: addCenteredImageToView: one of the inputs is nil");}
     }
     
-    //Setup: 
     //setupVertButtons: buttons for adding vert, removing vert, and removing edge
     func setupVertButtons() {
         
