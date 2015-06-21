@@ -79,13 +79,22 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
     //MARK: UITextFieldDelegate methods
     func textFieldShouldReturn(textField: UITextField)->Bool {
         textField.resignFirstResponder();
+        if vert == nil {println("AttributeTable: testFieldShouldReturn: vert is nil");};
         
         if textField is attributeTextField {
-            if vert == nil {println("AttributeTable: testFieldShouldReturn: vert is nil");};
             if navigationController == nil {println("AttributeTable: testFieldShouldReturn: nav controller is nil");}
             for vc in navigationController!.viewControllers {
                 if vc is CoreController {
                     (vc as! CoreController).addAttributeById(vert!.vertViewId, withString: textField.text);
+                }
+            }
+        }
+        else {
+            // assumption here: the only textfields in AttributeTable not=attributeTextField is the title text field
+            if navigationController == nil {println("AttributeTable: testFieldShouldReturn: nav controller is nil");}
+            for vc in navigationController!.viewControllers {
+                if vc is CoreController {
+                    (vc as! CoreController).setTitle(vert!.vertViewId, title: textField.text);
                 }
             }
         }

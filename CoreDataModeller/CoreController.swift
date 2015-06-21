@@ -690,6 +690,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         return newContext
     }()
     
+    //MARK: vert attributes
     // use vert id to get a vert and add an attribute to it
     func addAttributeById(vertId:Int32, withString attrString:String) {
         // get vert
@@ -700,10 +701,14 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         // set the attr string to be the input string
         attr.string=attrString;
         
+        // update model with new attribute
         if vert != nil {
             addAttrToVert(attr, newVert: vert!);
         }
+        else {println("CoreController: addAttributeById: could not find vert to modify");}
         
+        //
+        // reload the table
         if navigationController == nil {println("CoreController: addAttributeById: nav controller is nil");}
         for vc in navigationController!.viewControllers {
             if vc is AttributeTable {
@@ -717,6 +722,13 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         if manyRelation is NSMutableSet {
             (manyRelation as! NSMutableSet).addObject(newAttr);
         }
+    }
+    
+    // setTitle
+    func setTitle(vertId:Int32, title: String) {
+        let vert:Vert? = graph!.getVertById(vertId);
+        if vert == nil { println("CoreController: addAttributeById: setTitle"); }
+        vert!.title = title;
     }
     
     //MARK: - Core Data Saving support

@@ -18,6 +18,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Core Data Modeller" id="mWU-rW-26I">
+                        <barButtonItem key="leftBarButtonItem" title="Email" id="hP7-pv-2ve"/>
                         <barButtonItem key="rightBarButtonItem" title="Grid" id="17t-ik-CXc">
                             <connections>
                                 <action selector="turnOffGrid:" destination="8qZ-gR-bVn" id="OsO-Rd-QXe"/>
