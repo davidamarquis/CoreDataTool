@@ -39,6 +39,9 @@ extension Graph {
         // Warning: setting of ids should be guarded against the deletion of managed verts from but is not currently
       
         if let vert=vertOrNil {
+            // assign the title property
+            vert.title = "";
+        
             // add to set within graph
             verts=verts.setByAddingObject(vert);
             // set the id property

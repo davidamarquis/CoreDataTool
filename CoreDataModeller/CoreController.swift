@@ -11,9 +11,9 @@ import Foundation
 import CoreData
 import MessageUI
 
-class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, MFMailComposeViewControllerDelegate {
+class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, mailGenDelegate {
 
-    let mailVC:MFMailComposeViewController = MFMailComposeViewController();
+    //var mailVC:MFMailComposeViewController = MFMailComposeViewController();
     
     let vscale:CGFloat=0.15;
     var hght:CGFloat=CGFloat();
@@ -117,52 +117,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         moveMode();
     }
     
-    /*
-    func mailComposeController(controller:MFMailComposeViewController, didFinishWithResult result:MFMailComposeResult, error:NSError) {
-    switch result {
-    case MFMailComposeResultCancelled:
-        NSLog("Mail cancelled")
-    case MFMailComposeResultSaved:
-        NSLog("Mail saved")
-    case MFMailComposeResultSent:
-        NSLog("Mail sent")
-    case MFMailComposeResultFailed:
-        NSLog("Mail sent failure: %@", [error.localizedDescription])
-    default:
-        break
-    }
-    self.dismissViewControllerAnimated(false, completion: nil)
-}
-*/
-    //MARK: nav bar
     @IBAction func emailPressed(sender: AnyObject) {
-        // mailVC is of type
-        if mailVC.mailComposeDelegate == nil {
-            mailVC.mailComposeDelegate = self;
-        }
-        mailVC.modalTransitionStyle = UIModalTransitionStyle.CoverVertical;
         
-        mailVC.setSubject("test file");
-        mailVC.setToRecipients(["david.a.marquis@gmail.com"]);
-        
-        // TODO: let myData:NSData = NSKeyedArchiver.archivedDataWithRootObject("cake is good for taste but bad for weight");
-        // http://stackoverflow.com/questions/901357/how-do-i-convert-an-nsstring-value-to-nsdata
-        let test="give me more dogs";
-        let myData:NSData?=test.dataUsingEncoding(NSUTF8StringEncoding);
-        if myData != nil {
-            mailVC.addAttachmentData(myData, mimeType:"text/rtf", fileName:"testForYou");
-        }
-        
-        // dismiss the VC
-        presentViewController(mailVC, animated: true, completion: nil);
-    }
-    
-    func mailComposeController(controller: MFMailComposeViewController!, didFinishWithResult result: MFMailComposeResult, error: NSError!) {
-        if error != nil {
-            println("CoreController: mailComposeController: error sending email");
-            println(error.localizedDescription);
-        }
-        self.dismissViewControllerAnimated(true, completion: nil);
     }
     
     @IBAction func turnOffGrid(sender: AnyObject) {
