@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 import MessageUI
 
-class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, MailGenDelegate {
+class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, MailGenDelegate, CellChangeResponse {
 
     //var mailVC:MFMailComposeViewController = MFMailComposeViewController();
     var mailGen:MailGen = MailGen();
@@ -49,8 +49,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             if graph != nil {
                 let vert:Vert? = graph!.getVertById(vv.vertViewId!);
                 if vert != nil {
-                    if segue.destinationViewController is AttributeTable {
-                        (segue.destinationViewController as! AttributeTable).vert=vert;
+                    if segue.destinationViewController is AttributeTableVC {
+                        (segue.destinationViewController as! AttributeTableVC).vert=vert;
                     }
                 }
                 else { println("CoreController: prepareForSegue: vert is nil"); }
@@ -775,8 +775,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         // reload the table
         if navigationController == nil {println("CoreController: addAttributeById: nav controller is nil");}
         for vc in navigationController!.viewControllers {
-            if vc is AttributeTable {
-                (vc as! AttributeTable).getStringsFromVert();
+            if vc is AttributeTableVC {
+                (vc as! AttributeTableVC).getStringsFromVert();
             }
         }
     }

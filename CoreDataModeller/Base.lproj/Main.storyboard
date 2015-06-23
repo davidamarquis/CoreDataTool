@@ -38,10 +38,10 @@
             </objects>
             <point key="canvasLocation" x="1290" y="169"/>
         </scene>
-        <!--Attribute Table-->
+        <!--Attribute TableVC-->
         <scene sceneID="KHi-Dp-E6g">
             <objects>
-                <viewController id="2NL-fe-8oU" customClass="AttributeTable" customModule="CoreDataModeller" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="2NL-fe-8oU" customClass="AttributeTableVC" customModule="CoreDataModeller" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="COe-7g-aNB"/>
                         <viewControllerLayoutGuide type="bottom" id="6OR-wb-Nzu"/>

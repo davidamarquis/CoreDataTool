@@ -11,8 +11,5 @@ import UIKit
 class Picker: UIPickerView {
 
     var canScroll:Bool=false;
-    
-    func pan(recog:UIPanGestureRecognizer) {
-    
-    }
+
 }
