@@ -68,41 +68,9 @@ class GraphWorldView: UIView {
         }
         else {println("VertView: pan(): err state is not valid");}
     }
-    /*
-    func tap(recognizer:UITapGestureRecognizer) {
 
-        let cgp:CGPoint=recognizer.locationInView(self);
-        let N:Int=subviews.count;
-        var i:Int=0;
-        
-        for(i=0;i<N;i++) {
-        
-            if(subviews[i] is VertView) {
-                let cur:VertView = subviews[i] as! VertView;
-                // do a hit test on the vert
-                // ok so need to know
-                if( cur.updateIfHit(cgp) ) {
-                    break;
-                }
-            }
-        }
-        if(i+1==N) {
-            return;
-        }
-        else {
-            i=i+1;
-            for( ;i<N;i++) {
-                if(subviews[i] is VertView) {
-                    let cur:VertView=subviews[i] as! VertView;
-                    if(cur.selected) {
-                        cur.selected=false;
-                    }
-                }
-            }
-        }
-    }
-    */
     //MARK: Vert Interface
+    //addVertAtPoint() creates a vert at a particular points. Returns a ref for further customization
     func addVertAtPoint(cgp:CGPoint)->VertView {
         let diameter:CGFloat=circSize!+edgeSize!;
         let vert:VertView=VertView( frame: CGRectMake(cgp.x, cgp.y, diameter, diameter) );
@@ -110,6 +78,7 @@ class GraphWorldView: UIView {
         addSubview(vert);
         return vert;
     }
+    
     //getVertViewById() returns the VertView corresponding to a particular id or nil if such a VertView does not exist
     func getVertViewById(vertViewId:Int32) -> VertView? {
 

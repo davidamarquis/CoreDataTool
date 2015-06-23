@@ -10,10 +10,22 @@ import UIKit
 import Foundation
 
 class CustomCell: UITableViewCell {
+ 
 
     var descriptionLabel:UILabel?;
     // pickerView's delegate is AttributeTable
-    var picker:UIPickerView?;
+    var picker:Picker?;
+
+    // selectCell() enables picker scrolling
+    func selectCell() {
+        if picker == nil {println("CustomCell: selectCell: picker is nil")}
+        picker!.canScroll = true;
+    }
+    
+    func deselectCell() {
+        if picker == nil {println("CustomCell: selectCell: picker is nil")}
+        picker!.canScroll = false;
+    }
 
     override init(style:UITableViewCellStyle, reuseIdentifier:String?) {
         super.init(style: style, reuseIdentifier:reuseIdentifier);
@@ -28,10 +40,11 @@ class CustomCell: UITableViewCell {
 
         contentView.addSubview(descriptionLabel!);
         
-        picker=UIPickerView();
+        picker=Picker();
         if picker == nil {println("CustomCell: postInitSetup: picker is nil");}
         picker!.frame = CGRectMake(160,0,140,self.frame.height);
         contentView.addSubview(picker!);
+        
     }
     
     required init(coder decoder: NSCoder) {

@@ -9,19 +9,20 @@
 import UIKit;
 import MessageUI;
 
-protocol mailGenDelegate {
+protocol MailGenDelegate {
     var graph:Graph? {get};
-    func presentViewController(_ viewControllerToPresent: UIViewController,animated flag: Bool, completion completion: (() -> Void)?);
+    func presentViewController(viewControllerToPresent: UIViewController,animated flag: Bool, completion: (() -> Void)?);
+    func dismissViewControllerAnimated(flag: Bool, completion: (() -> Void)?);
 }
 
-class mailGen: NSObject, MFMailComposeViewControllerDelegate {
+class MailGen: NSObject, MFMailComposeViewControllerDelegate {
     
     //TODO:
-    let weak delegate:CoreController?;
+    weak var delegate:CoreController?;
     let mailVC:MFMailComposeViewController = MFMailComposeViewController();
     
     //MARK: nav bar
-    @IBAction func emailPressed(sender: AnyObject) {
+    func emailPressed(sender: AnyObject) {
     
         // mailVC is of type
         if mailVC.mailComposeDelegate == nil {
@@ -31,6 +32,9 @@ class mailGen: NSObject, MFMailComposeViewControllerDelegate {
             println("CoreController: emailPressed: err mailComposeDelegate is not equal to self");
         }
         
+        if delegate == nil {
+            println("mailGen: emailPressed() delegate is nil");
+        }
         if MFMailComposeViewController.canSendMail() {
             mailVC.modalTransitionStyle = UIModalTransitionStyle.CoverVertical;
             
@@ -60,7 +64,8 @@ class mailGen: NSObject, MFMailComposeViewControllerDelegate {
                 mailVC.addAttachmentData(delegMData, mimeType:"text/rtf", fileName:"AppDelegate.m");
             }
             
-            for v in delegate.graph!.verts {
+            
+            for v in delegate!.graph!.verts {
                 if let vert=(v as? Vert) {
                 
                     let testStr = "";
@@ -70,7 +75,7 @@ class mailGen: NSObject, MFMailComposeViewControllerDelegate {
             }
             
             // dismiss the VC
-            delegate.presentViewController(mailVC, animated: true, completion: nil);
+            delegate!.presentViewController(mailVC, animated: true, completion: nil);
         }
         else {
             showSendMailErrorAlert();
@@ -105,7 +110,7 @@ class mailGen: NSObject, MFMailComposeViewControllerDelegate {
         //TODO: test reset delegate
         //mailVC = MFMailComposeViewController();
         
-        delegate.dismissViewControllerAnimated(true, completion: nil);
+        delegate!.dismissViewControllerAnimated(true, completion: nil);
     }
 
 }

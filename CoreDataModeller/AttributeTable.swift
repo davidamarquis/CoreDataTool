@@ -8,6 +8,7 @@
 
 import UIKit
 
+// AttributeTable is always presented as a segue from CoreController. Its properties are not retained when the user returns to CoreController
 class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     
     var pickerTest=["Undefined","Integer 16","Integer 32","Integer 64","Decimal","Double","Float","String","Boolean","Date","Binary Data","Transformable"];
@@ -21,17 +22,29 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
     var attrStringsOrNil:Array<String>?;
     
     let attrView:UITableView?=UITableView();
+    var titleField:UITextField?;
+    let titleHeight:CGFloat=48;
     
     //MARK: view lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        if vert == nil {
+           println("AttributeTable: viewWillAppear: err vert is nil");
+        }
         
-        let titleHeight:CGFloat=48;
-        let titleField = UITextField(frame: CGRectMake( CGFloat(0), CGFloat(20+44), view.frame.width, titleHeight ));
-        view.addSubview(titleField);
-        titleField.backgroundColor=UIColor.blueColor();
-        setTextField(titleField, placeholder:"Add title");
+        titleField = UITextField(frame: CGRectMake( CGFloat(0), CGFloat(20+44), view.frame.width, titleHeight ));
+        if titleField == nil {println("AttributeTable: viewWillAppear: err titleField is nil");}
         
+        view.addSubview(titleField!);
+        titleField!.backgroundColor=UIColor.blueColor();
+        setTextField(titleField!, placeholder:"Add title");
+        // if the vert does have text in its title then we override the placeholder
+        if !vert!.title.isEmpty {
+            titleField!.text = vert!.title;
+        }
+        
+        // create the table view
         attrView!.frame = CGRectMake(CGFloat(0),CGFloat(20+44)+titleHeight,view.frame.width,view.frame.height-CGFloat(titleHeight));
         attrView!.dataSource = self;
         attrView!.delegate = self;
@@ -42,9 +55,6 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
         attrView!.reloadData();
         view.addSubview(attrView!);
         
-        
-    }
-    override func viewWillAppear(animated: Bool) {
         getStringsFromVert();
     }
     
@@ -78,7 +88,9 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
     
     //MARK: UITextFieldDelegate methods
     func textFieldShouldReturn(textField: UITextField)->Bool {
+    
         textField.resignFirstResponder();
+        
         if vert == nil {println("AttributeTable: testFieldShouldReturn: vert is nil");};
         
         if textField is attributeTextField {
@@ -94,6 +106,8 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
             if navigationController == nil {println("AttributeTable: testFieldShouldReturn: nav controller is nil");}
             for vc in navigationController!.viewControllers {
                 if vc is CoreController {
+                    //entityName = textField.text;
+                    // add the new title to the model
                     (vc as! CoreController).setTitle(vert!.vertViewId, title: textField.text);
                 }
             }
@@ -122,7 +136,30 @@ class AttributeTable: UIViewController, UITableViewDataSource, UITableViewDelega
             return 0;
         }
     }
+    
+    // delegate
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if tableView.dataSource == nil {println("AttributeTable: didSelectRowAtIndexPath: data source is nil");}
 
+        //let cell:CustomCell? = self.tableView(tableView, cellForRowAtIndexPath: indexPath) as? CustomCell; would also work in the line below. 
+        //However, self cannot be removed. I don't know the reason. The compiler warning doesn't turn up anything when searched on google.
+        let cell:CustomCell? = tableView.dataSource?.tableView(tableView, cellForRowAtIndexPath: indexPath) as? CustomCell;
+        
+        if cell == nil {println("AttributeTable: didSelectRowAtIndexPath: could not find cell that is to be selected");}
+        cell!.selectCell();
+    }
+
+    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+        if tableView.dataSource == nil {println("AttributeTable: didDeselectRowAtIndexPath: data source is nil");}
+
+        //let cell:CustomCell? = self.tableView(tableView, cellForRowAtIndexPath: indexPath) as? CustomCell; would also work in the line below. 
+        //However, self cannot be removed. I don't know the reason. The compiler warning doesn't turn up anything when searched on google.
+        let cell:CustomCell? = tableView.dataSource?.tableView(tableView, cellForRowAtIndexPath: indexPath) as? CustomCell;
+        
+        if cell == nil {println("AttributeTable: didSelectRowAtIndexPath: could not find cell that is to be selected");}
+        cell!.deselectCell();
+    }
+    
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 
         let cellIdentifier:String="AttributeCell";

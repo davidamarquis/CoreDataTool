@@ -11,9 +11,10 @@ import Foundation
 import CoreData
 import MessageUI
 
-class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, mailGenDelegate {
+class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, MailGenDelegate {
 
     //var mailVC:MFMailComposeViewController = MFMailComposeViewController();
+    var mailGen:MailGen = MailGen();
     
     let vscale:CGFloat=0.15;
     var hght:CGFloat=CGFloat();
@@ -110,6 +111,9 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     
     override func viewWillAppear(animated: Bool) {
     
+        // clobber attrTable if it exists
+        
+    
         //TODO: if needed arrange views into final order here 
         /* ... */
 
@@ -117,7 +121,10 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         moveMode();
     }
     
+    //MARK: nav bar
     @IBAction func emailPressed(sender: AnyObject) {
+        mailGen.delegate=self;
+        mailGen.emailPressed(sender);
         
     }
     
@@ -389,7 +396,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         remEdgeControl!.center = CGPointMake(remEdgeControl!.center.x + graphViewContentOffsetDeltaX, remEdgeControl!.center.y + graphViewContentOffsetDeltaY);
     }
     
-    // edgeMode() holds logic for switching from vertMode() or moveMode()
+    // edgeMode() handles switching from vertMode() or moveMode()
     func edgeMode() {
         // method cannot be private, called by action
         
@@ -400,9 +407,10 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         if addVertControl != nil && remVertControl != nil {
             addVertControl!.removeFromSuperview();
             remVertControl!.removeFromSuperview();
-            //TODO: 10am june20
+
             graphView!.addSubview(remEdgeControl!);
-            //view.sendSubviewToBack(remEdgeControl!);
+            graphView!.sendSubviewToBack(remEdgeControl!);
+            graphView!.sendSubviewToBack(graphView!.gridBack!);
         }
         
         // enable gesture recognizers
@@ -412,6 +420,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         inMoveMode=false;
         inEdgeMode=true;
     }
+    
+    
     func moveMode() {
         // method cannot be private, called by action
         
@@ -452,7 +462,11 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         
             graphView!.addSubview(addVertControl!);
             graphView!.addSubview(remVertControl!);
-            //TODO:
+            // gridBack must go behind the addVertControls
+            graphView!.sendSubviewToBack(addVertControl!);
+            graphView!.sendSubviewToBack(remVertControl!);
+            graphView!.sendSubviewToBack(graphView!.gridBack!);
+            
             remEdgeControl!.removeFromSuperview();
         }
 
@@ -509,7 +523,32 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         if( keyPath=="finishedObservedMethod" && graphView != nil && v != nil) {
             drawVert(v!);
         }
+        if keyPath=="shouldSyncEntityAttributes" && graphView != nil && v != nil {
+            if v!.shouldSyncEntityAttributes {
+                updateAttributes(v!);
+            }
+        }
     }
+    
+    // updateAttributes() updates the appearance of vert views by setting the model properties the vert view uses to draw
+    // currently only using title
+    func updateAttributes(v:Vert) {
+    
+        let vv:VertView? = graphView!.gwv!.getVertViewById(v.vertViewId);
+        if vv != nil {
+            if vv!.titleLabel != nil {
+                // labels update live so we don't need to call setNeedsDisplay()
+                
+                vv!.titleLabel!.text = v.title;
+                //vv!.setNeedsDisplay();
+            }
+        }
+        else {
+            println("CoreController: updateAttributes: no vert view was found");
+        }
+        v.shouldSyncEntityAttributes = false;
+    }
+    
     private func drawVert(v:Vert) {
         if(!v.freshViews) {
             // check if a view exists corresponding to the vert instance. (1) if no view is found then vertView is nil and
@@ -517,14 +556,26 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             // VC updates the view by changing the frame of the view
             let vertView:VertView? = graphView!.gwv!.getVertViewById(v.vertViewId);
             if(vertView != nil) {
+                //TODO: this would be the place for a method to reset attributes of the vert view corresponding to model properties
+            
+                // set title of the vert view that was found by search
+                setVertViewTitle(vertView!, title:v.title);
+            
                 // set the new frame
-                // this only requires changing the origin
                 (vertView!.frame.origin.x, vertView!.frame.origin.y) = (CGFloat(v.x), CGFloat(v.y));
-                // add the new view
-                vertView!.setNeedsDisplay();
+                
+                // if the vert view wants to be clobbered then oblige it
+                if !vertView!.isDrawn {
+                    vertView!.setNeedsDisplay();
+                }
             }
             else {
+                // create vert view
                 let vv:VertView = graphView!.gwv!.addVertAtPoint(CGPointMake(CGFloat(v.x), CGFloat(v.y)) );
+                
+                // set title of the new vert view
+                setVertViewTitle(vv, title:v.title);
+                
                 vv.delegate=self;
                 // set the view id to match the model id
                 vv.vertViewId=v.vertViewId;
@@ -539,6 +590,12 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             // edge instance now fresh
             v.freshEdges=true;
         }
+    }
+    
+    // set the title of the given vert view
+    private func setVertViewTitle(vv:VertView, title:String) {
+        if vv.titleLabel == nil {println("CoreController: drawVert: titleLabel is nil")}
+        vv.titleLabel!.text=title;
     }
     
     private func drawEdges() {
@@ -736,6 +793,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         let vert:Vert? = graph!.getVertById(vertId);
         if vert == nil { println("CoreController: addAttributeById: setTitle"); }
         vert!.title = title;
+        vert!.shouldSyncEntityAttributes=true;
     }
     
     //MARK: - Core Data Saving support
@@ -798,6 +856,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             for var i=0;i<numVerts;i++ {
                 var vert:Vert = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
                 vert.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
+                vert.addObserver(self, forKeyPath: "shouldSyncEntityAttributes", options: .New, context: nil);
                 verts.append(vert);
             }
         }
