@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4810C3921B39FBE1004280C1 /* Attribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810C3911B39FBE1004280C1 /* Attribute.swift */; };
+		4810C3931B39FBE1004280C1 /* Attribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810C3911B39FBE1004280C1 /* Attribute.swift */; };
+		4810C3951B39FBE2004280C1 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810C3941B39FBE2004280C1 /* Entity.swift */; };
+		4810C3961B39FBE2004280C1 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810C3941B39FBE2004280C1 /* Entity.swift */; };
+		4810C3981B39FBE2004280C1 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810C3971B39FBE2004280C1 /* Vert.swift */; };
+		4810C3991B39FBE2004280C1 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810C3971B39FBE2004280C1 /* Vert.swift */; };
+		4810C39B1B39FBE2004280C1 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810C39A1B39FBE2004280C1 /* Edge.swift */; };
+		4810C39C1B39FBE2004280C1 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810C39A1B39FBE2004280C1 /* Edge.swift */; };
+		4810C39E1B39FBE2004280C1 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810C39D1B39FBE2004280C1 /* Graph.swift */; };
+		4810C39F1B39FBE2004280C1 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810C39D1B39FBE2004280C1 /* Graph.swift */; };
+		4810C3A01B39FE17004280C1 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 48282E901B179DF400BDA782 /* Model.xcdatamodeld */; };
 		4810E3551B1744C300F72097 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810E3541B1744C300F72097 /* AppDelegate.swift */; };
 		4810E35A1B1744C300F72097 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4810E3581B1744C300F72097 /* Main.storyboard */; };
 		4810E35C1B1744C300F72097 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4810E35B1B1744C300F72097 /* Images.xcassets */; };
@@ -31,16 +42,6 @@
 		4882F58D1B1E4046002F6A01 /* GraphExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58C1B1E4046002F6A01 /* GraphExtension.swift */; };
 		4882F58F1B1E4391002F6A01 /* EdgeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58E1B1E4391002F6A01 /* EdgeExtension.swift */; };
 		489039241B1B8E0C005E0992 /* CoreController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489039231B1B8E0C005E0992 /* CoreController.swift */; };
-		4893455B1B387434002D1A80 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4893455A1B387434002D1A80 /* Vert.swift */; };
-		4893455C1B387434002D1A80 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4893455A1B387434002D1A80 /* Vert.swift */; };
-		4893455E1B387435002D1A80 /* AttributeString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4893455D1B387435002D1A80 /* AttributeString.swift */; };
-		4893455F1B387435002D1A80 /* AttributeString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4893455D1B387435002D1A80 /* AttributeString.swift */; };
-		489345611B387435002D1A80 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489345601B387435002D1A80 /* Entity.swift */; };
-		489345621B387435002D1A80 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489345601B387435002D1A80 /* Entity.swift */; };
-		489345641B387435002D1A80 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489345631B387435002D1A80 /* Graph.swift */; };
-		489345651B387435002D1A80 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489345631B387435002D1A80 /* Graph.swift */; };
-		489345671B387435002D1A80 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489345661B387435002D1A80 /* Edge.swift */; };
-		489345681B387435002D1A80 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 489345661B387435002D1A80 /* Edge.swift */; };
 		4893456B1B38E314002D1A80 /* Picker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4893456A1B38E314002D1A80 /* Picker.swift */; };
 		4893456C1B38E314002D1A80 /* Picker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4893456A1B38E314002D1A80 /* Picker.swift */; };
 		48BEF91A1B2A038000DC51A4 /* AttributeTableVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BEF9191B2A038000DC51A4 /* AttributeTableVC.swift */; };
@@ -75,6 +76,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4810C3911B39FBE1004280C1 /* Attribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Attribute.swift; path = ../Attribute.swift; sourceTree = "<group>"; };
+		4810C3941B39FBE2004280C1 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Entity.swift; path = ../Entity.swift; sourceTree = "<group>"; };
+		4810C3971B39FBE2004280C1 /* Vert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Vert.swift; path = ../Vert.swift; sourceTree = "<group>"; };
+		4810C39A1B39FBE2004280C1 /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Edge.swift; path = ../Edge.swift; sourceTree = "<group>"; };
+		4810C39D1B39FBE2004280C1 /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Graph.swift; path = ../Graph.swift; sourceTree = "<group>"; };
 		4810E34F1B1744C300F72097 /* CoreDataModeller.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreDataModeller.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4810E3531B1744C300F72097 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4810E3541B1744C300F72097 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -99,11 +105,6 @@
 		4882F58C1B1E4046002F6A01 /* GraphExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphExtension.swift; sourceTree = "<group>"; };
 		4882F58E1B1E4391002F6A01 /* EdgeExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeExtension.swift; sourceTree = "<group>"; };
 		489039231B1B8E0C005E0992 /* CoreController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreController.swift; sourceTree = "<group>"; };
-		4893455A1B387434002D1A80 /* Vert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Vert.swift; path = ../Vert.swift; sourceTree = "<group>"; };
-		4893455D1B387435002D1A80 /* AttributeString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttributeString.swift; path = ../AttributeString.swift; sourceTree = "<group>"; };
-		489345601B387435002D1A80 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Entity.swift; path = ../Entity.swift; sourceTree = "<group>"; };
-		489345631B387435002D1A80 /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Graph.swift; path = ../Graph.swift; sourceTree = "<group>"; };
-		489345661B387435002D1A80 /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Edge.swift; path = ../Edge.swift; sourceTree = "<group>"; };
 		4893456A1B38E314002D1A80 /* Picker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Picker.swift; sourceTree = "<group>"; };
 		48BEF9191B2A038000DC51A4 /* AttributeTableVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeTableVC.swift; sourceTree = "<group>"; };
 		48C1AFAB1B3373AC00F99336 /* imgTextButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = imgTextButton.swift; sourceTree = "<group>"; };
@@ -258,11 +259,11 @@
 		48D5A0361B37007600198878 /* Persistent */ = {
 			isa = PBXGroup;
 			children = (
-				489345661B387435002D1A80 /* Edge.swift */,
-				489345631B387435002D1A80 /* Graph.swift */,
-				489345601B387435002D1A80 /* Entity.swift */,
-				4893455D1B387435002D1A80 /* AttributeString.swift */,
-				4893455A1B387434002D1A80 /* Vert.swift */,
+				4810C39D1B39FBE2004280C1 /* Graph.swift */,
+				4810C39A1B39FBE2004280C1 /* Edge.swift */,
+				4810C3971B39FBE2004280C1 /* Vert.swift */,
+				4810C3941B39FBE2004280C1 /* Entity.swift */,
+				4810C3911B39FBE1004280C1 /* Attribute.swift */,
 			);
 			name = Persistent;
 			sourceTree = "<group>";
@@ -367,22 +368,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				489345641B387435002D1A80 /* Graph.swift in Sources */,
 				484C8FFE1B306AD90051CDC1 /* Gestures.swift in Sources */,
 				4882F58F1B1E4391002F6A01 /* EdgeExtension.swift in Sources */,
 				48282EBA1B17AED100BDA782 /* VertExtension.swift in Sources */,
 				4812E3CB1B1D047C0061EAB1 /* VertView.swift in Sources */,
 				4812E3C91B1D046F0061EAB1 /* GraphWorldView.swift in Sources */,
 				48C1AFAC1B3373AC00F99336 /* imgTextButton.swift in Sources */,
+				4810C3981B39FBE2004280C1 /* Vert.swift in Sources */,
 				4812E3C71B1CF3E90061EAB1 /* GraphView.swift in Sources */,
-				489345671B387435002D1A80 /* Edge.swift in Sources */,
+				4810C39B1B39FBE2004280C1 /* Edge.swift in Sources */,
 				4893456B1B38E314002D1A80 /* Picker.swift in Sources */,
 				4812E3CD1B1D048C0061EAB1 /* EdgeView.swift in Sources */,
 				4812E3CF1B1D04BC0061EAB1 /* LandingVC.swift in Sources */,
-				4893455B1B387434002D1A80 /* Vert.swift in Sources */,
-				489345611B387435002D1A80 /* Entity.swift in Sources */,
+				4810C3951B39FBE2004280C1 /* Entity.swift in Sources */,
 				48BEF91A1B2A038000DC51A4 /* AttributeTableVC.swift in Sources */,
-				4893455E1B387435002D1A80 /* AttributeString.swift in Sources */,
+				4810C39E1B39FBE2004280C1 /* Graph.swift in Sources */,
 				4810E3551B1744C300F72097 /* AppDelegate.swift in Sources */,
 				487FDD011B1A6BC60087C0AF /* NSSet + Edit.swift in Sources */,
 				48D5A0381B371B9600198878 /* ObjCAppDelegateMGen.swift in Sources */,
@@ -390,6 +390,7 @@
 				484983391B361A9F00E5D7FE /* AttributeTextField.swift in Sources */,
 				484983361B35D31C00E5D7FE /* CustomCell.swift in Sources */,
 				48282E921B179DF400BDA782 /* Model.xcdatamodeld in Sources */,
+				4810C3921B39FBE1004280C1 /* Attribute.swift in Sources */,
 				4882F58D1B1E4046002F6A01 /* GraphExtension.swift in Sources */,
 				489039241B1B8E0C005E0992 /* CoreController.swift in Sources */,
 				48D5A0751B3780C000198878 /* MailGen.swift in Sources */,
@@ -400,22 +401,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				489345651B387435002D1A80 /* Graph.swift in Sources */,
 				48E92AB61B1E226700110510 /* NSSet + Edit.swift in Sources */,
 				483DAFB21B1E8D42007A532E /* EdgeExtension.swift in Sources */,
 				48E92ABB1B1E226700110510 /* VertExtension.swift in Sources */,
 				48C1AFAD1B33AD6700F99336 /* imgTextButton.swift in Sources */,
 				48E92ABD1B1E226700110510 /* GraphView.swift in Sources */,
+				4810C3A01B39FE17004280C1 /* Model.xcdatamodeld in Sources */,
 				484C8FFF1B3078F20051CDC1 /* Gestures.swift in Sources */,
+				4810C3991B39FBE2004280C1 /* Vert.swift in Sources */,
 				48E92ABE1B1E226700110510 /* GraphWorldView.swift in Sources */,
-				489345681B387435002D1A80 /* Edge.swift in Sources */,
+				4810C39C1B39FBE2004280C1 /* Edge.swift in Sources */,
 				4893456C1B38E314002D1A80 /* Picker.swift in Sources */,
 				48E92ABF1B1E226700110510 /* VertView.swift in Sources */,
 				48BEF91B1B2A185C00DC51A4 /* AttributeTableVC.swift in Sources */,
-				4893455C1B387434002D1A80 /* Vert.swift in Sources */,
-				489345621B387435002D1A80 /* Entity.swift in Sources */,
+				4810C3961B39FBE2004280C1 /* Entity.swift in Sources */,
 				48D5A0391B371B9600198878 /* ObjCAppDelegateMGen.swift in Sources */,
-				4893455F1B387435002D1A80 /* AttributeString.swift in Sources */,
+				4810C39F1B39FBE2004280C1 /* Graph.swift in Sources */,
 				48D5A0351B37006600198878 /* ObjCAppDelegateHGen.swift in Sources */,
 				48E92AC01B1E226700110510 /* EdgeView.swift in Sources */,
 				48E92AC11B1E226700110510 /* CoreController.swift in Sources */,
@@ -423,6 +424,7 @@
 				48E92AC31B1E226700110510 /* AppDelegate.swift in Sources */,
 				4849833A1B361AA300E5D7FE /* AttributeTextField.swift in Sources */,
 				483DAFB11B1E8D40007A532E /* GraphExtension.swift in Sources */,
+				4810C3931B39FBE1004280C1 /* Attribute.swift in Sources */,
 				484983371B35DAEC00E5D7FE /* CustomCell.swift in Sources */,
 				4810E36B1B1744C400F72097 /* CoreDataModellerTests.swift in Sources */,
 				48D5A0761B3780C000198878 /* MailGen.swift in Sources */,

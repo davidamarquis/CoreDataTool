@@ -1,17 +1,18 @@
 //
-//  AttributeString.swift
+//  Attribute.swift
 //  CoreDataModeller
 //
-//  Created by David Marquis on 2015-06-22.
+//  Created by David Marquis on 2015-06-23.
 //  Copyright (c) 2015 David Marquis. All rights reserved.
 //
 
 import Foundation
 import CoreData
 
-class AttributeString: NSManagedObject {
+class Attribute: NSManagedObject {
 
-    @NSManaged var string: String
+    @NSManaged var name: String
+    @NSManaged var type: String
     @NSManaged var vertWithAttribute: Vert
 
 }

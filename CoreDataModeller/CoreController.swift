@@ -513,27 +513,22 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     //MARK: KVO on model
     override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject: AnyObject], context: UnsafeMutablePointer<Void>) {
 
-        var v:Vert?
         if object is Vert {
-            v = object as? Vert;
-        }
-        else {
-            println("CoreController: observeValueForKeyPath: object is not Vert");
-        }
-        if( keyPath=="finishedObservedMethod" && graphView != nil && v != nil) {
-            drawVert(v!);
-        }
-        if keyPath=="shouldSyncEntityAttributes" && graphView != nil && v != nil {
-            if v!.shouldSyncEntityAttributes {
-                updateAttributes(v!);
+            var v = object as! Vert;
+            if graphView == nil {println("CoreController: observeValueForKeyPath: graphView is nil"); }
+            
+            if keyPath=="finishedObservedMethod" {
+                drawVert(v);
             }
+            else if keyPath=="title" {
+                setVertViewTitle(v);
+            }
+            else {println("CoreController: observeValueForKeyPath: unrecognized keyPath for object vert");}
         }
     }
     
-    // updateAttributes() updates the appearance of vert views by setting the model properties the vert view uses to draw
-    // currently only using title
-    func updateAttributes(v:Vert) {
-    
+    // sets the title of a vert view
+    func setVertViewTitle(v:Vert) {
         let vv:VertView? = graphView!.gwv!.getVertViewById(v.vertViewId);
         if vv != nil {
             if vv!.titleLabel != nil {
@@ -546,7 +541,13 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         else {
             println("CoreController: updateAttributes: no vert view was found");
         }
-        v.shouldSyncEntityAttributes = false;
+    }
+    
+    // updateAttributes() updates the attributes
+    // currently only using title
+    func updateAttributes(v:Vert) {
+    
+
     }
     
     private func drawVert(v:Vert) {
@@ -760,10 +761,10 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         // get vert
         let vert:Vert? = graph!.getVertById(vertId);
         // get attr
-        let attrDescription = NSEntityDescription.entityForName("AttributeString",inManagedObjectContext: context!);
-        let attr:AttributeString = AttributeString(entity: attrDescription!,insertIntoManagedObjectContext: context);
+        let attrDescription = NSEntityDescription.entityForName("Attribute",inManagedObjectContext: context!);
+        let attr:Attribute = Attribute(entity: attrDescription!,insertIntoManagedObjectContext: context);
         // set the attr string to be the input string
-        attr.string=attrString;
+        attr.name=attrString;
         
         // update model with new attribute
         if vert != nil {
@@ -771,18 +772,14 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
         else {println("CoreController: addAttributeById: could not find vert to modify");}
         
-        //
-        // reload the table
-        if navigationController == nil {println("CoreController: addAttributeById: nav controller is nil");}
-        for vc in navigationController!.viewControllers {
-            if vc is AttributeTableVC {
-                (vc as! AttributeTableVC).getStringsFromVert();
-            }
-        }
+        // attribute's table view will be refreshed by KVO
     }
     
-    private func addAttrToVert(newAttr:AttributeString, newVert:Vert) {
-        var manyRelation:AnyObject? = newVert.valueForKeyPath("attributeStrings") ;
+    private func addAttrToVert(newAttr:Attribute, newVert:Vert) {
+        // the attribute table view controller will be the only VC that responds to these observers
+        newAttr.addObserver(self, forKeyPath: "name", options: .New, context: nil);
+        newAttr.addObserver(self, forKeyPath: "type", options: .New, context: nil);
+        var manyRelation:AnyObject? = newVert.valueForKeyPath("attributes") ;
         if manyRelation is NSMutableSet {
             (manyRelation as! NSMutableSet).addObject(newAttr);
         }
@@ -793,7 +790,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         let vert:Vert? = graph!.getVertById(vertId);
         if vert == nil { println("CoreController: addAttributeById: setTitle"); }
         vert!.title = title;
-        vert!.shouldSyncEntityAttributes=true;
     }
     
     //MARK: - Core Data Saving support
@@ -817,9 +813,9 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         var edges=testEdgesArray(4);
         if graph != nil {
      
-            let attrDescription = NSEntityDescription.entityForName("AttributeString",inManagedObjectContext: context!);
-            let attr:AttributeString = AttributeString(entity: attrDescription!,insertIntoManagedObjectContext: context);
-            attr.string="test";
+            let attrDescription = NSEntityDescription.entityForName("Attribute",inManagedObjectContext: context!);
+            let attr:Attribute = Attribute(entity: attrDescription!,insertIntoManagedObjectContext: context);
+            attr.name="test";
             
             // cause is that an optional is returned by setByAddingObject
             addAttrToVert(attr, newVert:verts[0]);
@@ -856,7 +852,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             for var i=0;i<numVerts;i++ {
                 var vert:Vert = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
                 vert.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
-                vert.addObserver(self, forKeyPath: "shouldSyncEntityAttributes", options: .New, context: nil);
+                vert.addObserver(self, forKeyPath: "title", options: .New, context: nil);
                 verts.append(vert);
             }
         }

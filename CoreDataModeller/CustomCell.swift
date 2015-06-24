@@ -15,7 +15,7 @@ protocol CellChangeResponse {
 }
 
 protocol CheckAttributes {
-    var attrStringsOrNil:Array<String>? {get};
+    var attrsOrNil:Array<Attribute>? {get};
 }
 
 class CustomCell: UITableViewCell,UITextFieldDelegate {
@@ -104,9 +104,9 @@ class CustomCell: UITableViewCell,UITextFieldDelegate {
     }
     
     // default contains function is not working in Swift 1.2
-    func contains(arr:Array<String>, str:String)->Bool {
+    func contains(arr:Array<Attribute>, str:String)->Bool {
         for elem in arr {
-            if elem == str {
+            if elem.name == str {
                 return true;
             }
         }
@@ -119,9 +119,9 @@ class CustomCell: UITableViewCell,UITextFieldDelegate {
         if delegate == nil {println("CustomCell: textFieldShouldReturn: delegate is nil");}
         if vertViewId == nil {println("CustomCell: textFieldShouldReturn: vertViewId is nil");}
         if attributesDelegate == nil {println("CustomCell: textFieldShouldReturn: attributesDelegate is nil");}
-        if attributesDelegate!.attrStringsOrNil == nil {println("CustomCell: textFieldShouldReturn: attributesDelegate's attrStringsOrNil is nil");}
+        if attributesDelegate!.attrsOrNil == nil {println("CustomCell: textFieldShouldReturn: attributesDelegate's attrsOrNil is nil");}
         
-        if !contains(attributesDelegate!.attrStringsOrNil!, str:textField.text) {
+        if !contains(attributesDelegate!.attrsOrNil!, str:textField.text) {
             delegate!.addAttributeById(vertViewId!, withString: textField.text);
         }
         else {

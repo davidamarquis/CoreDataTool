@@ -16,14 +16,31 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     // vert will be assigned before we segue to this view
     var vert:Vert?;
     // attrsOrNil an array holding AttributeString managed objects
-    var attrsOrNil:Array<AttributeString>?;
+    var attrsOrNil:Array<Attribute>?;
     var relsOrNil:Array<Edge>?;
     // an array holding each of the string properties of attrsOrNil
-    var attrStringsOrNil:Array<String>?;
-    
+
     let attrView:UITableView?=UITableView();
     var titleField:UITextField?;
     let titleHeight:CGFloat=48;
+    
+    //MARK: kvo
+    //kvo is used to support changes in attributes.
+    override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject: AnyObject], context: UnsafeMutablePointer<Void>) {
+
+        if attrsOrNil == nil {println("AttributeTable: observeValueForKeyPath: attrsOrNil is nil");}
+        if object is Attribute {
+            var att = object as! Attribute;
+            
+            if keyPath == "name" || keyPath == "type" {
+                // get list and re-sort it
+                getSortedAttributes();
+            }
+            else {
+                println("AttributeTable: observeValueForKeyPath: unregonized key path for object vert");
+            }
+        }
+    }
     
     //MARK: view lifecycle methods
     override func viewDidLoad() {
@@ -59,22 +76,28 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         attrView!.reloadData();
         view.addSubview(attrView!);
         
-        getStringsFromVert();
+        getSortedAttributes();
+    }
+    
+    func sortAttributes(a1:Attribute, a2:Attribute)->Bool {
+        if a1.name < a2.name {
+            return true;
+        }
+        return false;
     }
     
     //MARK: setup methods
-    func getStringsFromVert() {
-        attrsOrNil=vert?.attributeStrings.allObjects as? Array<AttributeString>;
+    func getSortedAttributes() {
+    
+        // 1.get an unsorted array of attributes from the vert
+        if vert == nil {println("AttributeTableVC: getSortedAttributes: the vert is nil");}
+        attrsOrNil=vert!.attributes.allObjects as? Array<Attribute>;
+        if attrsOrNil == nil {println("AttributeTableVC: getSortedAttributes: the list of attributes is nil");}
         
-        // init the array that will hold the strings
-        attrStringsOrNil = Array<String>();
-        if attrsOrNil == nil { println("AttributeTable: viewWillAppear: no attributes found on the given vert"); }
-        for attr in attrsOrNil! {
-            attrStringsOrNil!.append(attr.string);
-        }
+        // 2.sort
+        attrsOrNil = sorted(attrsOrNil!, sortAttributes);
         
-        // sort the attributes alphabetically
-        attrStringsOrNil = sorted(attrStringsOrNil!, { $0 < $1 })
+        // 3.reload
         attrView!.reloadData();
     }
     
@@ -210,7 +233,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         // assumption: attrsOrNil!.count+1 = length of attributes section
         if indexPath.row < attrsOrNil!.count
         {
-            let elem:AnyObject = attrStringsOrNil![indexPath.row];
+            let elem:AnyObject = attrsOrNil![indexPath.row];
             if !(elem is String) {"AttributeTable: tableView setAttributeCell(): elem stored in attribute.string is not a string"}
             
             //set the text of the cell textfield
