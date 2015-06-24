@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 import MessageUI
 
-class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, MailGenDelegate, CellChangeResponse {
+class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, MailGenDelegate {
 
     //var mailVC:MFMailComposeViewController = MFMailComposeViewController();
     var mailGen:MailGen = MailGen();
@@ -50,12 +50,34 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                 let vert:Vert? = graph!.getVertById(vv.vertViewId!);
                 if vert != nil {
                     if segue.destinationViewController is AttributeTableVC {
+                        //set vert
                         (segue.destinationViewController as! AttributeTableVC).vert=vert;
+                        //set attr observers
+                        setupAttrObservers(vert!, vc: segue.destinationViewController as! AttributeTableVC);
+                        //set context
+                        if context == nil {println("Core")}
+                        (segue.destinationViewController as! AttributeTableVC).context=context!;
                     }
                 }
                 else { println("CoreController: prepareForSegue: vert is nil"); }
             }
             else { println("CoreController: prepareForSegue: graph is nil");}
+            
+        }
+    }
+
+    func setKVOForAttrTable(attr:Attribute, vc:UIViewController, vert:Vert) {
+        attr.addObserver(vc as! AttributeTableVC, forKeyPath: "name", options: .New, context: nil);
+        attr.addObserver(vc as! AttributeTableVC, forKeyPath: "type", options: .New, context: nil);
+    }
+    
+    // prepareForSegue helper
+    func setupAttrObservers(vert:Vert, vc:AttributeTableVC) {
+    
+        for attr in vert.attributes {
+            if attr is Attribute {
+                setKVOForAttrTable(attr as! Attribute, vc: vc, vert: vert);
+            }
         }
     }
 
@@ -167,8 +189,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         
 
     }
-    
-
     
     // sets up 3 buttons for the view controllers UI states
     func barButtons() {
@@ -755,36 +775,9 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         return newContext
     }()
     
-    //MARK: vert attributes
-    // use vert id to get a vert and add an attribute to it
-    func addAttributeById(vertId:Int32, withString attrString:String) {
-        // get vert
-        let vert:Vert? = graph!.getVertById(vertId);
-        // get attr
-        let attrDescription = NSEntityDescription.entityForName("Attribute",inManagedObjectContext: context!);
-        let attr:Attribute = Attribute(entity: attrDescription!,insertIntoManagedObjectContext: context);
-        // set the attr string to be the input string
-        attr.name=attrString;
-        
-        // update model with new attribute
-        if vert != nil {
-            addAttrToVert(attr, newVert: vert!);
-        }
-        else {println("CoreController: addAttributeById: could not find vert to modify");}
-        
-        // attribute's table view will be refreshed by KVO
-    }
-    
-    private func addAttrToVert(newAttr:Attribute, newVert:Vert) {
-        // the attribute table view controller will be the only VC that responds to these observers
-        newAttr.addObserver(self, forKeyPath: "name", options: .New, context: nil);
-        newAttr.addObserver(self, forKeyPath: "type", options: .New, context: nil);
-        var manyRelation:AnyObject? = newVert.valueForKeyPath("attributes") ;
-        if manyRelation is NSMutableSet {
-            (manyRelation as! NSMutableSet).addObject(newAttr);
-        }
-    }
-    
+
+            
+    // MARK: Vert attributes
     // setTitle
     func setTitle(vertId:Int32, title: String) {
         let vert:Vert? = graph!.getVertById(vertId);
@@ -812,20 +805,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         var verts=testVertsArray(4);
         var edges=testEdgesArray(4);
         if graph != nil {
-     
-            let attrDescription = NSEntityDescription.entityForName("Attribute",inManagedObjectContext: context!);
-            let attr:Attribute = Attribute(entity: attrDescription!,insertIntoManagedObjectContext: context);
-            attr.name="test";
-            
-            // cause is that an optional is returned by setByAddingObject
-            addAttrToVert(attr, newVert:verts[0]);
-            addAttrToVert(attr, newVert:verts[1]);
-            addAttrToVert(attr, newVert:verts[2]);
-            addAttrToVert(attr, newVert:verts[3]);
-            
-            //var cat:NSSet=NSSet();
-            //cat = cat.setByAddingObject(attr);
-            
+      
             graph!.SetupVert(verts[0], AtX:10, AtY:70 );
             graph!.SetupVert(verts[1], AtX:100, AtY:200 );
             graph!.SetupVert(verts[2], AtX:50, AtY:300 );

@@ -9,23 +9,27 @@
 import UIKit
 import Foundation
 
-protocol CellChangeResponse {
-    func addAttributeById(vertId:Int32, withString attrString:String);
-    func presentViewController(viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)?);
-}
-
 protocol CheckAttributes {
+    
+    func addAttributeById(vertId:Int32, withString attrString:String);
+    // the delegate is responsible for presenting an
+    func presentViewController(viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)?);
+    
+    func setAttrName(attr:Attribute, name:String);
+    func setAttrType(attr:Attribute, type:String);
+    func validateAttrName(str:String)->Bool;
+    
     var attrsOrNil:Array<Attribute>? {get};
 }
 
-class CustomCell: UITableViewCell,UITextFieldDelegate {
- 
-    var showAttrErr=false;
-    
+class CustomCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPickerViewDataSource {
+    // determines if changing the
+    var doesCreateNewCell:Bool?;
+
     var attributesDelegate:CheckAttributes?;
+    var pickerTest=["Undefined","Integer 16","Integer 32","Integer 64","Decimal","Double","Float","String","Boolean","Date","Binary Data","Transformable"];
     
     let addAttrFieldPlaceholderText = "Add Attribute";
-    var delegate:CellChangeResponse?;
     // the id of the vert that has been passed to AttrTable
     var vertViewId:Int32?;
     
@@ -34,6 +38,8 @@ class CustomCell: UITableViewCell,UITextFieldDelegate {
     var descriptionLabel:UITextField?;
     var picker:Picker?;
     var typeLabel:UILabel?;
+    //TODO: refactor trello:
+    var attr:Attribute?;
 
     // selectCell() enables picker scrolling
     func selectCell() {
@@ -69,25 +75,33 @@ class CustomCell: UITableViewCell,UITextFieldDelegate {
         if picker == nil {println("CustomCell: postInitSetup: picker is nil");}
         picker!.frame = CGRectMake(160,0,140,self.frame.height);
         contentView.addSubview(picker!);
-        
-        let noteCenter:NSNotificationCenter = NSNotificationCenter.defaultCenter();
-        let mainQueue:NSOperationQueue=NSOperationQueue.mainQueue();
-        
-        noteCenter.addObserverForName( UIKeyboardWillHideNotification, object: nil, queue: mainQueue, usingBlock:
-        {(notification:NSNotification!) -> Void in
-        
-            if self.showAttrErr {
-                let alert = UIAlertController(title: "Attribute Exists", message: "Cannot add an attribute with the same name as an already existing attribute", preferredStyle: .Alert);
-                let alertAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil);
-                alert.addAction(alertAction);
-                self.delegate!.presentViewController(alert, animated: false, completion:
-                {() -> Void in
-                    // reset the showAttrErr flag
-                    self.showAttrErr=false;
-                });
-            }
-        });
+    }
     
+    //MARK: pickerView datasource
+    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+        return 1;
+    }
+    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return pickerTest.count
+    }
+    
+    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
+    
+        return pickerTest[row];
+    }
+    func pickerView(pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return 20;
+    }
+    
+    //MARK: picker scrolled
+    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        // sometimes scrolling of the picker view is ignored
+        if doesCreateNewCell! {return;}
+        
+        if attributesDelegate == nil {println("CustomCell: pickerView: attributesDelegate is nil");}
+        if row < 0 || pickerTest.count < row { println("CustomCell:pickerView:didSelectRow: row is too large after checking doesCreateNewCell"); }
+
+        attributesDelegate!.setAttrType(attr!, type: pickerTest[row]);
     }
     
     private func setTextField(textField:UITextField, placeholder:String) {
@@ -103,29 +117,29 @@ class CustomCell: UITableViewCell,UITextFieldDelegate {
         postInitSetup();
     }
     
-    // default contains function is not working in Swift 1.2
-    func contains(arr:Array<Attribute>, str:String)->Bool {
-        for elem in arr {
-            if elem.name == str {
-                return true;
-            }
-        }
-        return false;
-    }
+
 
     //MARK: UITextFieldDelegate methods
     func textFieldShouldReturn(textField: UITextField)->Bool {
         
-        if delegate == nil {println("CustomCell: textFieldShouldReturn: delegate is nil");}
+        if attributesDelegate == nil {println("CustomCell: textFieldShouldReturn: delegate is nil");}
         if vertViewId == nil {println("CustomCell: textFieldShouldReturn: vertViewId is nil");}
         if attributesDelegate == nil {println("CustomCell: textFieldShouldReturn: attributesDelegate is nil");}
         if attributesDelegate!.attrsOrNil == nil {println("CustomCell: textFieldShouldReturn: attributesDelegate's attrsOrNil is nil");}
+        if doesCreateNewCell == nil {println("CustomCell: textFieldShouldReturn: attributesDelegate's: doesCreateNewCell is nil");}
         
-        if !contains(attributesDelegate!.attrsOrNil!, str:textField.text) {
-            delegate!.addAttributeById(vertViewId!, withString: textField.text);
+        if attributesDelegate!.validateAttrName(textField.text) {
+            if doesCreateNewCell! {
+                attributesDelegate!.addAttributeById(vertViewId!, withString: textField.text);
+            }
+            else {
+                // assuming attr is not nil
+                attributesDelegate!.setAttrName(attr!,name: textField.text);
+            }
         }
         else {
-            showAttrErr=true;
+            textField.text = "";
+            textField.placeholder = addAttrFieldPlaceholderText;
         }
         textField.resignFirstResponder();
         return true;

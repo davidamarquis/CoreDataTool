@@ -6,10 +6,19 @@
 //  Copyright (c) 2015 David Marquis. All rights reserved.
 //
 
-import UIKit
+import UIKit;
+import CoreData;
 
 // AttributeTable is always presented as a segue from CoreController. Its properties are not retained when the user returns to CoreController
-class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, CheckAttributes {
+class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, CheckAttributes {
+    
+    // flags for validating attribute name input from user
+    var attrNameDidNotStartWithCaptial=false;
+    var attrAlreadyExists=false;
+    
+    let capLets=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"] as Array<Character>;
+    let lowLets=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"] as Array<Character>;
+    var context:NSManagedObjectContext?;
     
     var pickerTest=["Undefined","Integer 16","Integer 32","Integer 64","Decimal","Double","Float","String","Boolean","Date","Binary Data","Transformable"];
     
@@ -23,11 +32,19 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     let attrView:UITableView?=UITableView();
     var titleField:UITextField?;
     let titleHeight:CGFloat=48;
-    
+        
     //MARK: kvo
     //kvo is used to support changes in attributes.
     override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject: AnyObject], context: UnsafeMutablePointer<Void>) {
 
+        if object is Vert {
+            var v = object as! Vert;
+            if titleField == nil {println("AttributeTable: observeValueForKeyPath: title field is nil");}
+            if keyPath=="title" {
+                titleField!.text = v.title
+            }
+        }
+        
         if attrsOrNil == nil {println("AttributeTable: observeValueForKeyPath: attrsOrNil is nil");}
         if object is Attribute {
             var att = object as! Attribute;
@@ -46,9 +63,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if vert == nil {
-           println("AttributeTable: viewWillAppear: err vert is nil");
-        }
+        if vert == nil {println("AttributeTable: viewWillAppear: err vert is nil");}
         
         titleField = UITextField(frame: CGRectMake( CGFloat(0), CGFloat(20+44), view.frame.width, titleHeight ));
         if titleField == nil {println("AttributeTable: viewWillAppear: err titleField is nil");}
@@ -56,20 +71,16 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         view.addSubview(titleField!);
         titleField!.backgroundColor=UIColor.blueColor();
         setTextField(titleField!, placeholder:"Add title");
-        // if the vert does have text in its title then we override the placeholder
+        
+        // if there's text in vert title then override placeholder text
         if !vert!.title.isEmpty {
             titleField!.text = vert!.title;
         }
         
         // create the table view
         attrView!.frame = CGRectMake(CGFloat(0),CGFloat(20+44)+titleHeight,view.frame.width,view.frame.height-CGFloat(titleHeight));
-        attrView!.dataSource = self;
-        attrView!.delegate = self;
-        //attrView!.delaysContentTouches=false;
-        //attrView!.canCancelContentTouches=true;
-        attrView!.allowsSelection=false;
-        //attrView!.userInteractionEnabled=false;
-        
+        (attrView!.dataSource, attrView!.delegate) = (self, self);
+        attrView!.allowsSelection=true;
         // register class will allow new cells to be initialized properly at launch
         // an incorrect class name will cause cells to not be shown at launch
         attrView!.registerClass(CustomCell.self, forCellReuseIdentifier:"AttributeCell");
@@ -77,13 +88,78 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         view.addSubview(attrView!);
         
         getSortedAttributes();
+        
+        // observes keyboard dismissal in case any error
+        let noteCenter:NSNotificationCenter = NSNotificationCenter.defaultCenter();
+        let mainQueue:NSOperationQueue=NSOperationQueue.mainQueue();
+        noteCenter.addObserverForName( UIKeyboardWillHideNotification, object: nil, queue: mainQueue, usingBlock:
+        {(notification:NSNotification!) -> Void in
+        
+            if self.attrNameDidNotStartWithCaptial {
+                let alert = UIAlertController(title: "Invalid Name", message: "Attribute names must start with a capital letter", preferredStyle: .Alert);
+                let alertAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil);
+                alert.addAction(alertAction);
+                self.presentViewController(alert, animated: false, completion:
+                {() -> Void in
+                    // reset the showAttrErr flag
+                    self.attrNameDidNotStartWithCaptial=false;
+                });
+            }
+        });
+        noteCenter.addObserverForName( UIKeyboardWillHideNotification, object: nil, queue: mainQueue, usingBlock:
+        {(notification:NSNotification!) -> Void in
+        
+            if self.attrAlreadyExists {
+                let alert = UIAlertController(title: "Attribute Exists", message: "Cannot add an attribute with the same name as an already existing attribute", preferredStyle: .Alert);
+                let alertAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil);
+                alert.addAction(alertAction);
+                self.presentViewController(alert, animated: false, completion:
+                {() -> Void in
+                    // reset the showAttrErr flag
+                    self.attrAlreadyExists=false;
+                });
+            }
+        });
     }
     
-    func sortAttributes(a1:Attribute, a2:Attribute)->Bool {
-        if a1.name < a2.name {
-            return true;
+    //MARK: change model
+    // use vert id to get a vert and add an attribute to it
+    func addAttributeById(vertId:Int32, withString attrString:String) {
+        // make attr
+        let attrDescription = NSEntityDescription.entityForName("Attribute",inManagedObjectContext: context!);
+        let attr:Attribute = Attribute(entity: attrDescription!,insertIntoManagedObjectContext: context);
+
+        // set KVO on self
+        attr.addObserver(self, forKeyPath: "name", options: .New, context: nil);
+        attr.addObserver(self, forKeyPath: "type", options: .New, context: nil);
+        
+        // update vert
+        if vert == nil {println("CoreController: addAttributeById: could not find vert to modify");}
+        addAttrToVert(attr, newVert: vert!);
+        
+        // set attr properties
+        attr.name=attrString; // trigger KVO
+        attr.type="Undefined";
+    }
+    // delegate method
+    func setAttrName(attr:Attribute, name:String){
+        attr.name = name;
+    }
+    
+    // delegate method
+    func setAttrType(attr:Attribute, type:String){
+    
+        attr.type = type;
+    }
+    
+    
+    // addAttrToVert adds a reference to the attribute in the array of attributes held by the vert
+    private func addAttrToVert(newAttr:Attribute, newVert:Vert) {
+        // the attribute table view controller will be the only VC that responds to these observers
+        var manyRelation:AnyObject? = newVert.valueForKeyPath("attributes") ;
+        if manyRelation is NSMutableSet {
+            (manyRelation as! NSMutableSet).addObject(newAttr);
         }
-        return false;
     }
     
     //MARK: setup methods
@@ -100,20 +176,11 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         // 3.reload
         attrView!.reloadData();
     }
-    
-    //MARK: pickerView interface
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
-        return 1;
-    }
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return pickerTest.count
-    }
-    
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-        return pickerTest[row];
-    }
-    func pickerView(pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        return 20;
+    func sortAttributes(a1:Attribute, a2:Attribute)->Bool {
+        if a1.name < a2.name {
+            return true;
+        }
+        return false;
     }
     
     //MARK: UITextFieldDelegate methods
@@ -124,12 +191,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         if vert == nil {println("AttributeTable: testFieldShouldReturn: vert is nil");};
         
         if textField is attributeTextField {
-            if navigationController == nil {println("AttributeTable: testFieldShouldReturn: nav controller is nil");}
-            for vc in navigationController!.viewControllers {
-                if vc is CoreController {
-                    (vc as! CoreController).addAttributeById(vert!.vertViewId, withString: textField.text);
-                }
-            }
+            addAttributeById(vert!.vertViewId, withString: textField.text);
         }
         else {
             // assumption here: the only textfields in AttributeTable not=attributeTextField is the title text field
@@ -150,11 +212,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         return 162;
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Potentially incomplete method implementation.
-        // Return the number of sections.
-        return 2
-    }
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {return 2;}
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
@@ -208,9 +266,10 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
             
             // do any additional setup of the cell...
         }
-        cell!.picker!.delegate = self; //UIPickerView delegate
-        cell!.picker!.dataSource = self; //UIPickerView data source
+        cell!.picker!.delegate = cell!; //UIPickerView delegate
+        cell!.picker!.dataSource = cell!; //UIPickerView data source
         cell!.attributesDelegate = self; //CheckAttributes delegate
+        cell!.vertViewId = vert!.vertViewId;
 
         // customize the cell based on its section
         if inAttributesSection(indexPath) {
@@ -233,28 +292,26 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         // assumption: attrsOrNil!.count+1 = length of attributes section
         if indexPath.row < attrsOrNil!.count
         {
-            let elem:AnyObject = attrsOrNil![indexPath.row];
-            if !(elem is String) {"AttributeTable: tableView setAttributeCell(): elem stored in attribute.string is not a string"}
-            
+            // if a cell is not flagged with doesCreateNewCell then changing the textField makes a change to an existing attribute
+            cell.doesCreateNewCell = false;
             //set the text of the cell textfield
-            cell.descriptionLabel!.text=elem as? String;
-        }
-        else {
-            // the last cell in the attribute section invites creating a new cell
-            cell.descriptionLabel!.text=cell.addAttrFieldPlaceholderText;
-        }
-        
-        // set the delegate for cell
-        if navigationController == nil {println("AttributeTable: setAttributeCell(): nav controller is nil");}
-        // assumes there is only a single CoreController in nav
-        for vc in navigationController!.viewControllers
-        {
-            if vc is CoreController
-            {
-                cell.delegate=vc as! CoreController; // UITextField subclass delegate
-                cell.vertViewId=vert!.vertViewId;
+            cell.descriptionLabel!.text=attrsOrNil![indexPath.row].name;
+            
+            //TODO: Trello: refactor to MVC
+            cell.attr=attrsOrNil![indexPath.row];
+            
+            let ind = find(pickerTest,cell.attr!.type);
+            if ind != nil {
+            
+                cell.picker!.selectRow(ind!, inComponent: 0, animated: false);
             }
         }
+        else {
+            cell.doesCreateNewCell = true;
+            // the last cell in the attribute section invites creating a new cell
+            cell.descriptionLabel!.placeholder=cell.addAttrFieldPlaceholderText;
+        }
+    
     }
     
     // setRelationshipCell() does the setup for a table view cell in the attributes section.
@@ -280,13 +337,47 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         return sectionName;
     }
 
-    
-    //MARK: helper methods
     private func setTextField(textField:UITextField, placeholder:String) {
         textField.adjustsFontSizeToFitWidth = true;
         textField.textColor = UIColor.blackColor();
         textField.placeholder = placeholder;
         textField.keyboardType = UIKeyboardType.EmailAddress;
         textField.delegate = self;
+    }
+    
+    //MARK: attr name validation
+    // default contains function is not working in Swift 1.2
+    func contains(arr:Array<Attribute>, str:String)->Bool {
+        for elem in arr {
+            if elem.name == str {
+                return true;
+            }
+        }
+        return false;
+    }
+    func validateNameNotExists(str:String)->Bool {
+        if !contains(attrsOrNil!, str:str) {
+            attrAlreadyExists=true;
+            return false;
+        }
+        return true;
+    }
+    
+    func validateFirstChar(str:String)->Bool {
+        let firstChar=str[str.startIndex];
+        
+        if find(lowLets,firstChar) != nil {
+            attrNameDidNotStartWithCaptial=true;
+            return false;
+        }
+        return true;
+    }
+    
+    func validateAttrName(str:String)->Bool {
+        // if any of the tests is false then return false
+        if !validateFirstChar(str) || !validateNameNotExists(str) {
+            return false;
+        }
+        return true;
     }
 }
