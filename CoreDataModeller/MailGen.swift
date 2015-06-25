@@ -18,59 +18,48 @@ protocol MailGenDelegate {
 class MailGen: NSObject, MFMailComposeViewControllerDelegate {
     
     //TODO:
-    weak var delegate:CoreController?;
+    var delegate:MailGenDelegate?;
     let mailVC:MFMailComposeViewController = MFMailComposeViewController();
     
     //MARK: nav bar
     func emailPressed(sender: AnyObject) {
     
-        // mailVC is of type
         if mailVC.mailComposeDelegate == nil {
             mailVC.mailComposeDelegate = self;
         }
-        if !(mailVC.mailComposeDelegate is CoreController) {
-            println("CoreController: emailPressed: err mailComposeDelegate is not equal to self");
-        }
         
-        if delegate == nil {
-            println("mailGen: emailPressed() delegate is nil");
-        }
+        if delegate == nil {println("mailGen: emailPressed() delegate is nil");}
+        
         if MFMailComposeViewController.canSendMail() {
             mailVC.modalTransitionStyle = UIModalTransitionStyle.CoverVertical;
             
             mailVC.setSubject("test file");
             mailVC.setToRecipients(["david.a.marquis@gmail.com"]);
             
-            // TODO: let myData:NSData = NSKeyedArchiver.archivedDataWithRootObject("cake is good for taste but bad for weight");
             // http://stackoverflow.com/questions/901357/how-do-i-convert-an-nsstring-value-to-nsdata
-            
             // create app delegate header string
-            let headerGen:ObjCAppDelegateHGen = ObjCAppDelegateHGen();
-            headerGen.updateString();
-            let appDelegHStr = headerGen.appDelegateH;
-            // attach app delegate header file to mail
-            let delegHeaderData:NSData?=appDelegHStr.dataUsingEncoding(NSUTF8StringEncoding);
-            if delegHeaderData != nil {
-                mailVC.addAttachmentData(delegHeaderData, mimeType:"text/rtf", fileName:"AppDelegate.h");
-            }
+
+            // generate app delegate files
+            makeAppDelegateHGen();
+            makeAppDelegateMGen();
             
-            // create app delegate header string
-            let delegMGen:ObjCAppDelegateMGen = ObjCAppDelegateMGen();
-            delegMGen.updateString();
-            let appDelegMStr = delegMGen.appDelegateM;
-            // attach app delegate header file to mail
-            let delegMData:NSData?=appDelegMStr.dataUsingEncoding(NSUTF8StringEncoding);
-            if delegMData != nil {
-                mailVC.addAttachmentData(delegMData, mimeType:"text/rtf", fileName:"AppDelegate.m");
-            }
-            
-            
+            // generate entity files 
             for v in delegate!.graph!.verts {
                 if let vert=(v as? Vert) {
-                
-                    let testStr = "";
-                    let testData:NSData?=testStr.dataUsingEncoding(NSUTF8StringEncoding);
-                    mailVC.addAttachmentData(testData, mimeType:"text/rtf", fileName:"\(vert.title).m");
+                 
+                    let entityHGen = ObjCEntityHGen();
+                    entityHGen.vert = vert;
+                    entityHGen.updateString();
+                    let entityStr = entityHGen.entityH;
+                    let entityData:NSData?=entityStr.dataUsingEncoding(NSUTF8StringEncoding);
+                    mailVC.addAttachmentData(entityData, mimeType:"text/rtf", fileName:"\(vert.title).h");
+                    
+                    let entityMGen = ObjCEntityMGen();
+                    entityMGen.vert = vert;
+                    entityMGen.updateString();
+                    let entityMStr = entityMGen.entityM;
+                    let entityMData:NSData?=entityMStr.dataUsingEncoding(NSUTF8StringEncoding);
+                    mailVC.addAttachmentData(entityMData, mimeType:"text/rtf", fileName:"\(vert.title).m");
                 }
             }
             
@@ -82,6 +71,32 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
         }
     }
     
+    // makeAppDelegateHGen() adds an app delegate.h string attachment
+    private func makeAppDelegateHGen() {
+        let headerGen = ObjCAppDelegateHGen();
+        headerGen.updateString();
+        let appDelegHStr = headerGen.appDelegateH;
+        // attach app delegate header file to mail
+        let delegHeaderData:NSData?=appDelegHStr.dataUsingEncoding(NSUTF8StringEncoding);
+        if delegHeaderData != nil {
+            mailVC.addAttachmentData(delegHeaderData, mimeType:"text/rtf", fileName:"AppDelegate.h");
+        }
+    }
+    
+    // makeAppDelegateMGen() adds an app delegate.m string attachment
+    private func makeAppDelegateMGen() {
+        let delegMGen = ObjCAppDelegateMGen();
+        delegMGen.graph = delegate!.graph;
+        delegMGen.updateString();
+        let appDelegMStr = delegMGen.appDelegateM;
+        // attach app delegate.m file to mail
+        let delegMData:NSData?=appDelegMStr.dataUsingEncoding(NSUTF8StringEncoding);
+        if delegMData != nil {
+            mailVC.addAttachmentData(delegMData, mimeType:"text/rtf", fileName:"AppDelegate.m");
+        }
+    }
+    
+    //TODO: UIAlertView is deprecated
     func showSendMailErrorAlert() {
         let sendMailErrorAlert = UIAlertView(title: "Could Not Send Email", message: "Your device could not send e-mail.  Please check e-mail configuration and try again.", delegate: self, cancelButtonTitle: "OK")
         sendMailErrorAlert.show()

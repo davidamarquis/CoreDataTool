@@ -26,11 +26,6 @@ override func setUp() {
 }
 
 // MARK: - Core Data stack
-// applicationDocumentsDirectory
-// managedObjectModel
-// persistentStoreCoordinator
-// context
-
 lazy var applicationDocumentsDirectory: NSURL =
 {
     // The directory the application uses to store the Core Data store file. This code uses a directory named "com.david.CoreDataTest" in the application's documents Application Support directory.
@@ -150,6 +145,8 @@ func makeGraph1() {
         graph!.SetupEdge(edges![2], From:verts![0], To:verts![3]);
         graph!.SetupEdge(edges![3], From:verts![1], To:verts![2]);
         
+        edges![0].setNameForVert(verts![0], relationshipName:"photosTaken");
+        edges![0].setNameForVert(verts![1], relationshipName:"photographer");
     }
     
 }
@@ -197,22 +194,24 @@ func makeGraph3() {
     // TODO: eventually should have [self.graph setupGraph:@[@[@1,@2],@[@1,@3],
 }
 
-func testEdges1() {
-
-    let potato:Array<Array<Int32>> = graph!.edgeIdArray();
+// in Graph 1 the v0 is joined to v1 by e0
+func testNeighborOnEdge1() {
+    let neighbor:Vert?;
+    neighbor = verts![0].getNeighborOnEdge(edges![0]);
     
+    XCTAssert(verts![1] === neighbor);
 }
 
-// all verts initially have not been seen
+// In Graph 1 all verts initially have not been seen
 func testSeen1() {
     if verts != nil {
     
-        XCTAssert(verts![0].allNeighborsSeen()==false);
+        XCTAssert(verts![0].allNeighborsSeen() == false);
     }
     else { XCTAssert(false); }
 }
 
-// all verts start with edges that are not fresh
+// In Graph 1 all verts start with edges that are not fresh
 func testFreshEdges1() {
     if verts != nil {
         XCTAssert(verts![0].freshEdges==false);
@@ -228,6 +227,60 @@ func testDistance1() {
         XCTAssert((158<dist) && (dist<159));
     }
     else {
+        XCTAssert(false);
+    }
+}
+
+// the relationship out of vert 0 via edge 0 is called photosTaken
+func testGetNameForVert() {
+    let relationshipName:String? = edges![0].getNameForVert(verts![0]);
+    
+    if relationshipName != nil {
+        XCTAssert( relationshipName! == "photosTaken" );
+    }
+    else {
+        XCTAssert( false );
+    }
+}
+
+// the relationship out of vert 0 via edge 1 does not exist
+func testGetNameForVert2() {
+    let relationshipName:String? = edges![1].getNameForVert(verts![0]);
+    
+    if relationshipName != nil {
+        XCTAssert( relationshipName! != "photosTaken" );
+    }
+    else {
+        XCTAssert( false );
+    }
+}
+
+// v0 is a neighbor of v1
+func testNeighbor1() {
+    // isNeighborOf always returns a BOOL so don't need to check for nil result
+    XCTAssert( verts![0].isNeighborOf(verts![1]) );
+}
+
+// In graph 1 v2 is not a neighbor of v3
+func testNeighbor2() {
+    XCTAssert( !verts![2].isNeighborOf(verts![3]) );
+}
+
+// an edge exists between v0 and v1
+func testSharedEdge1() {
+    // expected edge id
+    let edgeId = edges![0].edgeViewId;
+    // found edge
+    let edge:Edge? = verts![0].getSharedEdge(verts![1]);
+    
+    if edge == nil || edgeId != edge!.edgeViewId {
+        XCTAssert(false);
+    }
+}
+
+// an edge does not exist between v2 and v3
+func testSharedEdge2() {
+    if verts![2].getSharedEdge(verts![3]) != nil {
         XCTAssert(false);
     }
 }
@@ -294,35 +347,6 @@ func testDistance3() {
         }
     }
     if(seenCount!=1) {
-        XCTAssert(NO);
-    }
-}
-
-// v0 is a neighbor of v1
--(void)testNeighbor1 {
-    // isNeighborOf always returns a BOOL so don't need to check for nil result
-    XCTAssert([_verts[0] isNeighborOf:_verts[1]]);
-}
-
-// v2 is not a neighbor of v3
--(void)testNeighbor2 {
-    XCTAssert(![_verts[2] isNeighborOf:_verts[3]]);
-}
-
-// an edge exists between v0 and v1
--(void)testSharedEdge1 {
-    // expected edge id
-    NSNumber* edgeId=((Edge*) _edges[0]).edgeViewId;
-    // found edge
-    Edge* edge=[_verts[0] getSharedEdge:_verts[1]];
-    if((edge==nil) || ![edgeId isEqualToNumber:edge.edgeViewId]) {
-        XCTAssert(NO);
-    }
-}
-
-// an edge does not exist between v2 and v3
--(void)testSharedEdge2 {
-    if([_verts[2] getSharedEdge:_verts[3]] != nil) {
         XCTAssert(NO);
     }
 }

@@ -2,7 +2,7 @@
 //  Entity.swift
 //  CoreDataModeller
 //
-//  Created by David Marquis on 2015-06-23.
+//  Created by David Marquis on 2015-06-24.
 //  Copyright (c) 2015 David Marquis. All rights reserved.
 //
 

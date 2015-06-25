@@ -45,6 +45,7 @@ func isNeighborOf(other:Vert)->Bool {
     }
 }
 
+// getSharedEdge() returns the edge shared with the other vert if it is not nil
 func getSharedEdge(other: Vert)->Edge? {
     if(!self.isNeighborOf(other)) {
         return nil;
@@ -54,7 +55,7 @@ func getSharedEdge(other: Vert)->Edge? {
         for e2 in other.edges {
             if(e1 is Edge && e2 is Edge )
             {
-                // Note in swift this is an equality test not an identity test
+                // Note in swift === is equality test not identity test
                 if(e1===e2) {
                     return e1 as? Edge;
                 }
@@ -62,6 +63,23 @@ func getSharedEdge(other: Vert)->Edge? {
         }
     }
     return nil;
+}
+
+// think of this as an inverse: you put one vert in and get the other one
+func getNeighborOnEdge(edge:Edge)->Vert? {
+    let v:Vert?;
+    let w:Vert?;
+    (v,w)=edge.Connects();
+    
+    if v === self {
+        return w;
+    }
+    else if w === self {
+        return v;
+    }
+    else {
+        return nil;
+    }
 }
 
 func isPositionEqual(other: Vert)->Bool {

@@ -11,6 +11,7 @@ import UIKit
 class ObjCAppDelegateMGen: NSObject {
 
     let username:String = "David Marquis";
+    var graph:Graph?;
     
     var appDelegateM = String();
     var comment:Array<String> = Array<String>();
@@ -33,7 +34,7 @@ class ObjCAppDelegateMGen: NSObject {
         comment = ["//","//  AppDelegate.m","//  June4CoreDataObjCTest","//","//  Created by \(username) on 2015-06-04.","//  Copyright (c) 2015 \(username). All rights reserved.","//","","#import \"AppDelegate.h\"","#import <CoreData/CoreData.h>",""];
         // any custom class names should be put at the start of this array
         privInterface = ["@interface AppDelegate ()","","@end","@implementation AppDelegate"]
-        didFinishLaunch = ["- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {","\t // Override point for customization after application launch.","\t return YES;","}",""];
+        didFinishLaunch = ["- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {","\t // Override point for customization after application launch.","[self setUpModel];","\t return YES;","}",""];
         appWillResign = ["- (void)applicationWillResignActive:(UIApplication *)application {","\t // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.","\t // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.","}",""];
         
         appDidEnterBackground = ["- (void)applicationDidEnterBackground:(UIApplication *)application {","// Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.","// If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.","}",""];
@@ -61,6 +62,34 @@ class ObjCAppDelegateMGen: NSObject {
         for str in didFinishLaunch {
             appDelegateM += str+"\n";
         }
+        
+        appDelegateM += "-(void)setupModel {\n";
+        for obj in graph!.verts {
+            if obj is Vert {
+                let vert = obj as! Vert;
+                // entity
+                appDelegateM += "NSEntityDescription *runEntity = [[NSEntityDescription alloc] init];\n";
+                appDelegateM += "[runEntity setName:@\"Run\"];\n";
+                appDelegateM += "[runEntity setManagedObjectClassName:@\"Run\"];\n";
+                appDelegateM += "[self.managedObjectModel setEntities:@[runEntity]];\n";
+                appDelegateM += "\n";
+                appDelegateM += "NSMutableArray *runProperties = [NSMutableArray array];\n";
+                for elem in vert.attributes {
+                    if elem is Attribute {
+                        let attr = elem as! Attribute;
+                        appDelegateM += "NSAttributeDescription *dateAttribute = [[NSAttributeDescription alloc] init];\n";
+                        appDelegateM += "[runProperties addObject:dateAttribute];\n";
+                        appDelegateM += "[dateAttribute setName:@\"date\"];\n"
+                        appDelegateM += "[dateAttribute setAttributeType:NSDateAttributeType];\n";
+                        appDelegateM += "[dateAttribute setOptional:NO];\n";
+                    }
+                }
+                appDelegateM += "}\n";
+                appDelegateM += "[runEntity setProperties:runProperties];\n";
+                appDelegateM += "}\n";
+            }
+        }
+
         for str in appWillResign {
             appDelegateM += str+"\n";
         }

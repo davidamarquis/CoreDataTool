@@ -15,9 +15,16 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     // flags for validating attribute name input from user
     var attrNameDidNotStartWithCaptial=false;
     var attrAlreadyExists=false;
+    // error strings
+    let attrTypeWarning="Entity attribute needs type";
+    let attrNameWarning="Entity attribute needs name";
+    let entityNameWarning="Entity needs name";
+    let entityFirstChar="Entity name must start with a capital letter";
     
     let capLets=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"] as Array<Character>;
     let lowLets=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"] as Array<Character>;
+    
+    //Mark: Core data
     var context:NSManagedObjectContext?;
     
     var pickerTest=["Undefined","Integer 16","Integer 32","Integer 64","Decimal","Double","Float","String","Boolean","Date","Binary Data","Transformable"];
@@ -32,7 +39,91 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     let attrView:UITableView?=UITableView();
     var titleField:UITextField?;
     let titleHeight:CGFloat=48;
+    
+    /*
+    func navigationBar(navigationBar: UINavigationBar, shouldPopItem item: UINavigationItem) -> Bool {
+        // every attribute needs a type
         
+        if attrsOrNil == nil {println("AttributeTableVC: nav bar shouldPopItem");}
+        for attr in attrsOrNil! {
+            if attr.type == "Undefined" {
+                invalidInput(attrTypeWarning, title:"Invalid Attribute Type");
+                return false;
+            }
+            else if attr.name == "" {
+                invalidInput(attrTypeWarning, title:"Invalid Attribute Type");
+                return false;
+            }
+            validateEntityNameWithAlert();
+        }
+        return true;
+    }
+    */
+    
+    // called by back button
+    func validateEntityAndReturn() {
+        // every attribute needs a type
+        
+        if attrsOrNil == nil {println("AttributeTableVC: validateEntityAndReturn: attrsOrNil is nil");}
+        for attr in attrsOrNil! {
+            if attr.type == "Undefined" {
+                invalidInput(attrTypeWarning, title:"Invalid Attribute Type");
+            }
+            else if attr.name == "" {
+                invalidInput(attrNameWarning, title:"Invalid Attribute Name");
+            }
+            validateEntityNameWithAlert();
+        }
+        
+        for vc in self.navigationController!.viewControllers {
+            if vc is CoreController {
+                presentViewController(vc as! CoreController, animated: false, completion:nil);
+            }
+        }
+    }
+
+    
+    private func validateEntityNameWithAlert()->Bool {
+        if vert!.title == "" {
+            invalidInput(entityNameWarning, title:"Invalid Entity Name");
+            return false;
+        }
+        else if !firstCharacterIsCapital(vert!.title) {
+            invalidInput(entityFirstChar, title:"Invalid Entity Name");
+            return false;
+        }
+        return true;
+    }
+    
+    private func validateEntityNameInputWithAlert(name:String)->Bool {
+        if name == "" {
+            invalidInput(entityNameWarning, title:"Invalid Entity Name");
+            return false;
+        }
+        else if !firstCharacterIsCapital(name) {
+            invalidInput(entityFirstChar, title:"Invalid Entity Name");
+            return false;
+        }
+        return true;
+    }
+    
+    // checks if the first character of the string is a capital letter
+    func firstCharacterIsCapital(str:String)->Bool {
+        let firstChar=str[str.startIndex];
+        if find(lowLets,firstChar) != nil {
+            return false;
+        }
+        return true;
+    }
+    
+    // displays and invalid input warning
+    func invalidInput(warning:String, title:String) {
+        let alert = UIAlertController(title: title, message: warning, preferredStyle: .Alert);
+        let alertAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil);
+        alert.addAction(alertAction);
+        presentViewController(alert, animated: false, completion:nil);
+    }
+    
     //MARK: kvo
     //kvo is used to support changes in attributes.
     override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject: AnyObject], context: UnsafeMutablePointer<Void>) {
@@ -61,8 +152,19 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     
     //MARK: view lifecycle methods
     override func viewDidLoad() {
-        super.viewDidLoad()
+        super.viewDidLoad();
+        
+        
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"Back", style:.Plain, target:self, action:"validateEntityAndReturn")
+        // configure the nav bar
+        /*
+        let item:UIBarButtonItem = UIBarButtonItem(title: "Backward", style:UIBarButtonItemStyle.Plain, target:self, action:"validateEntityAndReturn" );
+        navigationController!.navigationItem.hidesBackButton = true;
+        navigationController!.navigationItem.leftBarButtonItem = item;
+        */
+        //navigationController!.navigationBar.delegate = self;
 
+        view.backgroundColor = UIColor.grayColor();
         if vert == nil {println("AttributeTable: viewWillAppear: err vert is nil");}
         
         titleField = UITextField(frame: CGRectMake( CGFloat(0), CGFloat(20+44), view.frame.width, titleHeight ));
@@ -78,7 +180,8 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         }
         
         // create the table view
-        attrView!.frame = CGRectMake(CGFloat(0),CGFloat(20+44)+titleHeight,view.frame.width,view.frame.height-CGFloat(titleHeight));
+        //attrView!.frame = CGRectMake(CGFloat(0),CGFloat(20+44)+titleHeight,view.frame.width,view.frame.height-CGFloat(titleHeight));
+        attrView!.frame = CGRectMake(CGFloat(0),CGFloat(20+44)+titleHeight,view.frame.width,162*3);
         (attrView!.dataSource, attrView!.delegate) = (self, self);
         attrView!.allowsSelection=true;
         // register class will allow new cells to be initialized properly at launch
@@ -122,7 +225,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         });
     }
     
-    //MARK: change model
+    //MARK: model methods
     // use vert id to get a vert and add an attribute to it
     func addAttributeById(vertId:Int32, withString attrString:String) {
         // make attr
@@ -141,6 +244,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         attr.name=attrString; // trigger KVO
         attr.type="Undefined";
     }
+    
     // delegate method
     func setAttrName(attr:Attribute, name:String){
         attr.name = name;
@@ -176,7 +280,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         // 3.reload
         attrView!.reloadData();
     }
-    func sortAttributes(a1:Attribute, a2:Attribute)->Bool {
+    private func sortAttributes(a1:Attribute, a2:Attribute)->Bool {
         if a1.name < a2.name {
             return true;
         }
@@ -190,16 +294,14 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         
         if vert == nil {println("AttributeTable: testFieldShouldReturn: vert is nil");};
         
-        if textField is attributeTextField {
-            addAttributeById(vert!.vertViewId, withString: textField.text);
-        }
-        else {
-            // assumption here: the only textfields in AttributeTable not=attributeTextField is the title text field
-            if navigationController == nil {println("AttributeTable: testFieldShouldReturn: nav controller is nil");}
-            for vc in navigationController!.viewControllers {
-                if vc is CoreController {
-                    //entityName = textField.text;
-                    // add the new title to the model
+        // assumption here: the only textfields in AttributeTable not=attributeTextField is the title text field
+        if navigationController == nil {println("AttributeTable: testFieldShouldReturn: nav controller is nil");}
+        for vc in navigationController!.viewControllers {
+            if vc is CoreController {
+                //entityName = textField.text;
+                // add the new title to the model
+                //TODO: trying to present err over the keyboard
+                if validateEntityNameInputWithAlert(textField.text) {
                     (vc as! CoreController).setTitle(vert!.vertViewId, title: textField.text);
                 }
             }
@@ -347,7 +449,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     
     //MARK: attr name validation
     // default contains function is not working in Swift 1.2
-    func contains(arr:Array<Attribute>, str:String)->Bool {
+    private func contains(arr:Array<Attribute>, str:String)->Bool {
         for elem in arr {
             if elem.name == str {
                 return true;
@@ -355,24 +457,23 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         }
         return false;
     }
-    func validateNameNotExists(str:String)->Bool {
-        if !contains(attrsOrNil!, str:str) {
+    private func validateNameNotExists(str:String)->Bool {
+        if contains(attrsOrNil!, str:str) {
             attrAlreadyExists=true;
             return false;
         }
         return true;
     }
     
-    func validateFirstChar(str:String)->Bool {
-        let firstChar=str[str.startIndex];
-        
-        if find(lowLets,firstChar) != nil {
+    private func validateFirstChar(str:String)->Bool {
+        if !firstCharacterIsCapital(str) {
             attrNameDidNotStartWithCaptial=true;
             return false;
         }
         return true;
     }
     
+    // validateAttrName() validates input and sets flags for displaying an alert if the input is bad
     func validateAttrName(str:String)->Bool {
         // if any of the tests is false then return false
         if !validateFirstChar(str) || !validateNameNotExists(str) {
