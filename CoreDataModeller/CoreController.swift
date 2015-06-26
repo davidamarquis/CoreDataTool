@@ -28,6 +28,9 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     var remVertControl:UIView?;
     var remEdgeControl:UIView?;
     
+    var resetZoom:UIButton?;
+    var clearMode:UIButton?;
+    
     var inEdgeMode=false;
     var inVertMode=false;
     var inMoveMode=false;
@@ -775,8 +778,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         return newContext
     }()
     
-
-            
     // MARK: Vert attributes
     // setTitle
     func setTitle(vertId:Int32, title: String) {
@@ -799,6 +800,24 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     }
     
     //MARK:testing
+    
+    // use vert id to get a vert and add an attribute to it
+    func addAttributeById(vert:Vert)->Attribute {
+        // make attr
+        let attrDescription = NSEntityDescription.entityForName("Attribute",inManagedObjectContext: context!);
+        let attr:Attribute = Attribute(entity: attrDescription!,insertIntoManagedObjectContext: context);
+
+        // set KVO on self
+        attr.addObserver(self, forKeyPath: "name", options: .New, context: nil);
+        attr.addObserver(self, forKeyPath: "type", options: .New, context: nil);
+        
+        var manyRelation:AnyObject? = vert.valueForKeyPath("attributes") ;
+        if manyRelation is NSMutableSet {
+            (manyRelation as! NSMutableSet).addObject(attr);
+        }
+        return attr;
+    }
+    
     // create some variables in the managedObjectModel and send them to the model for setup
     private func testGraph() {
         // setup: step 1: create a ref to some verts and observers for them, step 2: create a ref to some edges and observers for them, step 3: set the position of the verts and attach to graph, step 4: attach edges
@@ -814,10 +833,58 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             graph!.SetupEdge(edges[1], From:verts[1], To:verts[3]);
             graph!.SetupEdge(edges[2], From:verts[1], To:verts[2]);
             graph!.SetupEdge(edges[3], From:verts[2], To:verts[3]);
-            // add an observer of the graph object
+
+            // set default titles and relationships
+            verts[0].title = "Dog";
+            verts[1].title = "Owner";
+            verts[2].title = "Brand";
+            verts[3].title = "Photo";
+            
+            let dogname = addAttributeById(verts[0]);
+            dogname.name = "Name";
+            dogname.type = "String";
+            
+            let dogbreed = addAttributeById(verts[0]);
+            dogbreed.name = "Breed";
+            dogbreed.type = "String";
+            
+            let dogage = addAttributeById(verts[0]);
+            dogage.name = "Age";
+            dogage.type = "String";
+            
+            let dogweight = addAttributeById(verts[0]);
+            dogweight.name = "Weight";
+            dogweight.type = "String";
+            
+            // customize owner
+            let ownername = addAttributeById(verts[1]);
+            ownername.name = "Name";
+            ownername.type = "String";
+            
+            let membershipId = addAttributeById(verts[1]);
+            membershipId.name = "MembershipId";
+            membershipId.type = "String";
+            
+            // customize brand
+            let brandname = addAttributeById(verts[2]);
+            brandname.name = "Name";
+            brandname.type = "String";
+            
+            let cost = addAttributeById(verts[2]);
+            cost.name = "Cost";
+            cost.type = "Double";
+            
+            let desc = addAttributeById(verts[2]);
+            desc.name = "Description";
+            desc.type = "String";
+            
+            // customize photo
+            let photo = addAttributeById(verts[3]);
+            photo.name = "Description";
+            photo.type = "Binary Data";
             
             
-            let testArr:Array<Int32> = graph!.getIds();
+            // let testArr:Array<Int32> = graph!.getIds();
         }
         else {
             println("CoreController: testGraph: err graph is nil");

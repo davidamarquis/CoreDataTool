@@ -20,9 +20,17 @@ protocol CheckAttributes {
     func validateAttrName(str:String)->Bool;
     
     var attrsOrNil:Array<Attribute>? {get};
+    
+    var activeField:UITextField? {get set};
+    var shouldMove:Bool? {get set};
 }
 
 class CustomCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPickerViewDataSource {
+
+    // there are two ways to end editing of a text field
+    // switching to another text field or hitting the return button
+    var willSwitchFields = true;
+
     // determines if changing the
     var doesCreateNewCell:Bool?;
 
@@ -38,9 +46,10 @@ class CustomCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPi
     var descriptionLabel:UITextField?;
     var picker:Picker?;
     var typeLabel:UILabel?;
+    
     //TODO: refactor trello:
     var attr:Attribute?;
-
+    
     // selectCell() enables picker scrolling
     func selectCell() {
         if picker == nil {println("CustomCell: selectCell: picker is nil")}
@@ -120,8 +129,19 @@ class CustomCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPi
 
 
     //MARK: UITextFieldDelegate methods
+    //
     func textFieldShouldReturn(textField: UITextField)->Bool {
         
+        // user has ended control by hitting return
+        willSwitchFields = false;
+        
+        setAttribute(textField);
+        
+        textField.resignFirstResponder();
+        return true;
+    }
+    
+    private func setAttribute(textField:UITextField) {
         if attributesDelegate == nil {println("CustomCell: textFieldShouldReturn: delegate is nil");}
         if vertViewId == nil {println("CustomCell: textFieldShouldReturn: vertViewId is nil");}
         if attributesDelegate == nil {println("CustomCell: textFieldShouldReturn: attributesDelegate is nil");}
@@ -141,9 +161,30 @@ class CustomCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPi
             textField.text = "";
             textField.placeholder = addAttrFieldPlaceholderText;
         }
-        textField.resignFirstResponder();
-        return true;
     }
     
+    //MARK:
+    func textFieldDidBeginEditing(textField: UITextField) {
+        attributesDelegate!.shouldMove = true;
+        
+        if attributesDelegate == nil {println("CustomCell: textFieldDidBeginEditing: delegate is nil");}
+        attributesDelegate!.activeField = textField;
+    }
+    
+    // called when text field resigns first responder status
+    func textFieldDidEndEditing(textField: UITextField) {
+
+        attributesDelegate!.shouldMove = false;
+        
+        // if
+        if attr != nil && willSwitchFields {
+            textField.text = attr!.name;
+        }
+        willSwitchFields = true;
+        
+        if attributesDelegate == nil {println("CustomCell: textFieldDidEndEditing: delegate is nil");}
+        attributesDelegate!.activeField = nil;
+    
+    }
     
 }

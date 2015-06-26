@@ -12,6 +12,9 @@ import CoreData;
 // AttributeTable is always presented as a segue from CoreController. Its properties are not retained when the user returns to CoreController
 class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, CheckAttributes {
     
+    // a flag that determines if keyboard appearance should trigger an attempt to scroll attrView
+    var shouldMove:Bool?=false;
+    
     // flags for validating attribute name input from user
     var attrNameDidNotStartWithCaptial=false;
     var attrAlreadyExists=false;
@@ -40,27 +43,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     var titleField:UITextField?;
     let titleHeight:CGFloat=48;
     
-    /*
-    func navigationBar(navigationBar: UINavigationBar, shouldPopItem item: UINavigationItem) -> Bool {
-        // every attribute needs a type
-        
-        if attrsOrNil == nil {println("AttributeTableVC: nav bar shouldPopItem");}
-        for attr in attrsOrNil! {
-            if attr.type == "Undefined" {
-                invalidInput(attrTypeWarning, title:"Invalid Attribute Type");
-                return false;
-            }
-            else if attr.name == "" {
-                invalidInput(attrTypeWarning, title:"Invalid Attribute Type");
-                return false;
-            }
-            validateEntityNameWithAlert();
-        }
-        return true;
-    }
-    */
-    
-    // called by back button
+    /* this validation should be done with an alert message in viewWillDisappear
     func validateEntityAndReturn() {
         // every attribute needs a type
         
@@ -74,15 +57,11 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
             }
             validateEntityNameWithAlert();
         }
-        
-        for vc in self.navigationController!.viewControllers {
-            if vc is CoreController {
-                presentViewController(vc as! CoreController, animated: false, completion:nil);
-            }
-        }
-    }
-
     
+    }
+    */
+
+    // validates entity name in the model
     private func validateEntityNameWithAlert()->Bool {
         if vert!.title == "" {
             invalidInput(entityNameWarning, title:"Invalid Entity Name");
@@ -95,6 +74,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         return true;
     }
     
+    // validates user input for the entity name
     private func validateEntityNameInputWithAlert(name:String)->Bool {
         if name == "" {
             invalidInput(entityNameWarning, title:"Invalid Entity Name");
@@ -108,7 +88,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     }
     
     // checks if the first character of the string is a capital letter
-    func firstCharacterIsCapital(str:String)->Bool {
+    private func firstCharacterIsCapital(str:String)->Bool {
         let firstChar=str[str.startIndex];
         if find(lowLets,firstChar) != nil {
             return false;
@@ -154,16 +134,10 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     override func viewDidLoad() {
         super.viewDidLoad();
         
+        //register for keyboard notifications
+        NSNotificationCenter.defaultCenter().addObserver(self,selector:"keyboardWasShown:", name:UIKeyboardDidShowNotification, object:nil);
+        NSNotificationCenter.defaultCenter().addObserver(self,selector:"keyboardWillBeHidden:", name:UIKeyboardWillHideNotification, object:nil);
         
-        self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"Back", style:.Plain, target:self, action:"validateEntityAndReturn")
-        // configure the nav bar
-        /*
-        let item:UIBarButtonItem = UIBarButtonItem(title: "Backward", style:UIBarButtonItemStyle.Plain, target:self, action:"validateEntityAndReturn" );
-        navigationController!.navigationItem.hidesBackButton = true;
-        navigationController!.navigationItem.leftBarButtonItem = item;
-        */
-        //navigationController!.navigationBar.delegate = self;
-
         view.backgroundColor = UIColor.grayColor();
         if vert == nil {println("AttributeTable: viewWillAppear: err vert is nil");}
         
@@ -238,7 +212,11 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         
         // update vert
         if vert == nil {println("CoreController: addAttributeById: could not find vert to modify");}
-        addAttrToVert(attr, newVert: vert!);
+
+        var manyRelation:AnyObject? = vert!.valueForKeyPath("attributes") ;
+        if manyRelation is NSMutableSet {
+            (manyRelation as! NSMutableSet).addObject(attr);
+        }
         
         // set attr properties
         attr.name=attrString; // trigger KVO
@@ -254,16 +232,6 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     func setAttrType(attr:Attribute, type:String){
     
         attr.type = type;
-    }
-    
-    
-    // addAttrToVert adds a reference to the attribute in the array of attributes held by the vert
-    private func addAttrToVert(newAttr:Attribute, newVert:Vert) {
-        // the attribute table view controller will be the only VC that responds to these observers
-        var manyRelation:AnyObject? = newVert.valueForKeyPath("attributes") ;
-        if manyRelation is NSMutableSet {
-            (manyRelation as! NSMutableSet).addObject(newAttr);
-        }
     }
     
     //MARK: setup methods
@@ -364,12 +332,12 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
             // init a custom cell
             cell = CustomCell(style:UITableViewCellStyle.Default, reuseIdentifier: cellIdentifier);
             
-            if cell == nil{println("AttributeTable: tableView cellForRowAtIndexPath: failed to create cell");}
+            if cell == nil {println("AttributeTable: tableView cellForRowAtIndexPath: failed to create cell");}
             
             // do any additional setup of the cell...
         }
-        cell!.picker!.delegate = cell!; //UIPickerView delegate
-        cell!.picker!.dataSource = cell!; //UIPickerView data source
+        
+        (cell!.picker!.delegate,cell!.picker!.dataSource) = (cell!,cell!); //UIPickerView delegate and datasource
         cell!.attributesDelegate = self; //CheckAttributes delegate
         cell!.vertViewId = vert!.vertViewId;
 
@@ -481,4 +449,46 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         }
         return true;
     }
+    
+    // following listing 5-1 in https://developer.apple.com/library/ios/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/KeyboardManagement/KeyboardManagement.html
+    var activeField:UITextField?;
+        
+    //MARK: keyboard methods
+    // Called when the UIKeyboardDidShowNotification is sent.
+    func keyboardWasShown(aNotification:NSNotification) {
+    
+        if shouldMove == nil {println("AttributeTableVC: keyboardWasShown: shouldMove is nil");}
+        if shouldMove! {
+            let info:NSDictionary = aNotification.userInfo!;
+            // from http://stackoverflow.com/questions/25856003/swift-moving-content-behind-keyboard-doesnt-reset-after-dismiss
+            let kbSize:CGSize = (info.valueForKey(UIKeyboardFrameBeginUserInfoKey) as! NSValue).CGRectValue().size;
+         
+            //TODO: remove magic number
+            let magicNumber:CGFloat=20;
+            let contentInsets = UIEdgeInsetsMake(0.0, 0.0, kbSize.height+magicNumber, 0.0);
+            
+            attrView!.contentInset = contentInsets;
+            attrView!.scrollIndicatorInsets = contentInsets;
+         
+            // If active text field is hidden by keyboard, scroll it so it's visible
+            // Your app might not need or want this behavior.
+            var aRect = self.view.frame;
+            aRect.size.height -= kbSize.height;
+            
+            if !CGRectContainsPoint(aRect, activeField!.frame.origin) {
+                attrView!.scrollRectToVisible(activeField!.frame, animated:true);
+            }
+            shouldMove = false;
+        }
+    }
+    
+    // Called when the UIKeyboardWillHideNotification is sent
+    func keyboardWillBeHidden(aNotification:NSNotification) {
+    
+        let contentInsets = UIEdgeInsetsZero;
+        attrView!.contentInset = contentInsets;
+        attrView!.scrollIndicatorInsets = contentInsets;
+    }
+    
+    
 }
