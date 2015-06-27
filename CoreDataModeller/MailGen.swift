@@ -28,7 +28,7 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
             mailVC.mailComposeDelegate = self;
         }
         
-        if delegate == nil {println("mailGen: emailPressed() delegate is nil");}
+        if delegate == nil {println("mailGen: emailPressed(): delegate is nil");}
         
         if MFMailComposeViewController.canSendMail() {
             mailVC.modalTransitionStyle = UIModalTransitionStyle.CoverVertical;

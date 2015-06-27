@@ -12,7 +12,10 @@ import CoreData
 import MessageUI
 
 class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, MailGenDelegate {
-
+    @IBOutlet weak var gridButton: UIButton!
+    @IBOutlet weak var clearButton: UIButton!
+    @IBOutlet weak var barButtonHolder: UIBarButtonItem!
+    
     //var mailVC:MFMailComposeViewController = MFMailComposeViewController();
     var mailGen:MailGen = MailGen();
     
@@ -83,8 +86,39 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             }
         }
     }
+    
+    //| ----------------------------------------------------------------------------
+    //! IBAction for the segmented control.
+    //
+    let segmentTextContent = ["Grid","Clear"];
+    
+    func action(sender:AnyObject)
+    {
+        if segmentTextContent[sender.selectedSegmentIndex] == "Grid" {
+            
+        }
+        else if segmentTextContent[sender.selectedSegmentIndex] == "Clear" {
+        
+        }
+    }
 
     override func viewDidLoad() {
+    
+        // Segmented control as the custom title view
+        let segmentedControl:UISegmentedControl = UISegmentedControl(items: segmentTextContent);
+        segmentedControl.selectedSegmentIndex = 0;
+        segmentedControl.autoresizingMask = UIViewAutoresizing.FlexibleWidth;
+        segmentedControl.frame = CGRectMake(0, 0, 400.0, 30.0);
+        segmentedControl.addTarget(self, action:"action:", forControlEvents: UIControlEvents.ValueChanged);
+	
+        self.navigationItem.titleView = segmentedControl;
+        
+        //
+        let navBarHeight:CGFloat = 44;
+        
+        //gridButton.frame.origin.y = navBarHeight/2 - gridButton.bounds.height/2;
+        gridButton.titleLabel!.textAlignment = NSTextAlignment.Center;
+        clearButton.titleLabel!.textAlignment = NSTextAlignment.Center;
 
         hght=view.bounds.size.height;
         wdth=view.bounds.size.width;
@@ -107,7 +141,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             }
         });
     }
-    
+
     private func respondToDeletion(deletedObjs:Set<NSObject>) {
         if deletedObjs.count > 0 {
             for obj in deletedObjs {
@@ -146,11 +180,31 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         moveMode();
     }
     
-    //MARK: nav bar
-    @IBAction func emailPressed(sender: AnyObject) {
+    // remove all the verts from the graph
+    @IBAction func clearPressed(sender: AnyObject) {
+        for obj in graph!.verts {
+            if obj is Vert {
+                let vertId:Int32? = (obj as! Vert).vertViewId;
+                if vertId != nil {
+                    self.remVertView(vertId!);
+                }
+                else {println("CoreController: clearPressed: vertId is nil");}
+            }
+        }
+        for obj in graph!.edges {
+            if obj is Edge {
+                let edgeId:Int32? = (obj as! Edge).edgeViewId;
+                if edgeId != nil {
+                    self.remEdgeView(edgeId!);
+                }
+                else {println("CoreController: clearPressed: edgeId is nil");}
+            }
+        }
+    }
+    
+    @IBAction func emailSelected(sender: AnyObject) {
         mailGen.delegate=self;
         mailGen.emailPressed(sender);
-        
     }
     
     @IBAction func turnOffGrid(sender: AnyObject) {
@@ -158,6 +212,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             graphView!.switchGraphState();
         }
     }
+
     
     //Setup: 
     func addCenteredImageToView(view:UIView?, image:UIImage?) {

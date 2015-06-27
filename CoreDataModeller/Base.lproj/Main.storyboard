@@ -20,17 +20,43 @@
                     <navigationItem key="navigationItem" title="Core Data Modeller" id="mWU-rW-26I">
                         <barButtonItem key="leftBarButtonItem" title="Email" id="hP7-pv-2ve">
                             <connections>
-                                <action selector="emailPressed:" destination="8qZ-gR-bVn" id="qgJ-VF-4rI"/>
+                                <action selector="emailSelected:" destination="8qZ-gR-bVn" id="QYh-2q-sAj"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Grid" id="17t-ik-CXc">
-                            <connections>
-                                <action selector="turnOffGrid:" destination="8qZ-gR-bVn" id="OsO-Rd-QXe"/>
-                            </connections>
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="H2G-xy-ntP">
+                            <view key="customView" contentMode="scaleToFill" id="Njd-to-sab">
+                                <rect key="frame" x="0.0" y="0.0" width="133" height="33"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S0J-rA-uzN">
+                                        <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                        <state key="normal" title="Clear">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="clearPressed:" destination="8qZ-gR-bVn" eventType="touchUpInside" id="mhc-Bc-nGl"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Ev-Gw-NdZ">
+                                        <rect key="frame" x="89" y="0.0" width="44" height="44"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                        <state key="normal" title="Grid">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="turnOffGrid:" destination="8qZ-gR-bVn" eventType="touchUpInside" id="ZR6-Sv-91q"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="emailButtonPressed" destination="hP7-pv-2ve" id="gF3-H8-7Us"/>
+                        <outlet property="barButtonHolder" destination="H2G-xy-ntP" id="HBV-WA-Oq1"/>
+                        <outlet property="clearButton" destination="S0J-rA-uzN" id="GS8-dZ-aQD"/>
+                        <outlet property="gridButton" destination="4Ev-Gw-NdZ" id="qWM-vc-qKE"/>
                         <segue destination="2NL-fe-8oU" kind="show" identifier="VertInfo" id="mzh-W5-Ftp"/>
                     </connections>
                 </viewController>

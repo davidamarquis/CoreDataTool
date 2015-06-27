@@ -12,8 +12,7 @@ import Foundation
 // warning: in the methods and comments of this class to be concise we will sometimes refer to vertViews as verts
 class gestureCC:CoreController, GestureResponse
 {
-
-    @IBOutlet weak var emailButtonPressed: UIBarButtonItem!
+    //@IBOutlet weak var emailButtonPressed: UIBarButtonItem!
     // 3 properties
     var gestureVV:VertView?;
     var shiftedOrigin:CGPoint?;
