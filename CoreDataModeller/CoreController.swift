@@ -136,7 +136,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         self.presentViewController(alert, animated: false, completion:nil);
 
     }
-
+    
     override func viewDidLoad() {
 
         // set right nav buttons
@@ -160,8 +160,23 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         barButtons();
         setupVertButtons();
         
-        // set a test model
-        testGraph();
+        let entityDescription:NSEntityDescription? = NSEntityDescription.entityForName("Graph", inManagedObjectContext: context!);
+        let graphRequest:NSFetchRequest = NSFetchRequest();
+        graphRequest.entity = entityDescription;
+        //var fReq: NSFetchRequest = NSFetchRequest(entityName: "Family")
+        var error: NSError? = nil;
+        let savedGraphs = context!.executeFetchRequest(graphRequest, error:&error);
+        if (savedGraphs == nil){println("CoreController: viewDidLoad: array is nil");}
+        else {
+            if savedGraphs!.count > 0 {
+            
+                graph = savedGraphs![0] as? Graph;
+            }
+            else {
+                // TODO: move testGraph into options
+                testGraph();
+            }
+        }
         
         // set observer for object deletion
         let noteCenter:NSNotificationCenter = NSNotificationCenter.defaultCenter();
@@ -629,46 +644,49 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
 
     }
     
+    private func displayVert(v:Vert) {
+        // check if a view exists corresponding to the vert instance. (1) if no view is found then vertView is nil and
+        // we init a vertView and paste it to view. (2) otherwise model and view are out of date
+        // VC updates the view by changing the frame of the view
+        let vertView:VertView? = graphView!.gwv!.getVertViewById(v.vertViewId);
+        if(vertView != nil) {
+            //TODO: this would be the place for a method to reset attributes of the vert view corresponding to model properties
+        
+            // set title of the vert view that was found by search
+            setVertViewTitle(vertView!, title:v.title);
+        
+            // set the new frame
+            (vertView!.frame.origin.x, vertView!.frame.origin.y) = (CGFloat(v.x), CGFloat(v.y));
+            
+            // if the vert view wants to be clobbered then oblige it
+            if !vertView!.isDrawn {
+                vertView!.setNeedsDisplay();
+            }
+        }
+        else {
+            // create vert view
+            let vv:VertView = graphView!.gwv!.addVertAtPoint(CGPointMake(CGFloat(v.x), CGFloat(v.y)) );
+            
+            // set title of the new vert view
+            setVertViewTitle(vv, title:v.title);
+            
+            vv.delegate=self;
+            // set the view id to match the model id
+            vv.vertViewId=v.vertViewId;
+            
+        }
+        // vert instance now fresh
+        v.freshViews=true;
+    }
+    
+    // drawVert draws any verts that have fresh views
     private func drawVert(v:Vert) {
         if(!v.freshViews) {
-            // check if a view exists corresponding to the vert instance. (1) if no view is found then vertView is nil and
-            // we init a vertView and paste it to view. (2) otherwise model and view are out of date
-            // VC updates the view by changing the frame of the view
-            let vertView:VertView? = graphView!.gwv!.getVertViewById(v.vertViewId);
-            if(vertView != nil) {
-                //TODO: this would be the place for a method to reset attributes of the vert view corresponding to model properties
-            
-                // set title of the vert view that was found by search
-                setVertViewTitle(vertView!, title:v.title);
-            
-                // set the new frame
-                (vertView!.frame.origin.x, vertView!.frame.origin.y) = (CGFloat(v.x), CGFloat(v.y));
-                
-                // if the vert view wants to be clobbered then oblige it
-                if !vertView!.isDrawn {
-                    vertView!.setNeedsDisplay();
-                }
-            }
-            else {
-                // create vert view
-                let vv:VertView = graphView!.gwv!.addVertAtPoint(CGPointMake(CGFloat(v.x), CGFloat(v.y)) );
-                
-                // set title of the new vert view
-                setVertViewTitle(vv, title:v.title);
-                
-                vv.delegate=self;
-                // set the view id to match the model id
-                vv.vertViewId=v.vertViewId;
-                
-            }
-            // vert instance now fresh
-            v.freshViews=true;
+            displayVert(v);
         }
         if(!v.freshEdges) {
             // call drawEdges to prepare for the drawing of the edges of v
             drawEdges();
-            // edge instance now fresh
-            v.freshEdges=true;
         }
     }
     
@@ -683,12 +701,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         var edgeFrame:CGRect?;
         var e:Edge?;
         var v,w:Vert?;
-        var edgeDir:Bool?;
         
-        if graph == nil || graphView == nil {
-            println("CoreController: drawEdges: graph or graphView is nil");
-        }
-        let diameter=graphView!.gwv!.diameter;
+        if graph == nil || graphView == nil {println("CoreController: drawEdges: graph or graphView is nil");}
         
         for edge in graph!.edges {
             if edge is Edge {
@@ -747,6 +761,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                 edgeView!.setNeedsDisplay();
             }
         }
+        v.freshEdges=true;
     }
     //MARK: UIScrollViewDelegateProtocol
     func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {

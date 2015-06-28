@@ -18,18 +18,20 @@ class ObjCEntityHGen: NSObject {
     
     //placeholders
     var title="Data Fun!";
-    var date="9999-99-99";
-    var entityName="Test"
+    var date="";
+    var entityName="Test";
+    var year="";
     
     let useScalarTypes=true;
 
     func setupArrays() {
-        comment = ["//","//  \(entityName).h","//  \(title)","//","//  Created by \(username) on \(date).","//  Copyright (c) 2015 \(username). All rights reserved.","//","","#import <CoreData/CoreData.h>","","@interface \(entityName) : NSManagedObject",""];
+        comment = ["//","//  \(entityName).h","//  \(title)","//","//  Created by \(username) on \(date).","//  Copyright (c) \(year) \(username). All rights reserved.","//","","#import <CoreData/CoreData.h>","","@interface \(entityName) : NSManagedObject",""];
         // any custom class names should be put at the start of this array
     }
     
     func updateString() {
-    
+        year = CurDate().getYearString();
+        date = CurDate().getDateString();
         setupArrays();
         if vert == nil {println("AttributeTableVC: udpdateString: vert is nil ");}
         

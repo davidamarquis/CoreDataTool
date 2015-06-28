@@ -12,7 +12,9 @@ class ObjCAppDelegateMGen: NSObject {
 
     let username:String = "David Marquis";
     var graph:Graph?;
-    
+    var date = "";
+    var year = "";
+        
     var appDelegateM = String();
     var comment:Array<String> = Array<String>();
     var privInterface:Array<String> = Array<String>();
@@ -31,7 +33,7 @@ class ObjCAppDelegateMGen: NSObject {
     var save:Array<String> = Array<String>();
    
     override init() {
-        comment = ["//","//  AppDelegate.m","//  June4CoreDataObjCTest","//","//  Created by \(username) on 2015-06-04.","//  Copyright (c) 2015 \(username). All rights reserved.","//","","#import \"AppDelegate.h\"","#import <CoreData/CoreData.h>",""];
+        comment = ["//","//  AppDelegate.m","//  June4CoreDataObjCTest","//","//  Created by \(username) on \(date).","//  Copyright (c) \(year) \(username). All rights reserved.","//","","#import \"AppDelegate.h\"","#import <CoreData/CoreData.h>",""];
         // any custom class names should be put at the start of this array
         privInterface = ["@interface AppDelegate ()","","@end","@implementation AppDelegate"]
         didFinishLaunch = ["- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {","\t // Override point for customization after application launch.","\t[self setUpModel];","\t return YES;","}",""];
@@ -53,6 +55,9 @@ class ObjCAppDelegateMGen: NSObject {
     }
 
     func updateString() {
+        year = CurDate().getYearString();
+        date = CurDate().getDateString();
+        
         for str in comment {
             appDelegateM += str+"\n";
         }
