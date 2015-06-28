@@ -7,6 +7,7 @@
     </entity>
     <entity name="Edge" representedClassName="CoreDataModeller.Edge" syncable="YES">
         <attribute name="edgeViewId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="freshView" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="parseObjectId" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="rel1name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="rel2name" optional="YES" attributeType="String" syncable="YES"/>
@@ -23,7 +24,6 @@
     <entity name="Vert" representedClassName="CoreDataModeller.Vert" syncable="YES">
         <attribute name="depthSearchSeen" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="finishedObservedMethod" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="freshEdges" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="freshViews" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="parseObjId" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="shouldSyncEntityAttributes" optional="YES" attributeType="Boolean" syncable="YES"/>
@@ -41,9 +41,9 @@
     </entity>
     <elements>
         <element name="Attribute" positionX="-423" positionY="83" width="128" height="88"/>
-        <element name="Edge" positionX="108" positionY="-195" width="128" height="133"/>
+        <element name="Edge" positionX="108" positionY="-195" width="128" height="148"/>
         <element name="Entity" positionX="-351" positionY="-234" width="128" height="43"/>
         <element name="Graph" positionX="-369" positionY="-135" width="128" height="105"/>
-        <element name="Vert" positionX="-234" positionY="72" width="128" height="281"/>
+        <element name="Vert" positionX="-234" positionY="72" width="128" height="266"/>
     </elements>
 </model>

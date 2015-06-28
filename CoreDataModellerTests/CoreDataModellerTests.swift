@@ -212,11 +212,13 @@ func testSeen1() {
 }
 
 // In Graph 1 all verts start with edges that are not fresh
+/*
 func testFreshEdges1() {
     if verts != nil {
         XCTAssert(verts![0].freshEdges==false);
     }
 }
+*/
 
 // graph 1 has been set up
 // dist from v0=(10,70) to v1=(100,200) is 158

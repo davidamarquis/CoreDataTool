@@ -606,21 +606,113 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
 
     //MARK: KVO on model
     override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject: AnyObject], context: UnsafeMutablePointer<Void>) {
-
+        
+        if graphView == nil {println("CoreController: observeValueForKeyPath: graphView is nil"); }
+        
         if object is Vert {
-            var v = object as! Vert;
-            if graphView == nil {println("CoreController: observeValueForKeyPath: graphView is nil"); }
-            
-            if keyPath=="finishedObservedMethod" {
-                drawVert(v);
+
+            if keyPath == "finishedObservedMethod" && !(object as! Vert).freshViews {
+                drawVert(object as! Vert);
             }
-            else if keyPath=="title" {
-                setVertViewTitle(v);
+            else if keyPath == "title" {
+                setVertViewTitle(object as! Vert);
             }
             else {println("CoreController: observeValueForKeyPath: unrecognized keyPath for object vert");}
         }
+        else if object is Edge {
+        
+            if keyPath == "freshView" && !(object as! Edge).freshView {
+                drawEdge(object as! Edge);
+            }
+        }
     }
     
+    // caller of this function should check that the edge view really does need to be redrawn
+    private func drawVert(v:Vert) {
+    
+        // check if a view exists corresponding to the vert instance. Then (1) if no view is found then vertView is nil and
+        // we init a vertView and paste it to view. (2) otherwise model and view are out of date.
+        let vertView:VertView? = graphView!.gwv!.getVertViewById(v.vertViewId);
+        if(vertView != nil) {
+            // Refresh any properties of the vert view:
+            // (1) title
+            setVertViewTitle(vertView!, title:v.title);
+        
+            // (2) frame
+            (vertView!.frame.origin.x, vertView!.frame.origin.y) = (CGFloat(v.x), CGFloat(v.y));
+            
+            // in the unlikely event the vert view wants to be clobbered oblige it
+            if !vertView!.isDrawn {
+                vertView!.setNeedsDisplay();
+            }
+        }
+        else {
+            // create a vert view
+            let vv:VertView = graphView!.gwv!.addVertAtPoint(CGPointMake(CGFloat(v.x), CGFloat(v.y)) );
+            
+            // set title, delegate, and id of the new vert view
+            setVertViewTitle(vv, title:v.title);
+            vv.delegate=self;
+            vv.vertViewId=v.vertViewId;
+            
+        }
+        
+        // vert view is now fresh
+        v.freshViews=true;
+    }
+    
+    // caller of this function should check that the edge view really does need to be redrawn
+    private func drawEdge(e:Edge) {
+    
+        let v,w:Vert?;
+        (v,w)=e.Connects();
+        
+        // step 1: setup
+        
+        // diameter holds diamter of vertViews
+        let diameter=graphView!.gwv!.diameter;
+        var X1,Y1,X2,Y2,frameWidth,frameHeight,minX,minY:CGFloat?;
+        (X1,Y1,X2,Y2) = (CGFloat(v!.x),CGFloat(v!.y),CGFloat(w!.x),CGFloat(w!.y));
+        (frameWidth,frameHeight) = (fabs(X1!-X2!)+diameter,fabs(Y1!-Y2!)+diameter);
+        (minX,minY) = (min(X1!,X2!),min(Y1!,Y2!));
+        
+        // step 2: adjust the frame based on the least coordinate for the xval and yval for the pair of points
+        let edgeFrame = CGRectMake(minX!, minY!, frameWidth!, frameHeight!);
+        // there are four cases to consider for the positions of the origins of the verts. 
+        // There are two cases for the direction of the edge between the two verts: top left to bottom right or bottom left to top right. 
+        // The edge view must be told which of these cases it falls into
+        let edgeDir:Bool;
+        if (X1<X2 && Y1<Y2) || (X1>=X2 && Y1>=Y2) {
+            edgeDir=true;
+        }
+        else {
+            edgeDir=false;
+        }
+        
+        // step 3: getEdgeView()
+        var edgeView:EdgeView? = graphView!.gwv!.getEdgeViewById(e.edgeViewId);
+        if(edgeView != nil) {
+
+            // fix the frame
+            edgeView!.frame=edgeFrame;
+            // fix the path direction
+            edgeView!.topLeftToBotRight = edgeDir;
+            // redraw the bez path
+            edgeView!.setNeedsDisplay();
+        }
+        else {
+            // init the new view in setEdge() input
+            edgeView=graphView!.gwv!.setEdge(EdgeView(frame: edgeFrame), topLeftToBotRight: edgeDir);
+            
+            // do any additional setup i.e. length or angle
+            edgeView!.edgeViewId=e.edgeViewId;
+        }
+        // redraw the edge
+        edgeView!.setNeedsDisplay();
+        e.freshView = true;
+    }
+    
+    //MARK: title
     // sets the title of a vert view
     func setVertViewTitle(v:Vert) {
         let vv:VertView? = graphView!.gwv!.getVertViewById(v.vertViewId);
@@ -637,132 +729,12 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
     }
     
-    // updateAttributes() updates the attributes
-    // currently only using title
-    func updateAttributes(v:Vert) {
-    
-
-    }
-    
-    private func displayVert(v:Vert) {
-        // check if a view exists corresponding to the vert instance. (1) if no view is found then vertView is nil and
-        // we init a vertView and paste it to view. (2) otherwise model and view are out of date
-        // VC updates the view by changing the frame of the view
-        let vertView:VertView? = graphView!.gwv!.getVertViewById(v.vertViewId);
-        if(vertView != nil) {
-            //TODO: this would be the place for a method to reset attributes of the vert view corresponding to model properties
-        
-            // set title of the vert view that was found by search
-            setVertViewTitle(vertView!, title:v.title);
-        
-            // set the new frame
-            (vertView!.frame.origin.x, vertView!.frame.origin.y) = (CGFloat(v.x), CGFloat(v.y));
-            
-            // if the vert view wants to be clobbered then oblige it
-            if !vertView!.isDrawn {
-                vertView!.setNeedsDisplay();
-            }
-        }
-        else {
-            // create vert view
-            let vv:VertView = graphView!.gwv!.addVertAtPoint(CGPointMake(CGFloat(v.x), CGFloat(v.y)) );
-            
-            // set title of the new vert view
-            setVertViewTitle(vv, title:v.title);
-            
-            vv.delegate=self;
-            // set the view id to match the model id
-            vv.vertViewId=v.vertViewId;
-            
-        }
-        // vert instance now fresh
-        v.freshViews=true;
-    }
-    
-    // drawVert draws any verts that have fresh views
-    private func drawVert(v:Vert) {
-        if(!v.freshViews) {
-            displayVert(v);
-        }
-        if(!v.freshEdges) {
-            // call drawEdges to prepare for the drawing of the edges of v
-            drawEdges();
-        }
-    }
-    
     // set the title of the given vert view
     private func setVertViewTitle(vv:VertView, title:String) {
         if vv.titleLabel == nil {println("CoreController: drawVert: titleLabel is nil")}
         vv.titleLabel!.text=title;
     }
-    
-    private func drawEdges() {
-        var minX,minY,X1,Y1,X2,Y2,frameWidth,frameHeight:CGFloat?;
-        var edgeFrame:CGRect?;
-        var e:Edge?;
-        var v,w:Vert?;
-        
-        if graph == nil || graphView == nil {println("CoreController: drawEdges: graph or graphView is nil");}
-        
-        for edge in graph!.edges {
-            if edge is Edge {
-                e=edge as? Edge;
-            }
-            else {
-                println("CoreController: drawEdges: graph has an element that is not an edge");
-            }
-            
-            (v,w)=e!.Connects();
-            if v == nil || w == nil {
-                println("CoreController: DrawEdges: edge is incomplete")
-            }
-            else if !v!.freshEdges || !w!.freshEdges {
-                // step 1: setup
-                (X1,Y1,X2,Y2) = (CGFloat(v!.x),CGFloat(v!.y),CGFloat(w!.x),CGFloat(w!.y));
-                (frameWidth,frameHeight) = (fabs(X1!-X2!)+diameter,fabs(Y1!-Y2!)+diameter);
-                (minX,minY) = (min(X1!,X2!),min(Y1!,Y2!));
-                
-                // step 2: adjust the frame based on the least coordinate for the xval and yval for the pair of points
-                edgeFrame = CGRectMake(minX!, minY!, frameWidth!, frameHeight!);
-                // there are four cases to consider. Two are topLeftToBotRight, other two are not
-                if (X1<X2 && Y1<Y2) || (X1>=X2 && Y1>=Y2) {
-                    edgeDir=true;
-                }
-                else {
-                    edgeDir=false;
-                }
-                
-                // step 3: getEdgeView()
-                var edgeView:EdgeView? = graphView!.gwv!.getEdgeViewById(e!.edgeViewId);
-                if(edgeView != nil) {
 
-                    // fix the frame
-                    edgeView!.frame=edgeFrame!;
-                    // fix the path direction
-                    edgeView!.topLeftToBotRight = edgeDir!
-                    // redraw the bez path
-                    edgeView!.setNeedsDisplay();
-                    
-                    //graphView!.gwv!.setEdge(edgeView!, topLeftToBotRight: edgeDir!);
-                }
-                else {
-                    // init the new view in setEdge() input
-                    edgeView=graphView!.gwv!.setEdge(EdgeView(frame: edgeFrame!), topLeftToBotRight: edgeDir!);
-                    
-                    // do any additional setup
-                    //(1): id
-                    edgeView!.edgeViewId=e!.edgeViewId;
-                    //(2): length
-                    edgeView!.length=CGFloat(e!.length()!);
-                    //(3): angle
-                    edgeView!.angle=CGFloat(e!.angle()!);
-                }
-                // redraw the edge
-                edgeView!.setNeedsDisplay();
-            }
-        }
-        v.freshEdges=true;
-    }
     //MARK: UIScrollViewDelegateProtocol
     func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
         return graphView!.gwv ;
@@ -977,6 +949,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         return verts;
     }
 
+    // conveince function for making an array of edges observers associated to them
     private func testEdgesArray(numEdges:Int)->Array<Edge> {
         var edges=Array<Edge>();
         let edgeDescription = NSEntityDescription.entityForName("Edge",inManagedObjectContext: context!);
@@ -984,6 +957,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         if context != nil {
             for var i=0;i<numEdges;i++ {
                 var edge:Edge? = Edge(entity: edgeDescription!,insertIntoManagedObjectContext: context);
+                edge!.addObserver(self, forKeyPath: "freshView", options: .New, context: nil);
+                
                 edges.append(edge!);
             }
         }

@@ -2,7 +2,7 @@
 //  Edge.swift
 //  CoreDataModeller
 //
-//  Created by David Marquis on 2015-06-24.
+//  Created by David Marquis on 2015-06-28.
 //  Copyright (c) 2015 David Marquis. All rights reserved.
 //
 
@@ -15,6 +15,7 @@ class Edge: NSManagedObject {
     @NSManaged var parseObjectId: String
     @NSManaged var rel1name: String
     @NSManaged var rel2name: String
+    @NSManaged var freshView: Bool
     @NSManaged var graph: Graph
     @NSManaged var joinedTo: NSSet
 

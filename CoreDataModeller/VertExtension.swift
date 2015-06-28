@@ -113,8 +113,7 @@ func AddEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
         edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByAddingObject(vertOrNil!);
         edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByAddingObject(self);
         
-        freshEdges=false;
-        vertOrNil!.freshEdges=false;
+        edgeOrNil!.freshView = false;
         finishedObservedMethod=true;
         vertOrNil!.finishedObservedMethod=true;
     }
@@ -165,8 +164,7 @@ func removeEdge(edgeOrNil:Edge?, vertOrNil:Vert?) {
         //edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByRemovingObject(vertOrNil!);
         //edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByRemovingObject(self);
         
-        freshEdges=false;
-        vertOrNil!.freshEdges=false;
+        edgeOrNil!.freshView = false;
         finishedObservedMethod=true;
         vertOrNil!.finishedObservedMethod=true;
     }
@@ -193,15 +191,16 @@ func distance(other:Vert)->Float{
 
 // change Fresh flags so VC must redraw (i.e. trigger a redraw of corresponding view)
 func invalidateViews() {
-    if edges.count > 0 {
-        freshEdges=false;
+    for obj in edges {
+        if obj is Edge {
+            (obj as! Edge).freshView = false;
+        }
     }
     freshViews=false;
 }
 
 // change vert position in data model
 func moveVertTo(newX:Float, _ newY:Float) {
-    invalidateViews();
     x=newX;
     y=newY;
     // no verts have been seen
@@ -209,6 +208,9 @@ func moveVertTo(newX:Float, _ newY:Float) {
     // @search algos: set this flag to false at start when executed
     depthSearchSeen=false;
     finishedObservedMethod=true;
+    
+    // now trigger kvo response to redraw the associated views
+    invalidateViews();
 }
 
 func allNeighborsSeen()->Bool {
