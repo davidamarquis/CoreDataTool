@@ -11,7 +11,7 @@ import UIKit
 
 class imgTextButton: UIButton {
 
-    
+    let fontSize:CGFloat = 13;
     
     override func layoutSubviews() {
         backgroundColor=UIColor.whiteColor();
@@ -33,11 +33,12 @@ class imgTextButton: UIButton {
             titleFrame = CGRectMake((bounds.size.width - titleFrame.size.width)/2, topInset + imgFrame!.size.height, titleFrame.size.width, titleFrame.size.height);
             titleLabel!.frame = titleFrame;
             
-            setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
-            titleLabel!.textColor=UIColor.blackColor();
-            titleLabel!.font = UIFont.systemFontOfSize(13);
+            //setTitleColor(UIColor.blackColor(), forState: UIControlState.Normal);
+            //titleLabel!.textColor=UIColor.blackColor();
+            titleLabel!.font = UIFont.systemFontOfSize(fontSize);
             titleLabel!.lineBreakMode = .ByTruncatingTail;
             
         }
-    } 
+    }
+
 }

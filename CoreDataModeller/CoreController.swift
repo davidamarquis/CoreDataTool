@@ -12,12 +12,9 @@ import CoreData
 import MessageUI
 
 class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, MailGenDelegate {
-    @IBOutlet weak var gridButton: UIButton!
-    @IBOutlet weak var clearButton: UIButton!
-    @IBOutlet weak var barButtonHolder: UIBarButtonItem!
-    
-    //var mailVC:MFMailComposeViewController = MFMailComposeViewController();
-    var mailGen:MailGen = MailGen();
+
+    //mailGen is a subclass of MFMailComposeViewController();
+    //var mailGen:MailGen = MailGen();
     
     let vscale:CGFloat=0.15;
     var hght:CGFloat=CGFloat();
@@ -27,24 +24,28 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     var moveButton:imgTextButton?;
     var vertButton:imgTextButton?;
     
+    var inEdgeMode=false;
+    var inVertMode=false;
+    var inMoveMode=false;
+    
+    // the controls for adding verts, removing verts, and removing edge
     var addVertControl:UIView?;
     var remVertControl:UIView?;
     var remEdgeControl:UIView?;
     
-    var resetZoom:UIButton?;
-    var clearMode:UIButton?;
-    
-    var inEdgeMode=false;
-    var inVertMode=false;
-    var inMoveMode=false;
-
+    // the controls for adding verts, removing verts, and removing edge are attached directly to a subclass of UIScrollView. The following content offset vars are for repositioning these controls after scrolling occurs
     var graphViewContentOffsetDeltaX:CGFloat = 0;
     var graphViewContentOffsetDeltaY:CGFloat = 0;
     var graphViewPrevContentOffsetX:CGFloat = 0;
     var graphViewPrevContentOffsetY:CGFloat = 0;
     
     var unselectedTextColor = UIColor.grayColor();
-    var selectedTextColor = UIColor.whiteColor();
+    var selectedTextColor = UIColor.blackColor();
+    
+    let segmentTextContent = ["Grid","Clear"];
+    
+    // TODO: change 8:45 pm
+    var mailGen = MailGen();
     
     ////MARK: Setup
     //Setup: view lifecycle
@@ -87,38 +88,72 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
     }
     
-    //| ----------------------------------------------------------------------------
-    //! IBAction for the segmented control.
-    //
-    let segmentTextContent = ["Grid","Clear"];
+    // nav bar button actions
+    func email() {
+        mailGen.delegate=self;
+        mailGen.emailPressed();
+    }
     
-    func action(sender:AnyObject)
-    {
-        if segmentTextContent[sender.selectedSegmentIndex] == "Grid" {
-            
+    func grid() {
+        if graphView != nil {
+            graphView!.switchGraphState();
         }
-        else if segmentTextContent[sender.selectedSegmentIndex] == "Clear" {
+    }
+    
+    func clear() {
+    
+        let alert = UIAlertController(title: "Confirm Clear", message: "Please confirm removing all entities and relationships", preferredStyle: .Alert);
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil);
+        let confirmAction = UIAlertAction(title: "Confirm", style: UIAlertActionStyle.Default, handler:
+            {
+            (alert:UIAlertAction!) -> Void in
+                // reset the showAttrErr flag
+                for obj in self.graph!.verts
+                {
+                    if obj is Vert {
+                        let vertId:Int32? = (obj as! Vert).vertViewId;
+                        if vertId != nil {
+                            self.remVertView(vertId!);
+                        }
+                        else {println("CoreController: clearPressed: vertId is nil");}
+                    }
+                }
+                for obj in self.graph!.edges
+                {
+                    if obj is Edge {
+                        let edgeId:Int32? = (obj as! Edge).edgeViewId;
+                        if edgeId != nil {
+                            self.remEdgeView(edgeId!);
+                        }
+                        else {println("CoreController: clearPressed: edgeId is nil");}
+                    }
+                }
+            }
+        );
+        alert.addAction(cancelAction);
+        alert.addAction(confirmAction);
         
-        }
+        self.presentViewController(alert, animated: false, completion:nil);
+
     }
 
     override func viewDidLoad() {
-    
-        // Segmented control as the custom title view
-        let segmentedControl:UISegmentedControl = UISegmentedControl(items: segmentTextContent);
-        segmentedControl.selectedSegmentIndex = 0;
-        segmentedControl.autoresizingMask = UIViewAutoresizing.FlexibleWidth;
-        segmentedControl.frame = CGRectMake(0, 0, 400.0, 30.0);
-        segmentedControl.addTarget(self, action:"action:", forControlEvents: UIControlEvents.ValueChanged);
-	
-        self.navigationItem.titleView = segmentedControl;
+
+        // set right nav buttons
+        let grid = UIBarButtonItem(title:"grid", style: UIBarButtonItemStyle.Plain, target: self, action: "grid");
+        let email = UIBarButtonItem(title:"email", style: UIBarButtonItemStyle.Plain, target: self, action: "email");
+        let rightNavButtons = [grid,email];
+        navigationItem.rightBarButtonItems = rightNavButtons;
         
-        //
-        let navBarHeight:CGFloat = 44;
+        // set left nav buttons
+        let clear = UIBarButtonItem(title:"clear", style: UIBarButtonItemStyle.Plain, target: self, action: "clear");
+        let leftNavButtons = clear;
+        navigationItem.leftBarButtonItem = leftNavButtons;
         
-        //gridButton.frame.origin.y = navBarHeight/2 - gridButton.bounds.height/2;
-        gridButton.titleLabel!.textAlignment = NSTextAlignment.Center;
-        clearButton.titleLabel!.textAlignment = NSTextAlignment.Center;
+        // set title to be textfield
+        let navTextField = UITextField(frame: CGRectMake(0,0,100,30));
+        navTextField.placeholder = "Set model title";
+        navigationItem.titleView = navTextField;
 
         hght=view.bounds.size.height;
         wdth=view.bounds.size.width;
@@ -179,40 +214,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         // starting mode is one of moveMode(), vertMode(), edgeMode()
         moveMode();
     }
-    
-    // remove all the verts from the graph
-    @IBAction func clearPressed(sender: AnyObject) {
-        for obj in graph!.verts {
-            if obj is Vert {
-                let vertId:Int32? = (obj as! Vert).vertViewId;
-                if vertId != nil {
-                    self.remVertView(vertId!);
-                }
-                else {println("CoreController: clearPressed: vertId is nil");}
-            }
-        }
-        for obj in graph!.edges {
-            if obj is Edge {
-                let edgeId:Int32? = (obj as! Edge).edgeViewId;
-                if edgeId != nil {
-                    self.remEdgeView(edgeId!);
-                }
-                else {println("CoreController: clearPressed: edgeId is nil");}
-            }
-        }
-    }
-    
-    @IBAction func emailSelected(sender: AnyObject) {
-        mailGen.delegate=self;
-        mailGen.emailPressed(sender);
-    }
-    
-    @IBAction func turnOffGrid(sender: AnyObject) {
-        if graphView != nil {
-            graphView!.switchGraphState();
-        }
-    }
-
     
     //Setup: 
     func addCenteredImageToView(view:UIView?, image:UIImage?) {

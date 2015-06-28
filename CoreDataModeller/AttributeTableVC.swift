@@ -183,6 +183,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
                 });
             }
         });
+        
         noteCenter.addObserverForName( UIKeyboardWillHideNotification, object: nil, queue: mainQueue, usingBlock:
         {(notification:NSNotification!) -> Void in
         
