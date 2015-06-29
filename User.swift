@@ -1,5 +1,5 @@
 //
-//  Entity.swift
+//  User.swift
 //  CoreDataModeller
 //
 //  Created by David Marquis on 2015-06-29.
@@ -9,7 +9,10 @@
 import Foundation
 import CoreData
 
-class Entity: Graph {
+class User: NSManagedObject {
 
+    @NSManaged var username: String
+    @NSManaged var password: String
+    @NSManaged var email: String
 
 }

@@ -4,10 +4,28 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
     </dependencies>
     <scenes>
+        <!--View Controller-->
+        <scene sceneID="6jR-RE-rEf">
+            <objects>
+                <viewController id="qhz-XA-Htw" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Tw9-7v-jy7"/>
+                        <viewControllerLayoutGuide type="bottom" id="Adc-iO-qUR"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="XOL-OT-OYo">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jTA-tL-cay" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="968" y="-912"/>
+        </scene>
         <!--Core Data Modeller-->
         <scene sceneID="wjC-d6-rxi">
             <objects>
-                <viewController id="8qZ-gR-bVn" customClass="gestureCC" customModule="CoreDataModeller" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CoreController" id="8qZ-gR-bVn" customClass="gestureCC" customModule="CoreDataModeller" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="p1T-tW-KxP"/>
                         <viewControllerLayoutGuide type="bottom" id="rq9-lN-JRT"/>
@@ -20,11 +38,30 @@
                     <navigationItem key="navigationItem" title="Core Data Modeller" id="mWU-rW-26I"/>
                     <connections>
                         <segue destination="2NL-fe-8oU" kind="show" identifier="VertInfo" id="mzh-W5-Ftp"/>
+                        <segue destination="m9d-wh-qDc" kind="show" identifier="optionsSegue" id="C4T-qe-Fgn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FEH-RE-aMI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1290" y="169"/>
+            <point key="canvasLocation" x="1278" y="161"/>
+        </scene>
+        <!--Options-->
+        <scene sceneID="5cz-l3-OsK">
+            <objects>
+                <viewController id="m9d-wh-qDc" customClass="Options" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="5sb-D8-CDh"/>
+                        <viewControllerLayoutGuide type="bottom" id="mPx-pP-gO4"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="jfQ-a0-yJt">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0WB-9K-FWi" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2081" y="-546"/>
         </scene>
         <!--Attribute TableVC-->
         <scene sceneID="KHi-Dp-E6g">

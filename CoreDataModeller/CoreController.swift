@@ -13,9 +13,6 @@ import MessageUI
 
 class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, MailGenDelegate {
 
-    //mailGen is a subclass of MFMailComposeViewController();
-    //var mailGen:MailGen = MailGen();
-    
     let vscale:CGFloat=0.15;
     var hght:CGFloat=CGFloat();
     var wdth:CGFloat=CGFloat();
@@ -42,9 +39,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     var unselectedTextColor = UIColor.grayColor();
     var selectedTextColor = UIColor.blackColor();
     
-    let segmentTextContent = ["Grid","Clear"];
-    
-    // TODO: change 8:45 pm
+    // mailGen trigers an async call so need to keep a strong reference to it. mailGen is a subclass of MFMailComposeViewController();
     var mailGen = MailGen();
     
     ////MARK: Setup
@@ -71,6 +66,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             else { println("CoreController: prepareForSegue: graph is nil");}
             
         }
+    
     }
 
     func setKVOForAttrTable(attr:Attribute, vc:UIViewController, vert:Vert) {
@@ -87,19 +83,22 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             }
         }
     }
-    
+
+    // must be public due to target-action
     // nav bar button actions
     func email() {
         mailGen.delegate=self;
         mailGen.emailPressed();
     }
     
+    // must be public due to target-action
     func grid() {
         if graphView != nil {
             graphView!.switchGraphState();
         }
     }
-    
+
+    // must be public due to target-action
     func clear() {
     
         let alert = UIAlertController(title: "Confirm Clear", message: "Please confirm removing all entities and relationships", preferredStyle: .Alert);
@@ -137,12 +136,19 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
 
     }
     
+    // must be public due to target-action
+    // gotoOptions() triggers a segue to the options menu
+    func gotoOptions() {
+        self.performSegueWithIdentifier("optionsSegue", sender: self);
+    }
+    
     override func viewDidLoad() {
 
         // set right nav buttons
+        let options = UIBarButtonItem(title:"options", style: UIBarButtonItemStyle.Plain, target: self, action: "gotoOptions");
         let grid = UIBarButtonItem(title:"grid", style: UIBarButtonItemStyle.Plain, target: self, action: "grid");
         let email = UIBarButtonItem(title:"email", style: UIBarButtonItemStyle.Plain, target: self, action: "email");
-        let rightNavButtons = [grid,email];
+        let rightNavButtons = [options,grid,email];
         navigationItem.rightBarButtonItems = rightNavButtons;
         
         // set left nav buttons
@@ -159,18 +165,22 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         wdth=view.bounds.size.width;
         barButtons();
         setupVertButtons();
-        
-        let entityDescription:NSEntityDescription? = NSEntityDescription.entityForName("Graph", inManagedObjectContext: context!);
+
+        var error: NSError? = nil;
+        let entityDescription = NSEntityDescription.entityForName("Graph", inManagedObjectContext: context!);
         let graphRequest:NSFetchRequest = NSFetchRequest();
         graphRequest.entity = entityDescription;
         //var fReq: NSFetchRequest = NSFetchRequest(entityName: "Family")
-        var error: NSError? = nil;
+        //var error: NSError? = nil;
         let savedGraphs = context!.executeFetchRequest(graphRequest, error:&error);
+        
         if (savedGraphs == nil){println("CoreController: viewDidLoad: array is nil");}
         else {
+        
             if savedGraphs!.count > 0 {
             
                 graph = savedGraphs![0] as? Graph;
+                loadGraph();
             }
             else {
                 // TODO: move testGraph into options
@@ -190,6 +200,29 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                 self.respondToDeletion(objs);
             }
         });
+    }
+    
+    // loadGraph() draws the verts and edges of a saved vert
+    // when debugging core data use println not debugging commands
+    private func loadGraph() {
+        
+        for obj in graph!.verts {
+        /*
+            println((obj as! Vert).title);
+            println((obj as! Vert).x);
+            println((obj as! Vert).y);
+            println("context is \((obj as! Vert).managedObjectContext) . Is this equal to \(context!) ?");
+          */
+            let vert = obj as! Vert;
+            vert.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
+            vert.addObserver(self, forKeyPath: "title", options: .New, context: nil);
+            drawVert(vert);
+        }
+        for obj in graph!.edges {
+            let edge = obj as! Edge;
+            edge.addObserver(self, forKeyPath: "freshView", options: .New, context: nil);
+            drawEdge(edge);
+        }
     }
 
     private func respondToDeletion(deletedObjs:Set<NSObject>) {
@@ -611,18 +644,22 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         
         if object is Vert {
 
-            if keyPath == "finishedObservedMethod" && !(object as! Vert).freshViews {
-                drawVert(object as! Vert);
+            if keyPath == "finishedObservedMethod" {
+                if !(object as! Vert).freshViews {
+                    drawVert(object as! Vert);
+                }
             }
             else if keyPath == "title" {
                 setVertViewTitle(object as! Vert);
             }
-            else {println("CoreController: observeValueForKeyPath: unrecognized keyPath for object vert");}
+            else {println("CoreController: observeValueForKeyPath: unrecognized keyPath \(keyPath) for object vert");}
         }
         else if object is Edge {
         
-            if keyPath == "freshView" && !(object as! Edge).freshView {
-                drawEdge(object as! Edge);
+            if keyPath == "freshView" {
+                if !(object as! Edge).freshView {
+                    drawEdge(object as! Edge);
+                }
             }
         }
     }
@@ -816,6 +853,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         if coordinator == nil {
             return nil
         }
+        
         var newContext = NSManagedObjectContext();
         newContext.persistentStoreCoordinator = coordinator;
         return newContext
@@ -831,14 +869,20 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     
     //MARK: - Core Data Saving support
     func saveContext() {
+    
         if let moc = context {
             var error: NSError? = nil
-            if moc.hasChanges && !moc.save(&error) {
+            //println("save context: context to save is \(context!)");
+            
+            if moc.hasChanges {
+                moc.save(&error);
+                println("error is \(error)");
                 // Replace this implementation with code to handle the error appropriately.
                 // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                NSLog("Unresolved error \(error), \(error!.userInfo)")
-                abort()
+                //NSLog("Unresolved error \(error), \(error!.userInfo)")
+                //abort()
             }
+            
         }
     }
     
@@ -926,7 +970,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             photo.name = "Description";
             photo.type = "Binary Data";
             
-            
+            saveContext();
             // let testArr:Array<Int32> = graph!.getIds();
         }
         else {

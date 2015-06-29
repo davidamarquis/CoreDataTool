@@ -20,22 +20,26 @@
 		4812E3CF1B1D04BC0061EAB1 /* LandingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4812E3CE1B1D04BC0061EAB1 /* LandingVC.swift */; };
 		48282E921B179DF400BDA782 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 48282E901B179DF400BDA782 /* Model.xcdatamodeld */; };
 		48282EBA1B17AED100BDA782 /* VertExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48282EB91B17AED100BDA782 /* VertExtension.swift */; };
+		483B47B31B410CCB00F73242 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47B21B410CCB00F73242 /* Options.swift */; };
+		483B47B41B410CCB00F73242 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47B21B410CCB00F73242 /* Options.swift */; };
+		483B47B61B41112800F73242 /* Attribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47B51B41112800F73242 /* Attribute.swift */; };
+		483B47B71B41112800F73242 /* Attribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47B51B41112800F73242 /* Attribute.swift */; };
+		483B47B91B41112900F73242 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47B81B41112900F73242 /* Entity.swift */; };
+		483B47BA1B41112900F73242 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47B81B41112900F73242 /* Entity.swift */; };
+		483B47BC1B41112900F73242 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47BB1B41112900F73242 /* Edge.swift */; };
+		483B47BD1B41112900F73242 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47BB1B41112900F73242 /* Edge.swift */; };
+		483B47BF1B41112900F73242 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47BE1B41112900F73242 /* Graph.swift */; };
+		483B47C01B41112900F73242 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47BE1B41112900F73242 /* Graph.swift */; };
+		483B47C21B41112900F73242 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47C11B41112900F73242 /* Vert.swift */; };
+		483B47C31B41112900F73242 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47C11B41112900F73242 /* Vert.swift */; };
+		483B47C51B41112900F73242 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47C41B41112900F73242 /* User.swift */; };
+		483B47C61B41112900F73242 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47C41B41112900F73242 /* User.swift */; };
 		483DAFB11B1E8D40007A532E /* GraphExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58C1B1E4046002F6A01 /* GraphExtension.swift */; };
 		483DAFB21B1E8D42007A532E /* EdgeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4882F58E1B1E4391002F6A01 /* EdgeExtension.swift */; };
 		484523F21B3C9F9D00D2BEB0 /* ObjCEntityMGen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484523F11B3C9F9D00D2BEB0 /* ObjCEntityMGen.swift */; };
 		484523F31B3C9F9D00D2BEB0 /* ObjCEntityMGen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484523F11B3C9F9D00D2BEB0 /* ObjCEntityMGen.swift */; };
 		484524541B3FA1E400D2BEB0 /* CurDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484524531B3FA1E200D2BEB0 /* CurDate.swift */; };
 		484524551B3FA1E500D2BEB0 /* CurDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484524531B3FA1E200D2BEB0 /* CurDate.swift */; };
-		484524661B4064F800D2BEB0 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484524651B4064F800D2BEB0 /* Entity.swift */; };
-		484524671B4064F800D2BEB0 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484524651B4064F800D2BEB0 /* Entity.swift */; };
-		484524691B4064F900D2BEB0 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484524681B4064F900D2BEB0 /* Vert.swift */; };
-		4845246A1B4064F900D2BEB0 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484524681B4064F900D2BEB0 /* Vert.swift */; };
-		4845246C1B4064F900D2BEB0 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4845246B1B4064F900D2BEB0 /* Graph.swift */; };
-		4845246D1B4064F900D2BEB0 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4845246B1B4064F900D2BEB0 /* Graph.swift */; };
-		4845246F1B4064F900D2BEB0 /* Attribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4845246E1B4064F900D2BEB0 /* Attribute.swift */; };
-		484524701B4064F900D2BEB0 /* Attribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4845246E1B4064F900D2BEB0 /* Attribute.swift */; };
-		484524721B4064F900D2BEB0 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484524711B4064F900D2BEB0 /* Edge.swift */; };
-		484524731B4064F900D2BEB0 /* Edge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484524711B4064F900D2BEB0 /* Edge.swift */; };
 		484983361B35D31C00E5D7FE /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484983351B35D31C00E5D7FE /* CustomCell.swift */; };
 		484983371B35DAEC00E5D7FE /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484983351B35D31C00E5D7FE /* CustomCell.swift */; };
 		484983391B361A9F00E5D7FE /* AttributeTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 484983381B361A9F00E5D7FE /* AttributeTextField.swift */; };
@@ -98,13 +102,15 @@
 		4812E3CE1B1D04BC0061EAB1 /* LandingVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LandingVC.swift; sourceTree = "<group>"; };
 		48282E911B179DF400BDA782 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		48282EB91B17AED100BDA782 /* VertExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertExtension.swift; sourceTree = "<group>"; };
+		483B47B21B410CCB00F73242 /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
+		483B47B51B41112800F73242 /* Attribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Attribute.swift; path = ../Attribute.swift; sourceTree = "<group>"; };
+		483B47B81B41112900F73242 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Entity.swift; path = ../Entity.swift; sourceTree = "<group>"; };
+		483B47BB1B41112900F73242 /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Edge.swift; path = ../Edge.swift; sourceTree = "<group>"; };
+		483B47BE1B41112900F73242 /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Graph.swift; path = ../Graph.swift; sourceTree = "<group>"; };
+		483B47C11B41112900F73242 /* Vert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Vert.swift; path = ../Vert.swift; sourceTree = "<group>"; };
+		483B47C41B41112900F73242 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = User.swift; path = ../User.swift; sourceTree = "<group>"; };
 		484523F11B3C9F9D00D2BEB0 /* ObjCEntityMGen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCEntityMGen.swift; sourceTree = "<group>"; };
 		484524531B3FA1E200D2BEB0 /* CurDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurDate.swift; sourceTree = "<group>"; };
-		484524651B4064F800D2BEB0 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Entity.swift; path = ../Entity.swift; sourceTree = "<group>"; };
-		484524681B4064F900D2BEB0 /* Vert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Vert.swift; path = ../Vert.swift; sourceTree = "<group>"; };
-		4845246B1B4064F900D2BEB0 /* Graph.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Graph.swift; path = ../Graph.swift; sourceTree = "<group>"; };
-		4845246E1B4064F900D2BEB0 /* Attribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Attribute.swift; path = ../Attribute.swift; sourceTree = "<group>"; };
-		484524711B4064F900D2BEB0 /* Edge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Edge.swift; path = ../Edge.swift; sourceTree = "<group>"; };
 		48472E7D1B34B1FC00CF9030 /* CoreDataModeller-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoreDataModeller-Bridging-Header.h"; sourceTree = "<group>"; };
 		484983351B35D31C00E5D7FE /* CustomCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
 		484983381B361A9F00E5D7FE /* AttributeTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributeTextField.swift; sourceTree = "<group>"; };
@@ -249,6 +255,7 @@
 			isa = PBXGroup;
 			children = (
 				489039231B1B8E0C005E0992 /* CoreController.swift */,
+				483B47B21B410CCB00F73242 /* Options.swift */,
 				48C1AFAB1B3373AC00F99336 /* imgTextButton.swift */,
 				4812E3CE1B1D04BC0061EAB1 /* LandingVC.swift */,
 				484C8FFD1B306AD90051CDC1 /* Gestures.swift */,
@@ -271,11 +278,12 @@
 		48D5A0361B37007600198878 /* Persistent */ = {
 			isa = PBXGroup;
 			children = (
-				484524711B4064F900D2BEB0 /* Edge.swift */,
-				4845246E1B4064F900D2BEB0 /* Attribute.swift */,
-				4845246B1B4064F900D2BEB0 /* Graph.swift */,
-				484524681B4064F900D2BEB0 /* Vert.swift */,
-				484524651B4064F800D2BEB0 /* Entity.swift */,
+				483B47C41B41112900F73242 /* User.swift */,
+				483B47C11B41112900F73242 /* Vert.swift */,
+				483B47BE1B41112900F73242 /* Graph.swift */,
+				483B47BB1B41112900F73242 /* Edge.swift */,
+				483B47B81B41112900F73242 /* Entity.swift */,
+				483B47B51B41112800F73242 /* Attribute.swift */,
 			);
 			name = Persistent;
 			sourceTree = "<group>";
@@ -381,25 +389,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				484524541B3FA1E400D2BEB0 /* CurDate.swift in Sources */,
-				484524661B4064F800D2BEB0 /* Entity.swift in Sources */,
 				484C8FFE1B306AD90051CDC1 /* Gestures.swift in Sources */,
+				483B47BF1B41112900F73242 /* Graph.swift in Sources */,
+				483B47BC1B41112900F73242 /* Edge.swift in Sources */,
+				483B47C51B41112900F73242 /* User.swift in Sources */,
 				4882F58F1B1E4391002F6A01 /* EdgeExtension.swift in Sources */,
 				48282EBA1B17AED100BDA782 /* VertExtension.swift in Sources */,
+				483B47C21B41112900F73242 /* Vert.swift in Sources */,
 				4812E3CB1B1D047C0061EAB1 /* VertView.swift in Sources */,
-				4845246C1B4064F900D2BEB0 /* Graph.swift in Sources */,
 				4812E3C91B1D046F0061EAB1 /* GraphWorldView.swift in Sources */,
 				48C1AFAC1B3373AC00F99336 /* imgTextButton.swift in Sources */,
 				4812E3C71B1CF3E90061EAB1 /* GraphView.swift in Sources */,
 				4893456B1B38E314002D1A80 /* Picker.swift in Sources */,
-				484524691B4064F900D2BEB0 /* Vert.swift in Sources */,
-				484524721B4064F900D2BEB0 /* Edge.swift in Sources */,
 				4812E3CD1B1D048C0061EAB1 /* EdgeView.swift in Sources */,
 				4812E3CF1B1D04BC0061EAB1 /* LandingVC.swift in Sources */,
 				48BEF91A1B2A038000DC51A4 /* AttributeTableVC.swift in Sources */,
 				4810E3551B1744C300F72097 /* AppDelegate.swift in Sources */,
 				487FDD011B1A6BC60087C0AF /* NSSet + Edit.swift in Sources */,
 				48D5A0381B371B9600198878 /* ObjCAppDelegateMGen.swift in Sources */,
-				4845246F1B4064F900D2BEB0 /* Attribute.swift in Sources */,
 				48D5A0341B37006600198878 /* ObjCAppDelegateHGen.swift in Sources */,
 				48EA6BDB1B3B512300D9D308 /* ObjCEntityHGen.swift in Sources */,
 				484983391B361A9F00E5D7FE /* AttributeTextField.swift in Sources */,
@@ -408,6 +415,9 @@
 				4882F58D1B1E4046002F6A01 /* GraphExtension.swift in Sources */,
 				484523F21B3C9F9D00D2BEB0 /* ObjCEntityMGen.swift in Sources */,
 				489039241B1B8E0C005E0992 /* CoreController.swift in Sources */,
+				483B47B91B41112900F73242 /* Entity.swift in Sources */,
+				483B47B31B410CCB00F73242 /* Options.swift in Sources */,
+				483B47B61B41112800F73242 /* Attribute.swift in Sources */,
 				48D5A0751B3780C000198878 /* MailGen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -416,31 +426,33 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				484524701B4064F900D2BEB0 /* Attribute.swift in Sources */,
 				48E92AB61B1E226700110510 /* NSSet + Edit.swift in Sources */,
 				483DAFB21B1E8D42007A532E /* EdgeExtension.swift in Sources */,
+				483B47B41B410CCB00F73242 /* Options.swift in Sources */,
+				483B47B71B41112800F73242 /* Attribute.swift in Sources */,
+				483B47C61B41112900F73242 /* User.swift in Sources */,
 				48E92ABB1B1E226700110510 /* VertExtension.swift in Sources */,
 				48C1AFAD1B33AD6700F99336 /* imgTextButton.swift in Sources */,
+				483B47C31B41112900F73242 /* Vert.swift in Sources */,
 				48E92ABD1B1E226700110510 /* GraphView.swift in Sources */,
 				4810C3A01B39FE17004280C1 /* Model.xcdatamodeld in Sources */,
 				484C8FFF1B3078F20051CDC1 /* Gestures.swift in Sources */,
-				484524731B4064F900D2BEB0 /* Edge.swift in Sources */,
 				48EA6BDC1B3B512300D9D308 /* ObjCEntityHGen.swift in Sources */,
 				48E92ABE1B1E226700110510 /* GraphWorldView.swift in Sources */,
 				4893456C1B38E314002D1A80 /* Picker.swift in Sources */,
-				484524671B4064F800D2BEB0 /* Entity.swift in Sources */,
+				483B47BD1B41112900F73242 /* Edge.swift in Sources */,
 				48E92ABF1B1E226700110510 /* VertView.swift in Sources */,
 				48BEF91B1B2A185C00DC51A4 /* AttributeTableVC.swift in Sources */,
 				48D5A0391B371B9600198878 /* ObjCAppDelegateMGen.swift in Sources */,
 				48D5A0351B37006600198878 /* ObjCAppDelegateHGen.swift in Sources */,
+				483B47BA1B41112900F73242 /* Entity.swift in Sources */,
 				484523F31B3C9F9D00D2BEB0 /* ObjCEntityMGen.swift in Sources */,
-				4845246D1B4064F900D2BEB0 /* Graph.swift in Sources */,
 				48E92AC01B1E226700110510 /* EdgeView.swift in Sources */,
 				484524551B3FA1E500D2BEB0 /* CurDate.swift in Sources */,
 				48E92AC11B1E226700110510 /* CoreController.swift in Sources */,
 				48E92AC21B1E226700110510 /* LandingVC.swift in Sources */,
 				48E92AC31B1E226700110510 /* AppDelegate.swift in Sources */,
-				4845246A1B4064F900D2BEB0 /* Vert.swift in Sources */,
+				483B47C01B41112900F73242 /* Graph.swift in Sources */,
 				4849833A1B361AA300E5D7FE /* AttributeTextField.swift in Sources */,
 				483DAFB11B1E8D40007A532E /* GraphExtension.swift in Sources */,
 				484983371B35DAEC00E5D7FE /* CustomCell.swift in Sources */,
