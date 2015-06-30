@@ -21,7 +21,7 @@
         <relationship name="edges" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Edge" inverseName="graph" inverseEntity="Edge" syncable="YES"/>
         <relationship name="verts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vert" inverseName="graph" inverseEntity="Vert" syncable="YES"/>
     </entity>
-    <entity name="User" representedClassName="PRODUCT_MODULE_NAME.User" syncable="YES">
+    <entity name="User" representedClassName="CoreDataModeller.User" syncable="YES">
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="password" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>

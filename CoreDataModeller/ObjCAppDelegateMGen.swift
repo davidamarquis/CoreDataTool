@@ -10,7 +10,9 @@ import UIKit
 
 class ObjCAppDelegateMGen: NSObject {
 
-    let username:String = "David Marquis";
+    var user:User? = nil;
+    var username:String = "";
+
     var graph:Graph?;
     var date = "";
     var year = "";
@@ -31,8 +33,8 @@ class ObjCAppDelegateMGen: NSObject {
     var persistentStoreCoordinator:Array<String> = Array<String>();
     var context:Array<String> = Array<String>();
     var save:Array<String> = Array<String>();
-   
-    override init() {
+    
+    func setStrArrays() {
         comment = ["//","//  AppDelegate.m","//  June4CoreDataObjCTest","//","//  Created by \(username) on \(date).","//  Copyright (c) \(year) \(username). All rights reserved.","//","","#import \"AppDelegate.h\"","#import <CoreData/CoreData.h>",""];
         // any custom class names should be put at the start of this array
         privInterface = ["@interface AppDelegate ()","","@end","@implementation AppDelegate"]
@@ -55,8 +57,13 @@ class ObjCAppDelegateMGen: NSObject {
     }
 
     func updateString() {
+    
+        // set properties needed for strings
+        username = user!.username;
         year = CurDate().getYearString();
         date = CurDate().getDateString();
+        
+        setStrArrays();
         
         for str in comment {
             appDelegateM += str+"\n";

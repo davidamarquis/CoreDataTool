@@ -10,7 +10,9 @@ import UIKit
 
 class ObjCEntityHGen: NSObject {
 
-    let username:String = "David Marquis";
+    var user:User? = nil;
+    var username:String = "";
+    
     var entityH:String=String();
     
     var comment:Array<String> = Array<String>();
@@ -30,8 +32,13 @@ class ObjCEntityHGen: NSObject {
     }
     
     func updateString() {
+        
+        // set properties needed for strings
+        username = user!.username;
         year = CurDate().getYearString();
         date = CurDate().getDateString();
+        
+        // set arrays of strings
         setupArrays();
         if vert == nil {println("AttributeTableVC: udpdateString: vert is nil ");}
         

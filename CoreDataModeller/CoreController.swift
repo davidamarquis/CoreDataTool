@@ -66,7 +66,14 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             else { println("CoreController: prepareForSegue: graph is nil");}
             
         }
-    
+        if segue.destinationViewController is Options {
+            //(segue.destinationViewController as! Options).nameOfUser = user.name;
+            //(segue.destinationViewController as! Options).emailOfUser = user.email;
+            if user != nil {
+            
+                (segue.destinationViewController as! Options).user = user;
+            }
+        }
     }
 
     func setKVOForAttrTable(attr:Attribute, vc:UIViewController, vert:Vert) {
@@ -88,6 +95,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     // nav bar button actions
     func email() {
         mailGen.delegate=self;
+        mailGen.user = user;
         mailGen.emailPressed();
     }
     
@@ -166,29 +174,12 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         barButtons();
         setupVertButtons();
 
-        var error: NSError? = nil;
-        let entityDescription = NSEntityDescription.entityForName("Graph", inManagedObjectContext: context!);
-        let graphRequest:NSFetchRequest = NSFetchRequest();
-        graphRequest.entity = entityDescription;
-        //var fReq: NSFetchRequest = NSFetchRequest(entityName: "Family")
-        //var error: NSError? = nil;
-        let savedGraphs = context!.executeFetchRequest(graphRequest, error:&error);
+        // assign the graph variable to a saved graph
+        fetchGraph();
+        // assign the user variable to a saved user
+        fetchUser();
         
-        if (savedGraphs == nil){println("CoreController: viewDidLoad: array is nil");}
-        else {
-        
-            if savedGraphs!.count > 0 {
-            
-                graph = savedGraphs![0] as? Graph;
-                loadGraph();
-            }
-            else {
-                // TODO: move testGraph into options
-                testGraph();
-            }
-        }
-        
-        // set observer for object deletion
+        // notification response to object deletion from context
         let noteCenter:NSNotificationCenter = NSNotificationCenter.defaultCenter();
         let mainQueue:NSOperationQueue=NSOperationQueue.mainQueue();
         noteCenter.addObserverForName( NSManagedObjectContextObjectsDidChangeNotification, object: nil, queue: mainQueue, usingBlock:
@@ -202,17 +193,57 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         });
     }
     
+    private func fetchGraph() {
+        var error: NSError? = nil;
+        let entityDescription = NSEntityDescription.entityForName("Graph", inManagedObjectContext: context!);
+        let graphRequest:NSFetchRequest = NSFetchRequest();
+        graphRequest.entity = entityDescription;
+
+        let savedGraphs = context!.executeFetchRequest(graphRequest, error:&error);
+        
+        if (savedGraphs == nil){println("CoreController: viewDidLoad: fetch is nil");}
+        else {
+            if savedGraphs!.count > 0 {
+                graph = savedGraphs![0] as? Graph;
+                loadGraph();
+            }
+            else {
+                // TODO: move testGraph into options
+                testGraph();
+            }
+        }
+    }
+    
+    // fetchUser() does a fetch request for users and assigns the user variable to the first user found
+    private func fetchUser() {
+        var error: NSError? = nil;
+        let entityDescription = NSEntityDescription.entityForName("User", inManagedObjectContext: context!);
+        let userRequest:NSFetchRequest = NSFetchRequest();
+        userRequest.entity = entityDescription;
+
+        let savedUsers = context!.executeFetchRequest(userRequest, error:&error);
+        
+        if savedUsers == nil {println("CoreController: fetchUser: fetch is nil");}
+        else {
+        
+            if savedUsers!.count > 0 {
+                user = savedUsers![0] as? User;
+            }
+            else {
+                // user will have a lazy init
+                user!.username = "";
+                user!.email = "";
+            }
+            
+        }
+    }
+    
     // loadGraph() draws the verts and edges of a saved vert
     // when debugging core data use println not debugging commands
     private func loadGraph() {
         
         for obj in graph!.verts {
-        /*
-            println((obj as! Vert).title);
-            println((obj as! Vert).x);
-            println((obj as! Vert).y);
-            println("context is \((obj as! Vert).managedObjectContext) . Is this equal to \(context!) ?");
-          */
+
             let vert = obj as! Vert;
             vert.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
             vert.addObserver(self, forKeyPath: "title", options: .New, context: nil);
@@ -325,6 +356,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     }
     
     //Setup: lazy init
+    
     //graphView property subclasses UIScrollView. It contains all the non-interface views as subviews.
     lazy var graphView:GraphView? = {
         var gv=GraphView(frame: CGRectMake(CGFloat(0), CGFloat(0), self.wdth, self.hght*(1-self.vscale)), graphWorldViewDeleg: self);
@@ -337,7 +369,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         return gv;
     }()
 
-    // graph is the application model
+    // model graph
     lazy var graph:Graph?={
         var graph:Graph?;
         if self.context != nil {
@@ -349,6 +381,20 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             println("CoreController: graph: cannot create graph, context is nil");
         }
         return graph;
+    }()
+    
+    // model user
+    lazy var user:User?={
+        var user:User?;
+        if self.context != nil {
+            let userDescription = NSEntityDescription.entityForName("User",inManagedObjectContext: self.context!);
+            user = User(entity: userDescription!,insertIntoManagedObjectContext: self.context!);
+            user?.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
+        }
+        else {
+            println("CoreController: user: cannot create user, context is nil");
+        }
+        return user;
     }()
     
     //
@@ -471,15 +517,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         else {println("removeEdgeById: err");}
     }
     
-    //MARK: unsorted
-    //TODO: remove this test function
-    private func printSomeTests() {
-        let edgeIds:Array<Array<Int32>> = graph!.edgeIdArray();
-        println(edgeIds);
-        let sortedEdgeIds:Array<Array<Int32>> = graph!.sortedEdgeIdArray();
-        println(sortedEdgeIds);
-    }
-
     //MARK: modes
     
     // curMode() returns an int with current mode
@@ -508,19 +545,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         if graphView == nil {println("CoreController: scrollOn: graphView is nil");}
         (graphView!.maximumZoomScale,graphView!.minimumZoomScale) = (2.0,0.2);
         graphView!.panGestureRecognizer.enabled=true;
-    }
-    
-    func scrollViewDidScroll(scrollView: UIScrollView) {
-    
-    
-        (graphViewContentOffsetDeltaX,graphViewContentOffsetDeltaY) = (scrollView.contentOffset.x - graphViewPrevContentOffsetX, scrollView.contentOffset.y - graphViewPrevContentOffsetY);
-        // reset the stored offset values
-        (graphViewPrevContentOffsetX, graphViewPrevContentOffsetY) = (scrollView.contentOffset.x, scrollView.contentOffset.y);
-        
-        // adjust x and y positions by delta
-        addVertControl!.center = CGPointMake(addVertControl!.center.x + graphViewContentOffsetDeltaX, addVertControl!.center.y + graphViewContentOffsetDeltaY);
-        remVertControl!.center = CGPointMake(remVertControl!.center.x + graphViewContentOffsetDeltaX, remVertControl!.center.y + graphViewContentOffsetDeltaY);
-        remEdgeControl!.center = CGPointMake(remEdgeControl!.center.x + graphViewContentOffsetDeltaX, remEdgeControl!.center.y + graphViewContentOffsetDeltaY);
     }
     
     // edgeMode() handles switching from vertMode() or moveMode()
@@ -747,6 +771,20 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         // redraw the edge
         edgeView!.setNeedsDisplay();
         e.freshView = true;
+    }
+    
+    // MARK: scroll
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+    
+    
+        (graphViewContentOffsetDeltaX,graphViewContentOffsetDeltaY) = (scrollView.contentOffset.x - graphViewPrevContentOffsetX, scrollView.contentOffset.y - graphViewPrevContentOffsetY);
+        // reset the stored offset values
+        (graphViewPrevContentOffsetX, graphViewPrevContentOffsetY) = (scrollView.contentOffset.x, scrollView.contentOffset.y);
+        
+        // adjust x and y positions by delta
+        addVertControl!.center = CGPointMake(addVertControl!.center.x + graphViewContentOffsetDeltaX, addVertControl!.center.y + graphViewContentOffsetDeltaY);
+        remVertControl!.center = CGPointMake(remVertControl!.center.x + graphViewContentOffsetDeltaX, remVertControl!.center.y + graphViewContentOffsetDeltaY);
+        remEdgeControl!.center = CGPointMake(remEdgeControl!.center.x + graphViewContentOffsetDeltaX, remEdgeControl!.center.y + graphViewContentOffsetDeltaY);
     }
     
     //MARK: title

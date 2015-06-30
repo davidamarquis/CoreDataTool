@@ -21,6 +21,8 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
     weak var delegate:MailGenDelegate?;
     //let mailVC:MFMailComposeViewController = MFMailComposeViewController();
     
+    var user:User? = nil;
+    
     //MARK: nav bar
     func emailPressed() {
 
@@ -50,13 +52,20 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
                 if let vert=(v as? Vert) {
                  
                     let entityHGen = ObjCEntityHGen();
+                    if user == nil {println("MailGen: emailPressed: user is nil");}
+                    entityHGen.user = user;
+                    
                     entityHGen.vert = vert;
                     entityHGen.updateString();
                     let entityStr = entityHGen.entityH;
                     let entityData:NSData?=entityStr.dataUsingEncoding(NSUTF8StringEncoding);
                     mailVC!.addAttachmentData(entityData, mimeType:"text/rtf", fileName:"\(vert.title).h");
                     
+                    // M
                     let entityMGen = ObjCEntityMGen();
+                    if user == nil {println("MailGen: emailPressed: user is nil");}
+                    entityMGen.user = user;
+                    
                     entityMGen.vert = vert;
                     entityMGen.updateString();
                     let entityMStr = entityMGen.entityM;
@@ -80,6 +89,9 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
     // makeAppDelegateHGen() adds an app delegate.h string attachment
     private func makeAppDelegateHGen(mailViewController:MFMailComposeViewController) {
         let headerGen = ObjCAppDelegateHGen();
+        if user == nil {println("MailGen: makeAppDelegateHGen: user is nil");}
+        headerGen.user = user;
+        
         headerGen.updateString();
         let appDelegHStr = headerGen.appDelegateH;
         // attach app delegate header file to mail
@@ -92,6 +104,9 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
     // makeAppDelegateMGen() adds an app delegate.m string attachment
     private func makeAppDelegateMGen(mailViewController:MFMailComposeViewController) {
         let delegMGen = ObjCAppDelegateMGen();
+        if user == nil {println("MailGen: makeAppDelegateMGen: user is nil");}
+        delegMGen.user = user;
+        
         delegMGen.graph = delegate!.graph;
         delegMGen.updateString();
         let appDelegMStr = delegMGen.appDelegateM;

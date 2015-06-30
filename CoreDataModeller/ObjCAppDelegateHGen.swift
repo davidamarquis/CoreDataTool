@@ -11,21 +11,29 @@ import Foundation
 class ObjCAppDelegateHGen: NSObject {
    
     var appDelegateH:String = String();
+
+    var user:User? = nil;    
+    var username:String = "";
     
-    let username:String = "David Marquis";
-    var comment:Array<String>;
-    var body:Array<String>;
+    var comment:Array<String> = Array<String>();
+    var body:Array<String> = Array<String>();
     var date = "";
     var year = "";
-   
-    override init() {
+    
+    func setStrArrays() {
         comment = ["//","//  AppDelegate.h","//  June4CoreDataObjCTest","//","//  Created by \(username) on \(date).","//  Copyright (c) \(year) \(username). All rights reserved.","//","","#import <UIKit/UIKit.h>","","@interface AppDelegate : UIResponder <UIApplicationDelegate>",""];
         // any custom class names should be put at the start of this array
         body = ["-(void)setupModel;","","@property (strong, nonatomic) UIWindow *window;","","# pragma mark core data","@property (readonly, strong, nonatomic) NSManagedObjectContext *context;","@property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;","@property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;","","- (void)saveContext;","- (NSURL *)applicationDocumentsDirectory;","","@end"];
     }
+    
     func updateString() {
+    
+        // set properties needed for strings
+        username = user!.username;
         year = CurDate().getYearString();
         date = CurDate().getDateString();
+        
+        setStrArrays();
         for str in comment {
             appDelegateH += str+"\n";
         }
