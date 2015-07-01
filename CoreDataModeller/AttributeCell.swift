@@ -1,5 +1,5 @@
 //
-//  CustomCellTableViewCell.swift
+//  AttributeCellTableViewCell.swift
 //  CoreDataModeller
 //
 //  Created by David Marquis on 2015-06-20.
@@ -25,13 +25,13 @@ protocol CheckAttributes {
     var shouldMove:Bool? {get set};
 }
 
-class CustomCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPickerViewDataSource {
+class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPickerViewDataSource {
 
     // there are two ways to end editing of a text field
     // switching to another text field or hitting the return button
     var willSwitchFields = true;
 
-    // determines if changing the
+    // if the field or the picker gets changed then this flag determines the response
     var doesCreateNewCell:Bool?;
 
     var attributesDelegate:CheckAttributes?;
@@ -52,12 +52,12 @@ class CustomCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPi
     
     // selectCell() enables picker scrolling
     func selectCell() {
-        if picker == nil {println("CustomCell: selectCell: picker is nil")}
+        if picker == nil {println("AttributeCell: selectCell: picker is nil")}
         picker!.canScroll = true;
     }
     
     func deselectCell() {
-        if picker == nil {println("CustomCell: selectCell: picker is nil")}
+        if picker == nil {println("AttributeCell: selectCell: picker is nil")}
         picker!.canScroll = false;
     }
 
@@ -81,7 +81,7 @@ class CustomCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPi
         else {println("CoreController: descriptionLabel is nil so can't set typeLabel");}
         
         picker=Picker();
-        if picker == nil {println("CustomCell: postInitSetup: picker is nil");}
+        if picker == nil {println("AttributeCell: postInitSetup: picker is nil");}
         picker!.frame = CGRectMake(160,0,140,self.frame.height);
         contentView.addSubview(picker!);
     }
@@ -107,8 +107,8 @@ class CustomCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPi
         // sometimes scrolling of the picker view is ignored
         if doesCreateNewCell! {return;}
         
-        if attributesDelegate == nil {println("CustomCell: pickerView: attributesDelegate is nil");}
-        if row < 0 || pickerTest.count < row { println("CustomCell:pickerView:didSelectRow: row is too large after checking doesCreateNewCell"); }
+        if attributesDelegate == nil {println("AttributeCell: pickerView: attributesDelegate is nil");}
+        if row < 0 || pickerTest.count < row { println("AttributeCell:pickerView:didSelectRow: row is too large after checking doesCreateNewCell"); }
 
         attributesDelegate!.setAttrType(attr!, type: pickerTest[row]);
     }
@@ -142,11 +142,11 @@ class CustomCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPi
     }
     
     private func setAttribute(textField:UITextField) {
-        if attributesDelegate == nil {println("CustomCell: textFieldShouldReturn: delegate is nil");}
-        if vertViewId == nil {println("CustomCell: textFieldShouldReturn: vertViewId is nil");}
-        if attributesDelegate == nil {println("CustomCell: textFieldShouldReturn: attributesDelegate is nil");}
-        if attributesDelegate!.attrsOrNil == nil {println("CustomCell: textFieldShouldReturn: attributesDelegate's attrsOrNil is nil");}
-        if doesCreateNewCell == nil {println("CustomCell: textFieldShouldReturn: attributesDelegate's: doesCreateNewCell is nil");}
+        if attributesDelegate == nil {println("AttributeCell: textFieldShouldReturn: delegate is nil");}
+        if vertViewId == nil {println("AttributeCell: textFieldShouldReturn: vertViewId is nil");}
+        if attributesDelegate == nil {println("AttributeCell: textFieldShouldReturn: attributesDelegate is nil");}
+        if attributesDelegate!.attrsOrNil == nil {println("AttributeCell: textFieldShouldReturn: attributesDelegate's attrsOrNil is nil");}
+        if doesCreateNewCell == nil {println("AttributeCell: textFieldShouldReturn: attributesDelegate's: doesCreateNewCell is nil");}
         
         if attributesDelegate!.validateAttrName(textField.text) {
             if doesCreateNewCell! {
@@ -167,7 +167,7 @@ class CustomCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPi
     func textFieldDidBeginEditing(textField: UITextField) {
         attributesDelegate!.shouldMove = true;
         
-        if attributesDelegate == nil {println("CustomCell: textFieldDidBeginEditing: delegate is nil");}
+        if attributesDelegate == nil {println("AttributeCell: textFieldDidBeginEditing: delegate is nil");}
         attributesDelegate!.activeField = textField;
     }
     
@@ -182,7 +182,7 @@ class CustomCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPi
         }
         willSwitchFields = true;
         
-        if attributesDelegate == nil {println("CustomCell: textFieldDidEndEditing: delegate is nil");}
+        if attributesDelegate == nil {println("AttributeCell: textFieldDidEndEditing: delegate is nil");}
         attributesDelegate!.activeField = nil;
     
     }

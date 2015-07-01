@@ -51,14 +51,14 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             if graph != nil {
                 let vert:Vert? = graph!.getVertById(vv.vertViewId!);
                 if vert != nil {
-                    if segue.destinationViewController is AttributeTableVC {
+                    if segue.destinationViewController is EntityTableVC {
                         //set vert
-                        (segue.destinationViewController as! AttributeTableVC).vert=vert;
+                        (segue.destinationViewController as! EntityTableVC).vert=vert;
                         //set attr observers
-                        setupAttrObservers(vert!, vc: segue.destinationViewController as! AttributeTableVC);
+                        setupAttrObservers(vert!, vc: segue.destinationViewController as! EntityTableVC);
                         //set context
                         if context == nil {println("Core")}
-                        (segue.destinationViewController as! AttributeTableVC).context=context!;
+                        (segue.destinationViewController as! EntityTableVC).context=context!;
                     }
                 }
                 else { println("CoreController: prepareForSegue: vert is nil"); }
@@ -67,22 +67,19 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             
         }
         if segue.destinationViewController is Options {
-            //(segue.destinationViewController as! Options).nameOfUser = user.name;
-            //(segue.destinationViewController as! Options).emailOfUser = user.email;
             if user != nil {
-            
                 (segue.destinationViewController as! Options).user = user;
             }
         }
     }
 
     func setKVOForAttrTable(attr:Attribute, vc:UIViewController, vert:Vert) {
-        attr.addObserver(vc as! AttributeTableVC, forKeyPath: "name", options: .New, context: nil);
-        attr.addObserver(vc as! AttributeTableVC, forKeyPath: "type", options: .New, context: nil);
+        attr.addObserver(vc as! EntityTableVC, forKeyPath: "name", options: .New, context: nil);
+        attr.addObserver(vc as! EntityTableVC, forKeyPath: "type", options: .New, context: nil);
     }
     
     // prepareForSegue helper
-    func setupAttrObservers(vert:Vert, vc:AttributeTableVC) {
+    func setupAttrObservers(vert:Vert, vc:EntityTableVC) {
     
         for attr in vert.attributes {
             if attr is Attribute {
@@ -227,14 +224,18 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         else {
         
             if savedUsers!.count > 0 {
-                user = savedUsers![0] as? User;
-            }
-            else {
-                // user will have a lazy init
-                user!.username = "";
-                user!.email = "";
+                for savedUser in savedUsers! {
+                    if (savedUser as! User).email != "" {
+                    
+                        user = savedUser as? User;
+                        return;
+                    }
+                }
             }
             
+            // If no saved user with a real email address was found then user will have a lazy init. Assign its properties as empty strings.
+            user!.username = "";
+            user!.email = "";
         }
     }
     
@@ -955,16 +956,27 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             graph!.SetupVert(verts[2], AtX:50, AtY:300 );
             graph!.SetupVert(verts[3], AtX:200, AtY:80 );
             graph!.SetupEdge(edges[0], From:verts[0], To:verts[1]);
-            graph!.SetupEdge(edges[1], From:verts[1], To:verts[3]);
-            graph!.SetupEdge(edges[2], From:verts[1], To:verts[2]);
+            graph!.SetupEdge(edges[1], From:verts[1], To:verts[2]);
+            graph!.SetupEdge(edges[2], From:verts[0], To:verts[2]);
             graph!.SetupEdge(edges[3], From:verts[2], To:verts[3]);
-
+            
             // set default titles and relationships
             verts[0].title = "Dog";
             verts[1].title = "Owner";
             verts[2].title = "Brand";
             verts[3].title = "Photo";
             
+            // the indexs of the verts are the same as the first column of vert indexs above
+            edges[0].setNameForVert(verts[0], relationshipName: "Owner");
+            edges[1].setNameForVert(verts[1], relationshipName: "FavoriteBrand");
+            edges[2].setNameForVert(verts[0], relationshipName: "FavoriteBrand");
+            edges[3].setNameForVert(verts[2], relationshipName: "Photo");
+            
+            edges[0].setNameForInverseOfVert(verts[1], relationshipName: "Dog");
+            edges[1].setNameForInverseOfVert(verts[2], relationshipName: "OwnersThatLike");
+            edges[2].setNameForInverseOfVert(verts[2], relationshipName: "DogsThatLike");
+            edges[3].setNameForInverseOfVert(verts[3], relationshipName: "Brand");
+
             let dogname = addAttributeById(verts[0]);
             dogname.name = "Name";
             dogname.type = "String";

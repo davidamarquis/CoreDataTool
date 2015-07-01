@@ -10,9 +10,9 @@ import UIKit;
 import CoreData;
 
 // AttributeTable is always presented as a segue from CoreController. Its properties are not retained when the user returns to CoreController
-class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, CheckAttributes {
+class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, CheckAttributes {
     
-    // a flag that determines if keyboard appearance should trigger an attempt to scroll attrView
+    // a flag that determines if keyboard appearance should trigger an attempt to scroll entityTable
     var shouldMove:Bool?=false;
     
     // flags for validating attribute name input from user
@@ -39,28 +39,10 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     var relsOrNil:Array<Edge>?;
     // an array holding each of the string properties of attrsOrNil
 
-    let attrView:UITableView?=UITableView();
+    let entityTable:UITableView?=UITableView();
     var titleField:UITextField?;
     let titleHeight:CGFloat=48;
     
-    /* this validation should be done with an alert message in viewWillDisappear
-    func validateEntityAndReturn() {
-        // every attribute needs a type
-        
-        if attrsOrNil == nil {println("AttributeTableVC: validateEntityAndReturn: attrsOrNil is nil");}
-        for attr in attrsOrNil! {
-            if attr.type == "Undefined" {
-                invalidInput(attrTypeWarning, title:"Invalid Attribute Type");
-            }
-            else if attr.name == "" {
-                invalidInput(attrNameWarning, title:"Invalid Attribute Name");
-            }
-            validateEntityNameWithAlert();
-        }
-    
-    }
-    */
-
     // validates entity name in the model
     private func validateEntityNameWithAlert()->Bool {
         if vert!.title == "" {
@@ -154,17 +136,20 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         }
         
         // create the table view
-        //attrView!.frame = CGRectMake(CGFloat(0),CGFloat(20+44)+titleHeight,view.frame.width,view.frame.height-CGFloat(titleHeight));
-        attrView!.frame = CGRectMake(CGFloat(0),CGFloat(20+44)+titleHeight,view.frame.width,162*3);
-        (attrView!.dataSource, attrView!.delegate) = (self, self);
-        attrView!.allowsSelection=true;
+        //entityTable!.frame = CGRectMake(CGFloat(0),CGFloat(20+44)+titleHeight,view.frame.width,view.frame.height-CGFloat(titleHeight));
+        entityTable!.frame = CGRectMake(CGFloat(0),CGFloat(20+44)+titleHeight,view.frame.width,162*3);
+        (entityTable!.dataSource, entityTable!.delegate) = (self, self);
+        entityTable!.allowsSelection=true;
         // register class will allow new cells to be initialized properly at launch
         // an incorrect class name will cause cells to not be shown at launch
-        attrView!.registerClass(CustomCell.self, forCellReuseIdentifier:"AttributeCell");
-        attrView!.reloadData();
-        view.addSubview(attrView!);
+        entityTable!.registerClass(AttributeCell.self, forCellReuseIdentifier:"AttributeCell");
+        entityTable!.registerClass(RelationshipCell.self, forCellReuseIdentifier:"RelationshipCell");
+        entityTable!.registerClass(UITableViewCell.self, forCellReuseIdentifier:"Cell");
+        entityTable!.reloadData();
+        view.addSubview(entityTable!);
         
         getSortedAttributes();
+        getSortedRels();
         
         // observes keyboard dismissal in case any error
         let noteCenter:NSNotificationCenter = NSNotificationCenter.defaultCenter();
@@ -239,16 +224,18 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     func getSortedAttributes() {
     
         // 1.get an unsorted array of attributes from the vert
-        if vert == nil {println("AttributeTableVC: getSortedAttributes: the vert is nil");}
+        if vert == nil {println("EntityTableVC: getSortedAttributes: the vert is nil");}
         attrsOrNil=vert!.attributes.allObjects as? Array<Attribute>;
-        if attrsOrNil == nil {println("AttributeTableVC: getSortedAttributes: the list of attributes is nil");}
+        if attrsOrNil == nil {println("EntityTableVC: getSortedAttributes: the list of attributes is nil");}
         
         // 2.sort
         attrsOrNil = sorted(attrsOrNil!, sortAttributes);
         
         // 3.reload
-        attrView!.reloadData();
+        entityTable!.reloadData();
     }
+    
+    // the sorting method for attributes
     private func sortAttributes(a1:Attribute, a2:Attribute)->Bool {
         if a1.name < a2.name {
             return true;
@@ -256,20 +243,45 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         return false;
     }
     
+    func getSortedRels() {
+    
+        // 1.get an unsorted array of edges
+        if vert == nil {println("EntityTableVC: getSortedRels: the vert is nil");}
+        
+        relsOrNil=vert!.edges.allObjects as? Array<Edge>;
+        if relsOrNil == nil {println("EntityTableVC: getSortedRels: the list of rels is nil");}
+        
+        // 2.sort
+        relsOrNil = sorted(relsOrNil!, sortEdges);
+        
+        // 3.reload
+        entityTable!.reloadData();
+    }
+    
+    // the sorting method for attributes
+    private func sortEdges(a1:Edge, a2:Edge)->Bool {
+        return true;
+        //TODO: 
+        /*
+        if a1.name < a2.name {
+            return true;
+        }
+        return false;
+        */
+    }
+    
     //MARK: UITextFieldDelegate methods
     func textFieldShouldReturn(textField: UITextField)->Bool {
     
         textField.resignFirstResponder();
-        
         if vert == nil {println("AttributeTable: testFieldShouldReturn: vert is nil");};
         
+        // if the input is valid change the title of the vert
         // assumption here: the only textfields in AttributeTable not=attributeTextField is the title text field
         if navigationController == nil {println("AttributeTable: testFieldShouldReturn: nav controller is nil");}
         for vc in navigationController!.viewControllers {
             if vc is CoreController {
-                //entityName = textField.text;
-                // add the new title to the model
-                //TODO: trying to present err over the keyboard
+ 
                 if validateEntityNameInputWithAlert(textField.text) {
                     (vc as! CoreController).setTitle(vert!.vertViewId, title: textField.text);
                 }
@@ -286,78 +298,100 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {return 2;}
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete method implementation.
-        // Return the number of rows in the section.
         if section == 0 {
             if attrsOrNil != nil {
                 return attrsOrNil!.count+1;
             }
-            else {
-                return 0;
-            }
+            else {return 0;}
         }
         else if section == 1 {
             if relsOrNil != nil {
                 return relsOrNil!.count+1;
             }
-            else {
-                return 0;
-            }
+            else {return 0;}
         }
         else {
-            println("AttributeTableVC: numberOfRowsInSection: invalid number of sections");
+            println("EntityTableVC: numberOfRowsInSection: invalid number of sections");
             return 0;
         }
     }
     
     //MARK: table view helpers
     func inAttributesSection(indexPath:NSIndexPath)->Bool {
-        if indexPath.row < self.tableView(attrView!, numberOfRowsInSection: 0) {
+        if indexPath.row < self.tableView(entityTable!, numberOfRowsInSection: 0) {
             return true;
         }
         else {return false;}
     }
+    
     func inRelationshipsSection(indexPath:NSIndexPath)->Bool {
-        if self.tableView(attrView!, numberOfRowsInSection: 1) <= indexPath.row && indexPath.row < self.tableView(attrView!, numberOfRowsInSection: 1) {
+
+        let m = self.tableView(entityTable!, numberOfRowsInSection: 0);
+        let n = self.tableView(entityTable!, numberOfRowsInSection: 0) + self.tableView(entityTable!, numberOfRowsInSection: 1);
+
+        // row must be greater than or equal to number rows in the first section, less than total number of rows
+        if m <= indexPath.row && indexPath.row < n {
             return true;
         }
         else {return false;}
     }
+
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     {
-
-        let cellIdentifier:String="AttributeCell";
-        var cell:CustomCell? = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as? CustomCell
-        if cell == nil {
-            // init a custom cell
-            cell = CustomCell(style:UITableViewCellStyle.Default, reuseIdentifier: cellIdentifier);
-            
-            if cell == nil {println("AttributeTable: tableView cellForRowAtIndexPath: failed to create cell");}
-            
-            // do any additional setup of the cell...
-        }
-        
-        (cell!.picker!.delegate,cell!.picker!.dataSource) = (cell!,cell!); //UIPickerView delegate and datasource
-        cell!.attributesDelegate = self; //CheckAttributes delegate
-        cell!.vertViewId = vert!.vertViewId;
-
-        // customize the cell based on its section
+    
         if inAttributesSection(indexPath) {
+
+            let cellIdentifier:String="AttributeCell";
+            var cell:AttributeCell? = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as? AttributeCell
+            if cell == nil {
+                // init a custom cell
+                cell = AttributeCell(style:UITableViewCellStyle.Default, reuseIdentifier: cellIdentifier);
+                
+                if cell == nil {println("AttributeTable: tableView cellForRowAtIndexPath: failed to create cell");}
+                
+                // do any additional setup of the cell...
+            }
+            
+            (cell!.picker!.delegate,cell!.picker!.dataSource) = (cell!,cell!);  //UIPickerView delegate and datasource
+            cell!.attributesDelegate = self;                                    //CheckAttributes delegate
+            cell!.vertViewId = vert!.vertViewId;
+
+            // customize the cell based on its section
+
             setAttributeCell(indexPath, cell: cell!);
+            return cell!;
         }
         else if inRelationshipsSection(indexPath) {
-            setRelationshipCell(indexPath, cell: cell!)
+        
+            let cellIdentifier:String="RelationshipCell";
+            
+            var cell:RelationshipCell? = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as? RelationshipCell
+            if cell == nil {
+                // init a custom cell
+                cell = RelationshipCell(style:UITableViewCellStyle.Default, reuseIdentifier: cellIdentifier);
+                if cell == nil {println("RelationshipTable: tableView cellForRowAtIndexPath: failed to create cell");}
+            }
+            
+            (cell!.picker!.delegate,cell!.picker!.dataSource) = (cell!,cell!);  //UIPickerView delegate and datasource
+            cell!.attributesDelegate = self;                                    //CheckAttributes delegate
+            cell!.vertViewId = vert!.vertViewId;
+
+            // customize the cell based on its section
+            setRelationshipCell(indexPath, cell: cell!);
+            
+            return cell!;
         }
         else {
-            println("AttributeTable: tableView cellForRowAtIndexPath: invalid section");
+            println("EntityTable: tableView cellForRowAtIndexPath: invalid section");
+            
+            return tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell;
         }
-        return cell!
     }
     
     // setAttributeCell() does the setup for a table view cell in the attributes section. 
     // Assumes that the indexPath row its given is in the right section
-    func setAttributeCell(indexPath: NSIndexPath, cell:CustomCell) {
+    func setAttributeCell(indexPath: NSIndexPath, cell:AttributeCell) {
         
         // set the text showing the attribute name
         // assumption: attrsOrNil!.count+1 = length of attributes section
@@ -365,6 +399,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
         {
             // if a cell is not flagged with doesCreateNewCell then changing the textField makes a change to an existing attribute
             cell.doesCreateNewCell = false;
+            
             //set the text of the cell textfield
             cell.descriptionLabel!.text=attrsOrNil![indexPath.row].name;
             
@@ -387,8 +422,33 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     
     // setRelationshipCell() does the setup for a table view cell in the attributes section.
     // Assumes that the indexPath row its given is in the right section
-    func setRelationshipCell(indexPath: NSIndexPath, cell:CustomCell) {
-         //TODO:
+    func setRelationshipCell(indexPath: NSIndexPath, cell:RelationshipCell) {
+        // set the text showing the attribute name
+        // assumption: attrsOrNil!.count+1 = length of attributes section
+        if indexPath.row < relsOrNil!.count
+        {
+            // if a cell is not flagged with doesCreateNewCell then changing the textField makes a change to an existing attribute
+            cell.doesCreateNewCell = false;
+            //set the text of the cell textfield
+            
+            cell.descriptionLabel!.text = relsOrNil![indexPath.row].getNameForVert(vert!);
+            
+            //TODO: Trello: refactor to MVC
+            cell.edge = relsOrNil![indexPath.row];
+            
+            //TODO: ind = find(pickerTest,cell.edge!.type);
+            /*
+            if ind != nil {
+            
+                cell.picker!.selectRow(ind!, inComponent: 0, animated: false);
+            }
+            */
+        }
+        else {
+            cell.doesCreateNewCell = true;
+            // the last cell in the attribute section invites creating a new cell
+            cell.descriptionLabel!.placeholder = cell.addRelFieldPlaceholderText ;
+        }
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -458,7 +518,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     // Called when the UIKeyboardDidShowNotification is sent.
     func keyboardWasShown(aNotification:NSNotification) {
     
-        if shouldMove == nil {println("AttributeTableVC: keyboardWasShown: shouldMove is nil");}
+        if shouldMove == nil {println("EntityTableVC: keyboardWasShown: shouldMove is nil");}
         if shouldMove! {
             let info:NSDictionary = aNotification.userInfo!;
             // from http://stackoverflow.com/questions/25856003/swift-moving-content-behind-keyboard-doesnt-reset-after-dismiss
@@ -468,8 +528,8 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
             let magicNumber:CGFloat=20;
             let contentInsets = UIEdgeInsetsMake(0.0, 0.0, kbSize.height+magicNumber, 0.0);
             
-            attrView!.contentInset = contentInsets;
-            attrView!.scrollIndicatorInsets = contentInsets;
+            entityTable!.contentInset = contentInsets;
+            entityTable!.scrollIndicatorInsets = contentInsets;
          
             // If active text field is hidden by keyboard, scroll it so it's visible
             // Your app might not need or want this behavior.
@@ -477,7 +537,7 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
             aRect.size.height -= kbSize.height;
             
             if !CGRectContainsPoint(aRect, activeField!.frame.origin) {
-                attrView!.scrollRectToVisible(activeField!.frame, animated:true);
+                entityTable!.scrollRectToVisible(activeField!.frame, animated:true);
             }
             shouldMove = false;
         }
@@ -487,8 +547,8 @@ class AttributeTableVC: UIViewController, UITableViewDataSource, UITableViewDele
     func keyboardWillBeHidden(aNotification:NSNotification) {
     
         let contentInsets = UIEdgeInsetsZero;
-        attrView!.contentInset = contentInsets;
-        attrView!.scrollIndicatorInsets = contentInsets;
+        entityTable!.contentInset = contentInsets;
+        entityTable!.scrollIndicatorInsets = contentInsets;
     }
     
     

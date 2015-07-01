@@ -45,10 +45,10 @@
             </objects>
             <point key="canvasLocation" x="2081" y="-546"/>
         </scene>
-        <!--Attribute TableVC-->
+        <!--Entity TableVC-->
         <scene sceneID="KHi-Dp-E6g">
             <objects>
-                <viewController id="2NL-fe-8oU" customClass="AttributeTableVC" customModule="CoreDataModeller" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="2NL-fe-8oU" customClass="EntityTableVC" customModule="CoreDataModeller" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="COe-7g-aNB"/>
                         <viewControllerLayoutGuide type="bottom" id="6OR-wb-Nzu"/>

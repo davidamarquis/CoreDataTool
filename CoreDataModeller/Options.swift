@@ -13,8 +13,8 @@ class Options: UIViewController, UITextFieldDelegate {
     //var nameOfUser:String? = String();
     //var emailOfUser:String? = String();
     var user:User? = nil;
-    var username: UITextField?;
-    var email: UITextField?;
+    var username: TagTextField?;
+    var email: TagTextField?;
     let usernameWidth:CGFloat = 200;
     var addAccount:UIButton?;
     
@@ -38,24 +38,16 @@ class Options: UIViewController, UITextFieldDelegate {
         email = TagTextField(frame: CGRectMake(view.bounds.width/2 - usernameWidth/2,170,200,40));
         email!.backgroundColor = UIColor.redColor();
         email!.delegate = self;
-        username!.fieldTag = "email";
+        email!.fieldTag = "email";
         
         if user!.email == "" {
-            email!.placeholder = "Email";
+            email!.placeholder = "email";
         }
         else {
             email!.text = user!.email;
         }
         view.addSubview(email!);
         
-        if user!.email == "" || user!.username == "" {
-            addAccount = UIButton(frame: CGRectMake(view.bounds.width/2 - usernameWidth/2,240,200,40));
-            addAccount!.backgroundColor = UIColor.grayColor();
-            addAccount!.setTitle("Add Account", forState: UIControlState.Normal);
-            addAccount!.setTitleColor(UIColor.whiteColor(), forState: UIControlState.Normal);
-            addAccount!.targetForAction("addAccountResponse", withSender: self);
-            view.addSubview(addAccount!);
-        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -64,8 +56,8 @@ class Options: UIViewController, UITextFieldDelegate {
     }
 
     func addAccountResponse() {
-        if validAccount() {
         
+        if validAccount() {
             user!.username = username!.text!;
             user!.email = email!.text!;
             addAccount!.removeFromSuperview();
@@ -80,13 +72,19 @@ class Options: UIViewController, UITextFieldDelegate {
     }
     
     //MARK: UITextFieldDelegate methods
-    func textFieldShouldReturn(textField: TagTextField)->Bool {
+    func textFieldShouldReturn(textField: UITextField)->Bool {
     
-        // if username then update the model
-        
-        // if email then update the model
-        
-        
+        if textField is TagTextField {
+            let field = textField as! TagTextField;
+            if field.fieldTag == "nameOfUser" {
+                user!.username = field.text;
+            }
+            
+            if field.fieldTag == "email" {
+                user!.email = field.text;
+                
+            }
+        }
         textField.resignFirstResponder();
         return true;
     }

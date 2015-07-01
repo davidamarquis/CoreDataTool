@@ -85,6 +85,8 @@ func setNameForVert(vert:Vert, relationshipName:String) {
     var w:Vert?;
     (v,w)=Connects();
     if v == nil || w == nil {println("Edge ext: getNameForVert: could not get pair of verts that the edge connects");}
+    
+    println("edge cat: setNameForVert: \(v!.title), \(w!.title)");
     if vert === v! {
         rel1name = relationshipName;
     }
@@ -104,6 +106,8 @@ func setNameForInverseOfVert(vert:Vert, relationshipName:String) {
     var w:Vert?;
     (v,w)=Connects();
     if v == nil || w == nil {println("Edge ext: getNameForVert: could not get pair of verts that the edge connects");}
+    
+    println("edge cat: setNameForVert: \(v!.title), \(w!.title)");
     if inverse === v! {
         rel1name = relationshipName;
     }
