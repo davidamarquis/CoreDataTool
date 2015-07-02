@@ -59,7 +59,7 @@ class ObjCAppDelegateMGen: NSObject {
     func updateString() {
     
         // set properties needed for strings
-        username = user!.username;
+        username = user!.username!;
         year = CurDate().getYearString();
         date = CurDate().getDateString();
         
@@ -77,7 +77,7 @@ class ObjCAppDelegateMGen: NSObject {
         
         appDelegateM += "-(void)setupModel {\n";
         appDelegateM += "\n";
-        for obj in graph!.verts {
+        for obj in graph!.verts! {
             if obj is Vert {
                 let vert = obj as! Vert;
                 // entity
@@ -89,7 +89,7 @@ class ObjCAppDelegateMGen: NSObject {
                 appDelegateM += "\t[self.managedObjectModel setEntities:@[\(vert.title)Entity]];\n";
                 appDelegateM += "\t\n";
                 appDelegateM += "\tNSMutableArray *\(vert.title)Properties = [NSMutableArray array];\n";
-                for elem in vert.attributes {
+                for elem in vert.attributes! {
                     if elem is Attribute {
                         let attr = elem as! Attribute;
                         appDelegateM += "\tNSAttributeDescription *\(attr.name)Attribute = [[NSAttributeDescription alloc] init];\n";

@@ -30,7 +30,7 @@ lazy var applicationDocumentsDirectory: NSURL =
 {
     // The directory the application uses to store the Core Data store file. This code uses a directory named "com.david.CoreDataTest" in the application's documents Application Support directory.
     let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
-    return urls[urls.count-1] as! NSURL
+    return urls[urls.count-1] as NSURL
 }()
 
 lazy var managedObjectModel: NSManagedObjectModel = {
@@ -51,7 +51,10 @@ lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator? = {
     let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent("CoreDataTest.sqlite")
     var error: NSError? = nil
     var failureReason = "There was an error creating or loading the application's saved data."
-    if coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: nil, error: &error) == nil {
+    do {
+        try coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: nil)
+    } catch var error1 as NSError {
+        error = error1
         coordinator = nil
         // Report any error we got.
         var dict = [String: AnyObject]()
@@ -63,6 +66,8 @@ lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator? = {
         // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
         NSLog("Unresolved error \(error), \(error!.userInfo)")
         abort()
+    } catch {
+        fatalError()
     }
     
     return coordinator
@@ -83,12 +88,17 @@ lazy var context: NSManagedObjectContext? = {
 
 func saveContext () {
     if let moc = context {
-        var error: NSError? = nil
-        if moc.hasChanges && !moc.save(&error) {
+        if moc.hasChanges {
+            do {
+               try moc.save();
+            }
+            catch {
             // Replace this implementation with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            NSLog("Unresolved error \(error), \(error!.userInfo)")
+            let nserror = error as NSError
+            NSLog("Unresolved error \(nserror), \(nserror.userInfo)")
             abort()
+            }
         }
     }
 }
@@ -103,11 +113,11 @@ func makeVertsArray(numVerts:Int) {
     // check if verts is nonnil
     if(verts != nil && context != nil) {
         for var i=0;i<numVerts;i++ {
-            var vert:Vert? = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
+            let vert:Vert? = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
             verts!.append(vert!);
         }
     }
-    else {println("CoreController: makeVertsArray(): verts is nil or context is nil");}
+    else {print("CoreController: makeVertsArray(): verts is nil or context is nil");}
 }
 
 func makeEdgesArray(numEdges:Int) {
@@ -116,14 +126,14 @@ func makeEdgesArray(numEdges:Int) {
     
     if (edges != nil && context != nil) {
         for var i=0;i<numEdges;i++ {
-            var edge:Edge? = Edge(entity: edgeDescription!,insertIntoManagedObjectContext: context);
+            let edge:Edge? = Edge(entity: edgeDescription!,insertIntoManagedObjectContext: context);
             if edge != nil {
                 edges!.append(edge!);
             }
-            else { println("tests: makeEdgesArray: edge is nil"); }
+            else { print("tests: makeEdgesArray: edge is nil"); }
         }
     }
-    else {println("CoreController: makeEdgesArray(): edges is nil or context is nil");}
+    else {print("CoreController: makeEdgesArray(): edges is nil or context is nil");}
 }
 
 func makeGraph1() {

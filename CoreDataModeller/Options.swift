@@ -26,7 +26,7 @@ class Options: UIViewController, UITextFieldDelegate {
         username!.delegate = self;
         username!.fieldTag = "nameOfUser";
         
-        if user == nil {println("Options: viewDidLoad: user is nil");}
+        if user == nil {print("Options: viewDidLoad: user is nil");}
         if user!.username == "" {
             username!.placeholder = "Name";
         }
@@ -77,11 +77,11 @@ class Options: UIViewController, UITextFieldDelegate {
         if textField is TagTextField {
             let field = textField as! TagTextField;
             if field.fieldTag == "nameOfUser" {
-                user!.username = field.text;
+                user!.username = field.text!;
             }
             
             if field.fieldTag == "email" {
-                user!.email = field.text;
+                user!.email = field.text!;
                 
             }
         }

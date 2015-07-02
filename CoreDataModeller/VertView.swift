@@ -13,7 +13,7 @@ protocol VertViewWasTouchedProtocol {
     var inVertMode:Bool {get};
     var inMoveMode:Bool {get};
     func drawGraphAfterMovingVert(viewId:Int32, toXPos endX:Float, toYPos endY:Float);
-    func performSegueWithIdentifier(identifier: String?, sender: AnyObject?);
+    //func performSegueWithIdentifier(identifier: String?, sender: AnyObject?);
     func curMode()->Int;
 }
 
@@ -59,7 +59,7 @@ class VertView: UIView {
         
         // configure label
         titleLabel = UILabel();
-        if titleLabel == nil {println("VertView: postInit: titleLabel is nil");}
+        if titleLabel == nil {print("VertView: postInit: titleLabel is nil");}
         addSubview(titleLabel!);
         
         titleLabel!.backgroundColor = UIColor.clearColor();
@@ -69,7 +69,7 @@ class VertView: UIView {
     // MARK: methods
     override func drawRect(rect:CGRect) {
         if !isDrawn {
-            if strokeSize == nil || circSize == nil {println("VertView: drawRect: strokeSize or circSize is nil");}
+            if strokeSize == nil || circSize == nil {print("VertView: drawRect: strokeSize or circSize is nil");}
             
             let diameter=circSize! + strokeSize!;
             
@@ -93,10 +93,10 @@ class VertView: UIView {
     // hit changes the selected property to its negation if cgp is within the BZ
     func tap(recognizer:UITapGestureRecognizer) {
         if delegate != nil {
-            delegate!.performSegueWithIdentifier("VertInfo", sender: self);
+            //TODO: july 1 10pm delegate!.performSegueWithIdentifier("VertInfo", sender: self);
         }
         else {
-            println("VertView: tap: vv delegate is nil");
+            print("VertView: tap: vv delegate is nil");
         }
     }
  

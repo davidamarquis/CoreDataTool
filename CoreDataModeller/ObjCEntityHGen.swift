@@ -34,25 +34,25 @@ class ObjCEntityHGen: NSObject {
     func updateString() {
         
         // set properties needed for strings
-        username = user!.username;
+        username = user!.username!;
         year = CurDate().getYearString();
         date = CurDate().getDateString();
         
         // set arrays of strings
         setupArrays();
-        if vert == nil {println("AttributeTableVC: udpdateString: vert is nil ");}
+        if vert == nil {print("AttributeTableVC: udpdateString: vert is nil ");}
         
         for str in comment{
             entityH += str+"\n";
         }
         
-        for obj in vert!.attributes {
+        for obj in vert!.attributes! {
             let attr=(obj as! Attribute);
             
             if useScalarTypes {
             
                 if attr.type == "Undefined" {
-                    println("ObjCEntityHGen: updateString: type is undefined so email cannot be created");
+                    print("ObjCEntityHGen: updateString: type is undefined so email cannot be created");
                     // don't want to handle this case. Undefined type would result in a build error anyway
                 }
                 else if attr.type == "Integer 16" {
@@ -88,7 +88,7 @@ class ObjCEntityHGen: NSObject {
                 else if attr.type == "Transformable" {
                     entityH += "@property (nonatomic, retain) id \(attr.name);\n";
                 }
-                else {println("ObjCEntityHGen: updateString: vert has an attribute of unrecognized type");}
+                else {print("ObjCEntityHGen: updateString: vert has an attribute of unrecognized type");}
             }
             entityH += "\n";
             entityH += "@end\n";

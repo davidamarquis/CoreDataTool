@@ -11,7 +11,7 @@ import UIKit
 class CurDate: NSObject {
 
     func getDateString()->String {
-        let components = NSCalendar.currentCalendar().components(.CalendarUnitDay | .CalendarUnitMonth | .CalendarUnitYear, fromDate: NSDate());
+        let components = NSCalendar.currentCalendar().components([.Day, .Month, .Year], fromDate: NSDate());
         let year = Int32(components.year);
         let month = Int32(components.month);
         let day = Int32(components.day);
@@ -19,7 +19,7 @@ class CurDate: NSObject {
     }
     
     func getYearString()->String {
-        let components = NSCalendar.currentCalendar().components(.CalendarUnitDay | .CalendarUnitMonth | .CalendarUnitYear, fromDate: NSDate());
+        let components = NSCalendar.currentCalendar().components([.Day, .Month, .Year], fromDate: NSDate());
         let year = Int32(components.year);
         return "\(year)";
     }

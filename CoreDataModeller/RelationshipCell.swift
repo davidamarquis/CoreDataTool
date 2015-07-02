@@ -7,41 +7,41 @@
 //
 
 import UIKit
+import Foundation
 
-protocol TextFieldManager {
+protocol RelationshipDelegate {
     
     var activeField:UITextField? {get set};
     var shouldMove:Bool? {get set};
+    var vert:Vert? {get};
 }
 
 class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPickerViewDataSource {
+    
+    var relationshipDelegate:RelationshipDelegate?;
+    
     // there are two ways to end editing of a text field:
     // switching to another text field or hitting the return button
     var willSwitchFields = true;
-
     var doesCreateNewCell:Bool?;
 
     let addRelFieldPlaceholderText = "Add relationship";
-    // the id of the vert that has been passed to AttrTable
-    var vertViewId:Int32?;
-    
-    //MARK: UI vars 
-    //pickerView's delegate is AttributeTable
-    var descriptionLabel:UITextField?;
-    var picker:Picker?;
-    var typeLabel:UILabel?;
-    
-    //TODO: refactor trello:
+    // destinations holds the titles of the verts that the edge can end on. Assigned by EntityTable
+    var destinations:Array<String> = Array<String>();
     var edge:Edge?;
+    
+    var descriptionLabel:UITextField?;
+    var typeLabel:UILabel?;
+    var picker:Picker?;
     
     // selectCell() enables picker scrolling
     func selectCell() {
-        if picker == nil {println("RelationshipCell: selectCell: picker is nil")}
+        if picker == nil {print("RelationshipCell: selectCell: picker is nil")}
         picker!.canScroll = true;
     }
     
     func deselectCell() {
-        if picker == nil {println("RelationshipCell: selectCell: picker is nil")}
+        if picker == nil {print("RelationshipCell: selectCell: picker is nil")}
         picker!.canScroll = false;
     }
 
@@ -51,10 +51,11 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
     }
     
     func postInitSetup() {
+
         // configure control(s)
         descriptionLabel = UITextField(frame: CGRectMake(0, 0, 160, 48));
         descriptionLabel!.backgroundColor = UIColor(red: 245/255.0, green: 245/255.0, blue: 245/255.0, alpha: 1);
-        setTextField(descriptionLabel!, placeholder: addAttrFieldPlaceholderText);
+        setTextField(descriptionLabel!, placeholder: addRelFieldPlaceholderText);
         contentView.addSubview(descriptionLabel!);
         
         if descriptionLabel != nil {
@@ -62,10 +63,10 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
             typeLabel!.backgroundColor = UIColor(red: 245/255.0, green: 245/255.0, blue: 245/255.0, alpha: 1);
             contentView.addSubview(typeLabel!);
         }
-        else {println("CoreController: descriptionLabel is nil so can't set typeLabel");}
+        else {print("CoreController: descriptionLabel is nil so can't set typeLabel");}
         
         picker=Picker();
-        if picker == nil {println("RelationshipCell: postInitSetup: picker is nil");}
+        if picker == nil {print("RelationshipCell: postInitSetup: picker is nil");}
         picker!.frame = CGRectMake(160,0,140,self.frame.height);
         contentView.addSubview(picker!);
     }
@@ -75,12 +76,12 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
         return 1;
     }
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return pickerTest.count
+        return destinations.count;
     }
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
     
-        return pickerTest[row];
+        return destinations[row];
     }
     func pickerView(pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return 20;
@@ -91,10 +92,10 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
         // sometimes scrolling of the picker view is ignored
         if doesCreateNewCell! {return;}
         
-        if attributesDelegate == nil {println("RelationshipCell: pickerView: attributesDelegate is nil");}
-        if row < 0 || pickerTest.count < row { println("RelationshipCell:pickerView:didSelectRow: row is too large after checking doesCreateNewCell"); }
+        if relationshipDelegate == nil {print("RelationshipCell: pickerView: relationshipDelegate is nil");}
+        if row < 0 || destinations.count < row { print("RelationshipCell:pickerView:didSelectRow: row is too large after checking doesCreateNewCell"); }
 
-        //TODO: change model with new destination: attributesDelegate!.setAttrType(attr!, type: pickerTest[row]);
+        //TODO: change model with new destination: relationshipDelegate!.setAttrType(attr!, type: pickerTest[row]);
     }
     
     private func setTextField(textField:UITextField, placeholder:String) {
@@ -110,8 +111,6 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
         postInitSetup();
     }
     
-
-
     //MARK: UITextFieldDelegate methods
     //
     func textFieldShouldReturn(textField: UITextField)->Bool {
@@ -119,46 +118,47 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
         // user has ended control by hitting return
         willSwitchFields = false;
         
-        setAttribute(textField);
+        setRelName(textField);
         
         textField.resignFirstResponder();
         return true;
     }
     
-    private func setAttribute(textField:UITextField) {
-        if attributesDelegate == nil {println("RelationshipCell: textFieldShouldReturn: delegate is nil");}
-        if vertViewId == nil {println("RelationshipCell: textFieldShouldReturn: vertViewId is nil");}
-        if attributesDelegate == nil {println("RelationshipCell: textFieldShouldReturn: attributesDelegate is nil");}
-        if attributesDelegate!.attrsOrNil == nil {println("RelationshipCell: textFieldShouldReturn: attributesDelegate's attrsOrNil is nil");}
-        if doesCreateNewCell == nil {println("RelationshipCell: textFieldShouldReturn: attributesDelegate's: doesCreateNewCell is nil");}
+    private func setRelName(textField:UITextField) {
+        if relationshipDelegate == nil {print("RelationshipCell: textFieldShouldReturn: delegate is nil");}
+        if doesCreateNewCell == nil {print("RelationshipCell: textFieldShouldReturn: relationshipDelegate's: doesCreateNewCell is nil");}
         
-        if attributesDelegate!.validateAttrName(textField.text) {
-            if doesCreateNewCell! {
-                attributesDelegate!.addAttributeById(vertViewId!, withString: textField.text);
-            }
-            else {
-                // assuming attr is not nil
-                //TODO: set name attributesDelegate!.setAttrName(attr!,name: textField.text);
-            }
+        // validate rel name and add
+        if validateRel(textField.text!) {
+            edge!.setNameForVert(relationshipDelegate!.vert!, relationshipName: textField.text!);
         }
         else {
             textField.text = "";
-            textField.placeholder = addAttrFieldPlaceholderText;
+            textField.placeholder = addRelFieldPlaceholderText;
         }
+    }
+    
+    // temporary method for validating relationships
+    func validateRel(text:String)->Bool {
+        if text != "" {
+            return true;
+        }
+        return false;
     }
     
     //MARK:
     func textFieldDidBeginEditing(textField: UITextField) {
-        attributesDelegate!.shouldMove = true;
+        relationshipDelegate!.shouldMove = true;
+        relationshipDelegate!.shouldMove = true;
         
-        if attributesDelegate == nil {println("RelationshipCell: textFieldDidBeginEditing: delegate is nil");}
-        attributesDelegate!.activeField = textField;
+        if relationshipDelegate == nil {print("RelationshipCell: textFieldDidBeginEditing: delegate is nil");}
+        relationshipDelegate!.activeField = textField;
     }
     
     // called when text field resigns first responder status
     func textFieldDidEndEditing(textField: UITextField) {
 
-        attributesDelegate!.shouldMove = false;
+        relationshipDelegate!.shouldMove = false;
         
         // if
         if edge != nil && willSwitchFields {
@@ -166,8 +166,8 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
         }
         willSwitchFields = true;
         
-        if attributesDelegate == nil {println("RelationshipCell: textFieldDidEndEditing: delegate is nil");}
-        attributesDelegate!.activeField = nil;
+        if relationshipDelegate == nil {print("RelationshipCell: textFieldDidEndEditing: delegate is nil");}
+        relationshipDelegate!.activeField = nil;
     
     }
     

@@ -6,10 +6,11 @@
 //  Copyright (c) 2015 David Marquis. All rights reserved.
 //
 
-import CoreData
 import Foundation
+import CoreData
 
-extension Graph {
+@objc(Graph)
+class Graph: NSManagedObject {
 // all methods in an extension
     /*
     func removeVert(vertToKill: Vert?) {
@@ -27,7 +28,7 @@ extension Graph {
     
         var idArray:Array<Int32>=Array<Int32>();
         
-        for v in verts {
+        for v in verts! {
             if v is Vert {
                 idArray.append((v as! Vert).vertViewId);
             }
@@ -43,7 +44,7 @@ extension Graph {
             vert.title = "";
         
             // add to set within graph
-            verts=verts.setByAddingObject(vert);
+            verts=verts!.setByAddingObject(vert);
             // set the id property
             curVertId++;
             let vertId:Int32=curVertId;
@@ -53,13 +54,13 @@ extension Graph {
             vert.moveVertTo(xPos, yPos);
         }
         else {
-            println("Graph cat: SetupVert: err ");
+            print("Graph cat: SetupVert: err ");
         }
     }
 
     func SetupEdge(edgeOrNil:Edge?, From vertOrNil1:Vert?, To vertOrNil2:Vert?) {
         if edgeOrNil != nil {
-            edges=edges.setByAddingObject(edgeOrNil!) ;
+            edges=edges!.setByAddingObject(edgeOrNil!) ;
             
             curEdgeId++;
             let edgeId:Int32=curEdgeId;
@@ -68,7 +69,7 @@ extension Graph {
             // adding an edge sets vert1 and vert2 to be neighbors joined by the edge e
         }
         else {
-            println("Graph Cat : SetupEdge: ");
+            print("Graph Cat : SetupEdge: ");
         }
         vertOrNil1!.AddEdge(edgeOrNil, toVert:vertOrNil2);
     }
@@ -81,17 +82,17 @@ extension Graph {
         var edgeArray:Array<Array<Int32>> = Array();
         //println("Graph cat: number of elems in edges is \(edges.count)");
         
-        for testEdge in self.edges {
+        for testEdge in edges! {
         
-            if(!(testEdge is NSManagedObject)) { println("Graph cat: edgeIdArray: verts has element that is not an NSManagedObject"); }
+            if(!(testEdge is NSManagedObject)) { print("Graph cat: edgeIdArray: verts has element that is not an NSManagedObject"); }
             else {
                 if(testEdge is Edge ) {
-                    let (v:Vert?,w:Vert?)=(testEdge as! Edge).Connects();
+                    let (v, w): (Vert?, Vert?)=(testEdge as! Edge).Connects();
                     edgeArray.append([v!.vertViewId,w!.vertViewId]);
                     
                 }
                 else {
-                    println("Graph cat: edgeIdArray: verts has element that is not a vert");
+                    print("Graph cat: edgeIdArray: verts has element that is not a vert");
                 }
             }
         }
@@ -124,8 +125,8 @@ extension Graph {
 
     func sortedEdgeIdArray()->Array<Array<Int32>> {
         
-        var bacon:Array<Array<Int32>> = edgeIdArray();
-        let sortArray=sorted(bacon,sortFunction);
+        let bacon:Array<Array<Int32>> = edgeIdArray();
+        let sortArray=bacon.sort(sortFunction);
 
         return sortArray;
     }
@@ -134,11 +135,11 @@ extension Graph {
     func getEdgeById(edgeId:Int32)->Edge? {
 
         if edgeId < Int32(0)  {
-            println("Graph cat: getEdgeById: err id argument is too large or small");
+            print("Graph cat: getEdgeById: err id argument is too large or small");
             return nil;
         }
         // search for matching id
-        for e in edges {
+        for e in edges! {
             if e is Edge {
                 let edge:Edge=e as! Edge;
                 if edge.edgeViewId == edgeId {
@@ -153,11 +154,11 @@ extension Graph {
     func getVertById(vertId:Int32)->Vert? {
 
         if vertId < Int32(0)  {
-            println("Graph cat: getVertById: err id argument is too large or small");
+            print("Graph cat: getVertById: err id argument is too large or small");
             return nil;
         }
         // search for matching id
-        for v in verts {
+        for v in verts! {
             if v is Vert {
                 let vert:Vert=v as! Vert;
                 if vert.vertViewId == vertId {
@@ -173,7 +174,7 @@ extension Graph {
         let v:Vert? = getVertById(vertId);
         // check v
         if(v==nil) {
-            print("moveVertById err: no vert found");
+            print("moveVertById err: no vert found", appendNewline: false);
         }
         v!.moveVertTo(endX, endY);
     }

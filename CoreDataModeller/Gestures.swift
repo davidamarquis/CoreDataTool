@@ -70,10 +70,10 @@ class gestureCC:CoreController, GestureResponse
             //println("loc is \(loc)");
             //println("remEdgeControl frame is \(remEdgeControl!.frame)");
             
-            if remEdgeControl == nil {println("CoreController gestures: handleStateEnded: trying to remove edge but remEdgeControl is nil");}
+            if remEdgeControl == nil {print("CoreController gestures: handleStateEnded: trying to remove edge but remEdgeControl is nil");}
             if CGRectContainsPoint(remEdgeControl!.frame, loc) {
             
-                if edgeViewToCheckRem!.edgeViewId == nil {println("CoreController gestures: handleStateEnded: trying to remove edge but id is nil")}
+                if edgeViewToCheckRem!.edgeViewId == nil {print("CoreController gestures: handleStateEnded: trying to remove edge but id is nil")}
                 remEdge(edgeViewToCheckRem!.edgeViewId!);
             }
         }
@@ -91,7 +91,7 @@ class gestureCC:CoreController, GestureResponse
         }
         for x in view.subviews {
             if x is UIView {
-                if (x as! UIView).pointInside(loc, withEvent: nil) {
+                if (x as UIView).pointInside(loc, withEvent: nil) {
                     return true;
                 }
             }
@@ -105,8 +105,8 @@ class gestureCC:CoreController, GestureResponse
     private func vertEndsOnVert()->Bool {
         if inEdgeMode && gestureDidStartOnVert() {
             // error checking
-            if shiftedOrigin == nil {println("CoreController gestures: vertEndsOnVert: shiftedOrigin nil when it is needed in edge mode");}
-            if gestureVV == nil {println("CoreController gestures: vertEndsOnVert: gestureVV is nil when it is needed");}
+            if shiftedOrigin == nil {print("CoreController gestures: vertEndsOnVert: shiftedOrigin nil when it is needed in edge mode");}
+            if gestureVV == nil {print("CoreController gestures: vertEndsOnVert: gestureVV is nil when it is needed");}
             
             let finalVertViewFrame:CGRect = CGRectMake(shiftedOrigin!.x, shiftedOrigin!.y, gestureVV!.frame.width, gestureVV!.frame.height);
             
@@ -120,8 +120,8 @@ class gestureCC:CoreController, GestureResponse
     // vertEndsOnRemControl() returns true if we are in vert mode and vv has ended on the control for removing verts
     private func vertEndsOnRemControl()->Bool {
         if inVertMode && gestureDidStartOnVert() {
-            if gestureVV == nil {println("Graph extension: vertEndsOnRemControl: gestureVV is nil");}
-            if remVertControl == nil {println("Graph extension: vertEndsOnRemControl: remVertControl is nil");}
+            if gestureVV == nil {print("Graph extension: vertEndsOnRemControl: gestureVV is nil");}
+            if remVertControl == nil {print("Graph extension: vertEndsOnRemControl: remVertControl is nil");}
             
             /*
             //TODO: june 22: get rid of relative frames
@@ -141,21 +141,21 @@ class gestureCC:CoreController, GestureResponse
         if vertEndsOnVert() {
             let finalVertViewFrame:CGRect = CGRectMake(shiftedOrigin!.x, shiftedOrigin!.y, gestureVV!.frame.width, gestureVV!.frame.height);
             let vv:VertView? = getIntersectingVert(finalVertViewFrame, vv: gestureVV!);
-            if vv == nil {println("CoreData gestures: getHitVertId: could not find intersecting vert");}
+            if vv == nil {print("CoreData gestures: getHitVertId: could not find intersecting vert");}
             
             if let retId = vv!.vertViewId {
                 return retId;
             }
-            else {println("CoreController sub: getHitVertId: err found nil vert id inside of guard");}
+            else {print("CoreController sub: getHitVertId: err found nil vert id inside of guard");}
         }
-        else { println("CoreController sub: getHitVertId: err failed to set id"); }
+        else { print("CoreController sub: getHitVertId: err failed to set id"); }
         return 0;
     }
     
     //MARK: helpers
     private func respondToNoHit() {
         if inVertMode && gestureDidStartOnVert() {
-            if gestureVV!.vertViewId == nil { println(); }
+            if gestureVV!.vertViewId == nil { print(""); }
             
             let endPos=gestureVV!.frame.origin;
             drawGraphAfterMovingVert(gestureVV!.vertViewId!, toXPos: Float(endPos.x), toYPos: Float(endPos.y) );
@@ -187,7 +187,7 @@ class gestureCC:CoreController, GestureResponse
         (org1,org2)=(frame1.origin,frame2.origin);
         
         if ((fabs(org1.x - org2.x) > 0.01) || (fabs(org1.y - org2.y)) > 0.01) && inVertMode {
-            println("GraphWorldView: getIntersectingVert: err: in Vert mode and the frames of the vertViews are not equal");
+            print("GraphWorldView: getIntersectingVert: err: in Vert mode and the frames of the vertViews are not equal");
         }
     }
     
@@ -233,8 +233,8 @@ class gestureCC:CoreController, GestureResponse
         //TODO: remove
         let relStart = CGPointMake(startPos.x - graphView!.contentOffset.x,startPos.y - graphView!.contentOffset.y);
         
-        if graphView == nil {println("CoreController gestures: handleStateBegan: graphView is nil");}
-        if graphView!.gwv == nil {println("CoreController gestures: handleStateBegan: gwv is nil");}
+        if graphView == nil {print("CoreController gestures: handleStateBegan: graphView is nil");}
+        if graphView!.gwv == nil {print("CoreController gestures: handleStateBegan: gwv is nil");}
         
         if addVertControl != nil {
         
@@ -277,7 +277,7 @@ class gestureCC:CoreController, GestureResponse
                         
                             edgeViewToCheckRem=edge;
                         }
-                        else {println("CoreController: handleStateEnded: edgeViewId is nil");}
+                        else {print("CoreController: handleStateEnded: edgeViewId is nil");}
                     }
                 }
             }

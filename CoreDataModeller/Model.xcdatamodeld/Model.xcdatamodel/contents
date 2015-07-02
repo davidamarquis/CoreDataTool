@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="14D136" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="8118.20" systemVersion="14D136" minimumToolsVersion="Xcode 4.3">
     <entity name="Attribute" representedClassName="CoreDataModeller.Attribute" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
@@ -11,6 +11,7 @@
         <attribute name="parseObjectId" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="rel1name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="rel2name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="vertChange" optional="YES" attributeType="Boolean" syncable="YES"/>
         <relationship name="graph" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Graph" inverseName="edges" inverseEntity="Graph" syncable="YES"/>
         <relationship name="joinedTo" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vert" inverseName="edges" inverseEntity="Vert" syncable="YES"/>
     </entity>
@@ -46,10 +47,10 @@
     </entity>
     <elements>
         <element name="Attribute" positionX="-423" positionY="83" width="128" height="88"/>
-        <element name="Edge" positionX="108" positionY="-195" width="128" height="148"/>
+        <element name="Edge" positionX="108" positionY="-195" width="128" height="163"/>
         <element name="Entity" positionX="-351" positionY="-234" width="128" height="43"/>
-        <element name="Graph" positionX="-369" positionY="-135" width="128" height="105"/>
-        <element name="Vert" positionX="-234" positionY="72" width="128" height="266"/>
+        <element name="Graph" positionX="-369" positionY="-135" width="128" height="103"/>
         <element name="User" positionX="-702" positionY="9" width="128" height="88"/>
+        <element name="Vert" positionX="-234" positionY="72" width="128" height="266"/>
     </elements>
 </model>

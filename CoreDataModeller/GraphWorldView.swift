@@ -56,7 +56,7 @@ class GraphWorldView: UIView {
     func pan(recognizer:UIPanGestureRecognizer) {
     
         panCount++;
-        if gestureResponseDelegate == nil {println("GraphView: pan: delegate is nil");}
+        if gestureResponseDelegate == nil {print("GraphView: pan: delegate is nil");}
         
         if(recognizer.state==UIGestureRecognizerState.Began) {gestureResponseDelegate!.handleStateBegan(recognizer);}
         else if(recognizer.state == UIGestureRecognizerState.Changed ) {gestureResponseDelegate!.handleStateChanged(recognizer);}
@@ -66,7 +66,7 @@ class GraphWorldView: UIView {
             //reset panCount;
             panCount=0;
         }
-        else {println("VertView: pan(): err state is not valid");}
+        else {print("VertView: pan(): err state is not valid");}
     }
 
     //MARK: Vert Interface
@@ -114,7 +114,7 @@ class GraphWorldView: UIView {
             
                 let edgeView:EdgeView=subview as! EdgeView;
                 if(edgeView.edgeViewId == edgeViewId) {
-                    println("GraphWorldView: getEdgeViewById: got edge with id \(edgeViewId)");
+                    print("GraphWorldView: getEdgeViewById: got edge with id \(edgeViewId)");
                     return edgeView;
                 }
             }

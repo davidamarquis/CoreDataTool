@@ -40,7 +40,7 @@ class GraphView: UIScrollView {
     func setupGraphWorldView() {
         // init gwv and nil check
         gwv=GraphWorldView();
-        if gwv == nil { println("GraphView: setupGraphWorldView: gwv is nil"); }
+        if gwv == nil { print("GraphView: setupGraphWorldView: gwv is nil"); }
         
         gwv!.frame=CGRectMake(0,0, contentSize.width, contentSize.height);
         gwv!.backgroundColor=UIColor.clearColor();
@@ -54,13 +54,13 @@ class GraphView: UIScrollView {
         let str:String="gridHalf";
         
         let grid:UIImage?=UIImage(named:str);
-        if grid == nil {println("GraphView: setupGraphWorldView: img named \(str) not found");}
+        if grid == nil {print("GraphView: setupGraphWorldView: img named \(str) not found");}
         
         var gwidth,gheight, curY, curX:CGFloat;
         (gwidth,gheight,curX,curY)=(grid!.size.width, grid!.size.height, 0, 0);
         
         if gridBack == nil {
-            println("GraphView: drawGraph: gridBack is nil");
+            print("GraphView: drawGraph: gridBack is nil");
         }
         
         while curY < contentSize.height {
@@ -85,7 +85,7 @@ class GraphView: UIScrollView {
             gwv!.gestureResponseDelegate=(graphWorldViewDeleg as! gestureCC);
         }
         else {
-            println("GraphView: init: could not set gwv delegate");
+            print("GraphView: init: could not set gwv delegate");
         }
     }
     

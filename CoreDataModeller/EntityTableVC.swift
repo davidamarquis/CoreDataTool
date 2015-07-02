@@ -10,7 +10,7 @@ import UIKit;
 import CoreData;
 
 // AttributeTable is always presented as a segue from CoreController. Its properties are not retained when the user returns to CoreController
-class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, CheckAttributes {
+class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, CheckAttributes, RelationshipDelegate {
     
     // a flag that determines if keyboard appearance should trigger an attempt to scroll entityTable
     var shouldMove:Bool?=false;
@@ -49,7 +49,7 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
             invalidInput(entityNameWarning, title:"Invalid Entity Name");
             return false;
         }
-        else if !firstCharacterIsCapital(vert!.title) {
+        else if !firstCharacterIsCapital(vert!.title!) {
             invalidInput(entityFirstChar, title:"Invalid Entity Name");
             return false;
         }
@@ -72,7 +72,7 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     // checks if the first character of the string is a capital letter
     private func firstCharacterIsCapital(str:String)->Bool {
         let firstChar=str[str.startIndex];
-        if find(lowLets,firstChar) != nil {
+        if lowLets.indexOf(firstChar) != nil {
             return false;
         }
         return true;
@@ -88,18 +88,16 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     
     //MARK: kvo
     //kvo is used to support changes in attributes.
-    override func observeValueForKeyPath(keyPath: String, ofObject object: AnyObject, change: [NSObject: AnyObject], context: UnsafeMutablePointer<Void>) {
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [NSObject: AnyObject]?, context: UnsafeMutablePointer<Void>) {
 
         if object is Vert {
-            var v = object as! Vert;
-            if titleField == nil {println("AttributeTable: observeValueForKeyPath: title field is nil");}
+            let v = object as! Vert;
+            if titleField == nil {print("AttributeTable: observeValueForKeyPath: title field is nil");}
             if keyPath=="title" {
                 titleField!.text = v.title
             }
         }
-        
-        if attrsOrNil == nil {println("AttributeTable: observeValueForKeyPath: attrsOrNil is nil");}
-        if object is Attribute {
+        else if object is Attribute {
             var att = object as! Attribute;
             
             if keyPath == "name" || keyPath == "type" {
@@ -107,7 +105,20 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
                 getSortedAttributes();
             }
             else {
-                println("AttributeTable: observeValueForKeyPath: unregonized key path for object vert");
+                print("AttributeTable: observeValueForKeyPath: unregonized key path for object vert");
+            }
+        }
+        else if object is Edge {
+            var edge = object as! Edge;
+            
+            if keyPath == "rel1name" {
+            
+            }
+            else if keyPath == "rel2name" {
+            
+            }
+            else if keyPath == "vertChange" {
+            
             }
         }
     }
@@ -115,23 +126,30 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     //MARK: view lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad();
+
+        // set numbe of attributes and edges
+        getSortedAttributes();
+        getSortedRels();
+        for obj in vert!.edges! {
+            (obj as! Edge).addObserver(self, forKeyPath: "name", options: .New, context: nil);
+        }
         
         //register for keyboard notifications
         NSNotificationCenter.defaultCenter().addObserver(self,selector:"keyboardWasShown:", name:UIKeyboardDidShowNotification, object:nil);
         NSNotificationCenter.defaultCenter().addObserver(self,selector:"keyboardWillBeHidden:", name:UIKeyboardWillHideNotification, object:nil);
         
         view.backgroundColor = UIColor.grayColor();
-        if vert == nil {println("AttributeTable: viewWillAppear: err vert is nil");}
+        if vert == nil {print("AttributeTable: viewWillAppear: err vert is nil");}
         
         titleField = UITextField(frame: CGRectMake( CGFloat(0), CGFloat(20+44), view.frame.width, titleHeight ));
-        if titleField == nil {println("AttributeTable: viewWillAppear: err titleField is nil");}
+        if titleField == nil {print("AttributeTable: viewWillAppear: err titleField is nil");}
         
         view.addSubview(titleField!);
         titleField!.backgroundColor=UIColor.blueColor();
         setTextField(titleField!, placeholder:"Add title");
         
         // if there's text in vert title then override placeholder text
-        if !vert!.title.isEmpty {
+        if !vert!.title!.isEmpty {
             titleField!.text = vert!.title;
         }
         
@@ -147,9 +165,6 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         entityTable!.registerClass(UITableViewCell.self, forCellReuseIdentifier:"Cell");
         entityTable!.reloadData();
         view.addSubview(entityTable!);
-        
-        getSortedAttributes();
-        getSortedRels();
         
         // observes keyboard dismissal in case any error
         let noteCenter:NSNotificationCenter = NSNotificationCenter.defaultCenter();
@@ -185,6 +200,56 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         });
     }
     
+    //MARK: setup methods
+    func getSortedAttributes() {
+    
+        // 1.get an unsorted array of attributes from the vert
+        if vert == nil {print("EntityTableVC: getSortedAttributes: the vert is nil");}
+        attrsOrNil=vert!.attributes!.allObjects as? Array<Attribute>;
+        if attrsOrNil == nil {print("EntityTableVC: getSortedAttributes: the list of attributes is nil");}
+        
+        // 2.sort
+        attrsOrNil = (attrsOrNil!).sort(sortAttributes);
+        
+        // 3.reload
+        entityTable!.reloadData();
+    }
+    
+    // the sorting method for attributes
+    private func sortAttributes(a1:Attribute, a2:Attribute)->Bool {
+        if a1.name < a2.name {
+            return true;
+        }
+        return false;
+    }
+    
+    func getSortedRels() {
+    
+        // 1.get an unsorted array of edges
+        if vert == nil {print("EntityTableVC: getSortedRels: the vert is nil");}
+        
+        relsOrNil=vert!.edges!.allObjects as? Array<Edge>;
+        if relsOrNil == nil {print("EntityTableVC: getSortedRels: the list of rels is nil");}
+        
+        // 2.sort
+        relsOrNil = (relsOrNil!).sort(sortEdges);
+        
+        // 3.reload
+        entityTable!.reloadData();
+    }
+    
+    // the sorting method for attributes
+    private func sortEdges(a1:Edge, a2:Edge)->Bool {
+        return true;
+        //TODO: 
+        /*
+        if a1.name < a2.name {
+            return true;
+        }
+        return false;
+        */
+    }
+    
     //MARK: model methods
     // use vert id to get a vert and add an attribute to it
     func addAttributeById(vertId:Int32, withString attrString:String) {
@@ -197,9 +262,9 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         attr.addObserver(self, forKeyPath: "type", options: .New, context: nil);
         
         // update vert
-        if vert == nil {println("CoreController: addAttributeById: could not find vert to modify");}
+        if vert == nil {print("CoreController: addAttributeById: could not find vert to modify");}
 
-        var manyRelation:AnyObject? = vert!.valueForKeyPath("attributes") ;
+        let manyRelation:AnyObject? = vert!.valueForKeyPath("attributes") ;
         if manyRelation is NSMutableSet {
             (manyRelation as! NSMutableSet).addObject(attr);
         }
@@ -220,70 +285,20 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         attr.type = type;
     }
     
-    //MARK: setup methods
-    func getSortedAttributes() {
-    
-        // 1.get an unsorted array of attributes from the vert
-        if vert == nil {println("EntityTableVC: getSortedAttributes: the vert is nil");}
-        attrsOrNil=vert!.attributes.allObjects as? Array<Attribute>;
-        if attrsOrNil == nil {println("EntityTableVC: getSortedAttributes: the list of attributes is nil");}
-        
-        // 2.sort
-        attrsOrNil = sorted(attrsOrNil!, sortAttributes);
-        
-        // 3.reload
-        entityTable!.reloadData();
-    }
-    
-    // the sorting method for attributes
-    private func sortAttributes(a1:Attribute, a2:Attribute)->Bool {
-        if a1.name < a2.name {
-            return true;
-        }
-        return false;
-    }
-    
-    func getSortedRels() {
-    
-        // 1.get an unsorted array of edges
-        if vert == nil {println("EntityTableVC: getSortedRels: the vert is nil");}
-        
-        relsOrNil=vert!.edges.allObjects as? Array<Edge>;
-        if relsOrNil == nil {println("EntityTableVC: getSortedRels: the list of rels is nil");}
-        
-        // 2.sort
-        relsOrNil = sorted(relsOrNil!, sortEdges);
-        
-        // 3.reload
-        entityTable!.reloadData();
-    }
-    
-    // the sorting method for attributes
-    private func sortEdges(a1:Edge, a2:Edge)->Bool {
-        return true;
-        //TODO: 
-        /*
-        if a1.name < a2.name {
-            return true;
-        }
-        return false;
-        */
-    }
-    
     //MARK: UITextFieldDelegate methods
     func textFieldShouldReturn(textField: UITextField)->Bool {
     
         textField.resignFirstResponder();
-        if vert == nil {println("AttributeTable: testFieldShouldReturn: vert is nil");};
+        if vert == nil {print("AttributeTable: testFieldShouldReturn: vert is nil");};
         
         // if the input is valid change the title of the vert
         // assumption here: the only textfields in AttributeTable not=attributeTextField is the title text field
-        if navigationController == nil {println("AttributeTable: testFieldShouldReturn: nav controller is nil");}
+        if navigationController == nil {print("AttributeTable: testFieldShouldReturn: nav controller is nil");}
         for vc in navigationController!.viewControllers {
             if vc is CoreController {
  
-                if validateEntityNameInputWithAlert(textField.text) {
-                    (vc as! CoreController).setTitle(vert!.vertViewId, title: textField.text);
+                if validateEntityNameInputWithAlert(textField.text!) {
+                    (vc as! CoreController).setTitle(vert!.vertViewId, title: textField.text!);
                 }
             }
         }
@@ -295,23 +310,32 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         return 162;
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {return 2;}
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    return 2;
+    }
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             if attrsOrNil != nil {
                 return attrsOrNil!.count+1;
             }
-            else {return 0;}
+            else {
+                print("EntityTableVC: number of rows in section: err trying to set number of rows but attrsOrNil is nil");
+                return 0;
+            }
         }
         else if section == 1 {
             if relsOrNil != nil {
                 return relsOrNil!.count+1;
+                
             }
-            else {return 0;}
+            else {
+                print("EntityTableVC: number of rows in section: err trying to set number of rows but relsOrNil is nil");
+                return 0;
+            }
         }
         else {
-            println("EntityTableVC: numberOfRowsInSection: invalid number of sections");
+            print("EntityTableVC: numberOfRowsInSection: invalid number of sections");
             return 0;
         }
     }
@@ -348,7 +372,7 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
                 // init a custom cell
                 cell = AttributeCell(style:UITableViewCellStyle.Default, reuseIdentifier: cellIdentifier);
                 
-                if cell == nil {println("AttributeTable: tableView cellForRowAtIndexPath: failed to create cell");}
+                if cell == nil {print("AttributeTable: tableView cellForRowAtIndexPath: failed to create cell");}
                 
                 // do any additional setup of the cell...
             }
@@ -370,12 +394,10 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
             if cell == nil {
                 // init a custom cell
                 cell = RelationshipCell(style:UITableViewCellStyle.Default, reuseIdentifier: cellIdentifier);
-                if cell == nil {println("RelationshipTable: tableView cellForRowAtIndexPath: failed to create cell");}
+                if cell == nil {print("RelationshipTable: tableView cellForRowAtIndexPath: failed to create cell");}
             }
             
             (cell!.picker!.delegate,cell!.picker!.dataSource) = (cell!,cell!);  //UIPickerView delegate and datasource
-            cell!.attributesDelegate = self;                                    //CheckAttributes delegate
-            cell!.vertViewId = vert!.vertViewId;
 
             // customize the cell based on its section
             setRelationshipCell(indexPath, cell: cell!);
@@ -383,9 +405,9 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
             return cell!;
         }
         else {
-            println("EntityTable: tableView cellForRowAtIndexPath: invalid section");
+            print("EntityTable: tableView cellForRowAtIndexPath: invalid section");
             
-            return tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell;
+            return tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell;
         }
     }
     
@@ -402,11 +424,10 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
             
             //set the text of the cell textfield
             cell.descriptionLabel!.text=attrsOrNil![indexPath.row].name;
-            
-            //TODO: Trello: refactor to MVC
+        
             cell.attr=attrsOrNil![indexPath.row];
             
-            let ind = find(pickerTest,cell.attr!.type);
+            let ind = pickerTest.indexOf(cell.attr!.type!);
             if ind != nil {
             
                 cell.picker!.selectRow(ind!, inComponent: 0, animated: false);
@@ -427,22 +448,20 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         // assumption: attrsOrNil!.count+1 = length of attributes section
         if indexPath.row < relsOrNil!.count
         {
-            // if a cell is not flagged with doesCreateNewCell then changing the textField makes a change to an existing attribute
+            // if a cell is not !doesCreateNewCell then changes to textFields modify existing attribute
             cell.doesCreateNewCell = false;
-            //set the text of the cell textfield
+            
+            print("setRelationshipCell: relationship/edge is \(relsOrNil![indexPath.row]) ");
+            print("setRelationshipCell: vert is \(vert!) ");
             
             cell.descriptionLabel!.text = relsOrNil![indexPath.row].getNameForVert(vert!);
-            
-            //TODO: Trello: refactor to MVC
             cell.edge = relsOrNil![indexPath.row];
             
-            //TODO: ind = find(pickerTest,cell.edge!.type);
-            /*
-            if ind != nil {
-            
-                cell.picker!.selectRow(ind!, inComponent: 0, animated: false);
+            cell.relationshipDelegate = self;
+        
+            for obj in vert!.neighbors! {
+                cell.destinations.append((obj as! Vert).title!);
             }
-            */
         }
         else {
             cell.doesCreateNewCell = true;
@@ -518,7 +537,7 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     // Called when the UIKeyboardDidShowNotification is sent.
     func keyboardWasShown(aNotification:NSNotification) {
     
-        if shouldMove == nil {println("EntityTableVC: keyboardWasShown: shouldMove is nil");}
+        if shouldMove == nil {print("EntityTableVC: keyboardWasShown: shouldMove is nil");}
         if shouldMove! {
             let info:NSDictionary = aNotification.userInfo!;
             // from http://stackoverflow.com/questions/25856003/swift-moving-content-behind-keyboard-doesnt-reset-after-dismiss

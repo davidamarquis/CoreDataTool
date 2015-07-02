@@ -1,26 +1,28 @@
 //
-//  VertExtension.swift
+//  Vert.swift
 //  CoreDataModeller
 //
-//  Created by David Marquis on 2015-05-28.
-//  Copyright (c) 2015 David Marquis. All rights reserved.
+//  Created by David Marquis on 2015-07-01.
+//  Copyright © 2015 David Marquis. All rights reserved.
 //
 
 import Foundation
+import CoreData
 
-extension Vert:Printable {
+@objc(Vert)
+class Vert: NSManagedObject {
 
 // computed property
 class func MAXPosition()->Float {
-    var maxPos:Float=1000;
+    let maxPos:Float=1000;
     return maxPos;
 }
 
 override var description:String {
     // store methodName for logging errors
     var desc:String="Vert(\(Int(x)),\(Int(y)))[";
-    let nghs:Array<Vert> = self.neighbors.allObjects as! Array<Vert>;
-    let n:Int=self.neighbors.count;
+    let nghs:Array<Vert> = self.neighbors!.allObjects as! Array<Vert>;
+    let n:Int=self.neighbors!.count;
     var i:Int;
 
     // first n-1 elems and last elem slightly different formatting
@@ -34,10 +36,10 @@ override var description:String {
 
 func isNeighborOf(other:Vert)->Bool {
 
-    if(self.neighbors.containsObject(other) && other.neighbors.containsObject(self)) {
+    if(self.neighbors!.containsObject(other) && other.neighbors!.containsObject(self)) {
         return true;
     }
-    else if self.neighbors.containsObject(other) {
+    else if self.neighbors!.containsObject(other) {
         return true;
     }
     else {
@@ -51,8 +53,8 @@ func getSharedEdge(other: Vert)->Edge? {
         return nil;
     }
     
-    for e1 in self.edges {
-        for e2 in other.edges {
+    for e1 in self.edges! {
+        for e2 in other.edges! {
             if(e1 is Edge && e2 is Edge )
             {
                 // Note in swift === is equality test not identity test
@@ -96,22 +98,22 @@ func AddEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
 
     if(edgeOrNil != nil && vertOrNil != nil) {
         // check if the verts already have an edge
-        if (neighbors as Set).contains(vertOrNil!) {
+        if (neighbors as! Set).contains(vertOrNil!) {
             //
         }
         
         
-        var manyRelation:AnyObject? = self.valueForKeyPath("neighbors") ;
+        let manyRelation:AnyObject? = self.valueForKeyPath("neighbors") ;
         if manyRelation is NSMutableSet {
             (manyRelation as! NSMutableSet).addObject(vertOrNil!);
         }
         
         // update edges on self and other
-        edges=edges.setByAddingObject(edgeOrNil!);
-        vertOrNil!.edges=vertOrNil!.edges.setByAddingObject(edgeOrNil!);
+        edges=edges!.setByAddingObject(edgeOrNil!);
+        vertOrNil!.edges=vertOrNil!.edges!.setByAddingObject(edgeOrNil!);
         
-        edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByAddingObject(vertOrNil!);
-        edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByAddingObject(self);
+        edgeOrNil!.joinedTo=edgeOrNil!.joinedTo!.setByAddingObject(vertOrNil!);
+        edgeOrNil!.joinedTo=edgeOrNil!.joinedTo!.setByAddingObject(self);
         
         edgeOrNil!.freshView = false;
         finishedObservedMethod=true;
@@ -125,60 +127,38 @@ func AddEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
 // prepare for the removal of an edge from the context
 func removeEdge(edgeOrNil:Edge?, vertOrNil:Vert?) {
     if(edgeOrNil != nil && vertOrNil != nil) {
-        
-        // neighbors is a bidirectional relationship
-        //TODO: 9:30pm June 12 neighbors=neighbors.setByAddingObject(vertOrNil!);
         var manyRelation:AnyObject?
         
         manyRelation = self.valueForKeyPath("neighbors") ;
-        if manyRelation is NSMutableSet {
-        
-            (manyRelation as! NSMutableSet).removeObject(vertOrNil!);
-            
-        }
-        
-        //manyRelation = vertOrNil!.valueForKeyPath("neighbors") ;
-        
-        /*
-        if manyRelation is NSMutableSet {
-        
-            (manyRelation as! NSMutableSet).removeObject(vertOrNil!);
-            
-        }
-        */
-        
-        // joinedTo updated by next line
-        //edges=edges.setByRemovingObject(edgeOrNil!);
+        if manyRelation is NSMutableSet {(manyRelation as! NSMutableSet).removeObject(vertOrNil!);}
+    
+        // update edeges of self
         manyRelation = self.valueForKeyPath("edges") ;
         if manyRelation is NSMutableSet {
             (manyRelation as! NSMutableSet).removeObject(edgeOrNil!);
         }
         
-        // joinedTo updated by next line
-        //vertOrNil!.edges=vertOrNil!.edges.setByRemovingObject(edgeOrNil!);
+        // update edges of other -- no strong ref to edge exists so it is removed
         manyRelation = vertOrNil!.valueForKeyPath("edges") ;
         if manyRelation is NSMutableSet {
             (manyRelation as! NSMutableSet).removeObject(edgeOrNil!);
         }
-        
-        //edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByRemovingObject(vertOrNil!);
-        //edgeOrNil!.joinedTo=edgeOrNil!.joinedTo.setByRemovingObject(self);
         
         edgeOrNil!.freshView = false;
         finishedObservedMethod=true;
         vertOrNil!.finishedObservedMethod=true;
     }
     else {
-        println("Vert cat: removeEdge: one of the inputs is nil");
+        print("Vert cat: removeEdge: one of the inputs is nil");
     }
 }
 
 func distance(other:Vert)->Float{
     if(self.isNeighborOf(other)) {
-        var x1:Float=self.x;
-        var x2:Float=other.x;
-        var y1:Float=self.y;
-        var y2:Float=other.y;
+        let x1:Float=self.x;
+        let x2:Float=other.x;
+        let y1:Float=self.y;
+        let y2:Float=other.y;
         let z1=pow(x1-x2,2);
         let z2=pow(y1-y2,2);
         return sqrt(z1+z2);
@@ -191,7 +171,7 @@ func distance(other:Vert)->Float{
 
 // change Fresh flags so VC must redraw (i.e. trigger a redraw of corresponding view)
 func invalidateViews() {
-    for obj in edges {
+    for obj in edges! {
         if obj is Edge {
             (obj as! Edge).freshView = false;
         }
@@ -214,14 +194,14 @@ func moveVertTo(newX:Float, _ newY:Float) {
 }
 
 func allNeighborsSeen()->Bool {
-    for v in self.neighbors {
+    for v in neighbors! {
         if let vert=v as? Vert {
             if(!vert.depthSearchSeen) {
                 return false;
             }
         }
         else {
-            print("Vert cat: allNeighborsSeen: err");
+            print("Vert cat: allNeighborsSeen: err", appendNewline: false);
         }
     }
     return true;
@@ -229,14 +209,14 @@ func allNeighborsSeen()->Bool {
 // public
 // finds an unseen vert, marks it as seen, and returns it
 func findUnseen()->Vert? {
-    for v in self.neighbors {
+    for v in neighbors! {
         if let vert=v as? Vert {
             if(!vert.depthSearchSeen) {
                 return vert;
             }
         }
         else {
-            print("Vert cat: findUnseen: err self.neighbor contains object that is not vert");
+            print("Vert cat: findUnseen: err self.neighbor contains object that is not vert", appendNewline: false);
         }
     }
     return nil;

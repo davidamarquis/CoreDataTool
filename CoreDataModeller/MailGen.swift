@@ -26,7 +26,7 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
     //MARK: nav bar
     func emailPressed() {
 
-        if delegate == nil {println("mailGen: emailPressed(): delegate is nil");}
+        if delegate == nil {print("mailGen: emailPressed(): delegate is nil");}
         
         if MFMailComposeViewController.canSendMail() {
             var mailVC:MFMailComposeViewController? = MFMailComposeViewController();
@@ -48,29 +48,29 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
             makeAppDelegateMGen(mailVC!);
             
             // generate entity files 
-            for v in delegate!.graph!.verts {
+            for v in delegate!.graph!.verts! {
                 if let vert=(v as? Vert) {
                  
                     let entityHGen = ObjCEntityHGen();
-                    if user == nil {println("MailGen: emailPressed: user is nil");}
+                    if user == nil {print("MailGen: emailPressed: user is nil");}
                     entityHGen.user = user;
                     
                     entityHGen.vert = vert;
                     entityHGen.updateString();
                     let entityStr = entityHGen.entityH;
                     let entityData:NSData?=entityStr.dataUsingEncoding(NSUTF8StringEncoding);
-                    mailVC!.addAttachmentData(entityData, mimeType:"text/rtf", fileName:"\(vert.title).h");
+                    mailVC!.addAttachmentData(entityData!, mimeType:"text/rtf", fileName:"\(vert.title).h");
                     
                     // M
                     let entityMGen = ObjCEntityMGen();
-                    if user == nil {println("MailGen: emailPressed: user is nil");}
+                    if user == nil {print("MailGen: emailPressed: user is nil");}
                     entityMGen.user = user;
                     
                     entityMGen.vert = vert;
                     entityMGen.updateString();
                     let entityMStr = entityMGen.entityM;
                     let entityMData:NSData?=entityMStr.dataUsingEncoding(NSUTF8StringEncoding);
-                    mailVC!.addAttachmentData(entityMData, mimeType:"text/rtf", fileName:"\(vert.title).m");
+                    mailVC!.addAttachmentData(entityMData!, mimeType:"text/rtf", fileName:"\(vert.title).m");
                 }
             }
             
@@ -89,7 +89,7 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
     // makeAppDelegateHGen() adds an app delegate.h string attachment
     private func makeAppDelegateHGen(mailViewController:MFMailComposeViewController) {
         let headerGen = ObjCAppDelegateHGen();
-        if user == nil {println("MailGen: makeAppDelegateHGen: user is nil");}
+        if user == nil {print("MailGen: makeAppDelegateHGen: user is nil");}
         headerGen.user = user;
         
         headerGen.updateString();
@@ -97,23 +97,23 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
         // attach app delegate header file to mail
         let delegHeaderData:NSData?=appDelegHStr.dataUsingEncoding(NSUTF8StringEncoding);
         if delegHeaderData != nil {
-            mailViewController.addAttachmentData(delegHeaderData, mimeType:"text/rtf", fileName:"AppDelegate.h");
+            mailViewController.addAttachmentData(delegHeaderData!, mimeType:"text/rtf", fileName:"AppDelegate.h");
         }
     }
     
     // makeAppDelegateMGen() adds an app delegate.m string attachment
     private func makeAppDelegateMGen(mailViewController:MFMailComposeViewController) {
         let delegMGen = ObjCAppDelegateMGen();
-        if user == nil {println("MailGen: makeAppDelegateMGen: user is nil");}
+        if user == nil {print("MailGen: makeAppDelegateMGen: user is nil");}
         delegMGen.user = user;
         
         delegMGen.graph = delegate!.graph;
         delegMGen.updateString();
         let appDelegMStr = delegMGen.appDelegateM;
         // attach app delegate.m file to mail
-        let delegMData:NSData?=appDelegMStr.dataUsingEncoding(NSUTF8StringEncoding);
+        let delegMData:NSData? = appDelegMStr.dataUsingEncoding(NSUTF8StringEncoding);
         if delegMData != nil {
-            mailViewController.addAttachmentData(delegMData, mimeType:"text/rtf", fileName:"AppDelegate.m");
+            mailViewController.addAttachmentData(delegMData!, mimeType:"text/rtf", fileName:"AppDelegate.m");
         }
     }
     
@@ -125,24 +125,24 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
 
     // mailComposeController() handles emails that are sent
     //func mailComposeController(controller: MFMailComposeViewController!, didFinishWithResult result: MFMailComposeResult, error: NSError!) {
-    func mailComposeController(controller: MFMailComposeViewController!, didFinishWithResult result: MFMailComposeResult, error: NSError!) {
+    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
         
-        if result.value == MFMailComposeResultCancelled.value {
-            println("CoreController: mailComposeController: result=Cancelled");
+        if result.rawValue == MFMailComposeResultCancelled.rawValue {
+            print("CoreController: mailComposeController: result=Cancelled");
         }
-        else if result.value == MFMailComposeResultSaved.value {
-            println("CoreController: mailComposeController: result=Saved");
+        else if result.rawValue == MFMailComposeResultSaved.rawValue {
+            print("CoreController: mailComposeController: result=Saved");
         }
-        else if result.value == MFMailComposeResultSent.value {
-            println("CoreController: mailComposeController: result=Sent");
+        else if result.rawValue == MFMailComposeResultSent.rawValue {
+            print("CoreController: mailComposeController: result=Sent");
         }
-        else if result.value == MFMailComposeResultFailed.value {
-            println("CoreController: mailComposeController: result=Failed");
+        else if result.rawValue == MFMailComposeResultFailed.rawValue {
+            print("CoreController: mailComposeController: result=Failed");
         }
     
         if error != nil {
-            println("CoreController: mailComposeController: error sending email");
-            println(error.localizedDescription);
+            print("CoreController: mailComposeController: error sending email");
+            print(error!.localizedDescription);
         }
         //TODO: test reset delegate
         //mailVC = MFMailComposeViewController();

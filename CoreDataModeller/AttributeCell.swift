@@ -27,6 +27,8 @@ protocol CheckAttributes {
 
 class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPickerViewDataSource {
 
+    var attributesDelegate:CheckAttributes?;
+    
     // there are two ways to end editing of a text field
     // switching to another text field or hitting the return button
     var willSwitchFields = true;
@@ -34,7 +36,6 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
     // if the field or the picker gets changed then this flag determines the response
     var doesCreateNewCell:Bool?;
 
-    var attributesDelegate:CheckAttributes?;
     var pickerTest=["Undefined","Integer 16","Integer 32","Integer 64","Decimal","Double","Float","String","Boolean","Date","Binary Data","Transformable"];
     
     let addAttrFieldPlaceholderText = "Add Attribute";
@@ -52,12 +53,12 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
     
     // selectCell() enables picker scrolling
     func selectCell() {
-        if picker == nil {println("AttributeCell: selectCell: picker is nil")}
+        if picker == nil {print("AttributeCell: selectCell: picker is nil")}
         picker!.canScroll = true;
     }
     
     func deselectCell() {
-        if picker == nil {println("AttributeCell: selectCell: picker is nil")}
+        if picker == nil {print("AttributeCell: selectCell: picker is nil")}
         picker!.canScroll = false;
     }
 
@@ -78,10 +79,10 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
             typeLabel!.backgroundColor = UIColor(red: 245/255.0, green: 245/255.0, blue: 245/255.0, alpha: 1);
             contentView.addSubview(typeLabel!);
         }
-        else {println("CoreController: descriptionLabel is nil so can't set typeLabel");}
+        else {print("CoreController: descriptionLabel is nil so can't set typeLabel");}
         
         picker=Picker();
-        if picker == nil {println("AttributeCell: postInitSetup: picker is nil");}
+        if picker == nil {print("AttributeCell: postInitSetup: picker is nil");}
         picker!.frame = CGRectMake(160,0,140,self.frame.height);
         contentView.addSubview(picker!);
     }
@@ -107,8 +108,8 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
         // sometimes scrolling of the picker view is ignored
         if doesCreateNewCell! {return;}
         
-        if attributesDelegate == nil {println("AttributeCell: pickerView: attributesDelegate is nil");}
-        if row < 0 || pickerTest.count < row { println("AttributeCell:pickerView:didSelectRow: row is too large after checking doesCreateNewCell"); }
+        if attributesDelegate == nil {print("AttributeCell: pickerView: attributesDelegate is nil");}
+        if row < 0 || pickerTest.count < row { print("AttributeCell:pickerView:didSelectRow: row is too large after checking doesCreateNewCell"); }
 
         attributesDelegate!.setAttrType(attr!, type: pickerTest[row]);
     }
@@ -142,19 +143,19 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
     }
     
     private func setAttribute(textField:UITextField) {
-        if attributesDelegate == nil {println("AttributeCell: textFieldShouldReturn: delegate is nil");}
-        if vertViewId == nil {println("AttributeCell: textFieldShouldReturn: vertViewId is nil");}
-        if attributesDelegate == nil {println("AttributeCell: textFieldShouldReturn: attributesDelegate is nil");}
-        if attributesDelegate!.attrsOrNil == nil {println("AttributeCell: textFieldShouldReturn: attributesDelegate's attrsOrNil is nil");}
-        if doesCreateNewCell == nil {println("AttributeCell: textFieldShouldReturn: attributesDelegate's: doesCreateNewCell is nil");}
+        if attributesDelegate == nil {print("AttributeCell: textFieldShouldReturn: delegate is nil");}
+        if vertViewId == nil {print("AttributeCell: textFieldShouldReturn: vertViewId is nil");}
+        if attributesDelegate == nil {print("AttributeCell: textFieldShouldReturn: attributesDelegate is nil");}
+        if attributesDelegate!.attrsOrNil == nil {print("AttributeCell: textFieldShouldReturn: attributesDelegate's attrsOrNil is nil");}
+        if doesCreateNewCell == nil {print("AttributeCell: textFieldShouldReturn: attributesDelegate's: doesCreateNewCell is nil");}
         
-        if attributesDelegate!.validateAttrName(textField.text) {
+        if attributesDelegate!.validateAttrName(textField.text!) {
             if doesCreateNewCell! {
-                attributesDelegate!.addAttributeById(vertViewId!, withString: textField.text);
+                attributesDelegate!.addAttributeById(vertViewId!, withString: textField.text!);
             }
             else {
                 // assuming attr is not nil
-                attributesDelegate!.setAttrName(attr!,name: textField.text);
+                attributesDelegate!.setAttrName(attr!,name: textField.text!);
             }
         }
         else {
@@ -167,7 +168,7 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
     func textFieldDidBeginEditing(textField: UITextField) {
         attributesDelegate!.shouldMove = true;
         
-        if attributesDelegate == nil {println("AttributeCell: textFieldDidBeginEditing: delegate is nil");}
+        if attributesDelegate == nil {print("AttributeCell: textFieldDidBeginEditing: delegate is nil");}
         attributesDelegate!.activeField = textField;
     }
     
@@ -176,13 +177,12 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
 
         attributesDelegate!.shouldMove = false;
         
-        // if
         if attr != nil && willSwitchFields {
             textField.text = attr!.name;
         }
         willSwitchFields = true;
         
-        if attributesDelegate == nil {println("AttributeCell: textFieldDidEndEditing: delegate is nil");}
+        if attributesDelegate == nil {print("AttributeCell: textFieldDidEndEditing: delegate is nil");}
         attributesDelegate!.activeField = nil;
     
     }

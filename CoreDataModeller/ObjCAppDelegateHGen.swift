@@ -29,7 +29,7 @@ class ObjCAppDelegateHGen: NSObject {
     func updateString() {
     
         // set properties needed for strings
-        username = user!.username;
+        username = user!.username!;
         year = CurDate().getYearString();
         date = CurDate().getDateString();
         

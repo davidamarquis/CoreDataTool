@@ -34,17 +34,17 @@ class ObjCEntityMGen: NSObject {
     func updateString() {
         
         // set properties needed for strings
-        username = user!.username;
+        username = user!.username!;
         year = CurDate().getYearString();
         date = CurDate().getDateString();
 
         setupArrays();
-        if vert == nil {println("AttributeTableVC: udpdateString: vert is nil ");}
+        if vert == nil {print("AttributeTableVC: udpdateString: vert is nil ");}
         
         for str in comment{
             entityM += str+"\n";
         }
-        for obj in vert!.attributes {
+        for obj in vert!.attributes! {
             let attr=(obj as! Attribute);
             
             entityM += "@dynamic \(attr.name);\n";

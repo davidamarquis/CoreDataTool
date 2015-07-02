@@ -82,7 +82,7 @@ class EdgeView: UIView {
                     //println("ev: drawRect: printing \(numberOfHitboxes) views");
                     let xOrg = scaleOfBox!*CGFloat(i)*frame.width;
                     let yOrg = scaleOfBox!*CGFloat(i)*frame.height;
-                    (hitbox.subviews[i] as! UIView).frame = CGRectMake(xOrg, yOrg, scaleOfBox!*frame.width, scaleOfBox!*frame.height);
+                    (hitbox.subviews[i] as UIView).frame = CGRectMake(xOrg, yOrg, scaleOfBox!*frame.width, scaleOfBox!*frame.height);
                 }
             
             }
@@ -101,14 +101,14 @@ class EdgeView: UIView {
                     let xOrg = scaleOfBox!*CGFloat(i)*frame.width;
                     let yOrg = scaleOfBox!*CGFloat(i)*frame.height
                     // x and y position displacement are relative to the parent view's position
-                    (hitbox.subviews[i] as! UIView).frame = CGRectMake(xOrg, -yOrg, scaleOfBox!*frame.width, scaleOfBox!*frame.height);
+                    (hitbox.subviews[i] as UIView).frame = CGRectMake(xOrg, -yOrg, scaleOfBox!*frame.width, scaleOfBox!*frame.height);
                 }
                 
             }
 
         }
         else {
-            println("EdgeView: drawRect: err");
+            print("EdgeView: drawRect: err");
         }
         bz.moveToPoint(p1!);
         bz.addLineToPoint(p2!);
