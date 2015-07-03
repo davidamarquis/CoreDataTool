@@ -213,6 +213,7 @@ func testNeighborOnEdge1() {
 }
 
 // In Graph 1 all verts initially have not been seen
+/*
 func testSeen1() {
     if verts != nil {
     
@@ -220,6 +221,7 @@ func testSeen1() {
     }
     else { XCTAssert(false); }
 }
+*/
 
 // In Graph 1 all verts start with edges that are not fresh
 /*

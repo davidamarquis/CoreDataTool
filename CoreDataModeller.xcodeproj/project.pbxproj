@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4800B9291B4585AE005BFE35 /* User+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4800B9201B4585AE005BFE35 /* User+CoreDataProperties.swift */; };
+		4800B92A1B4585AE005BFE35 /* User+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4800B9201B4585AE005BFE35 /* User+CoreDataProperties.swift */; };
+		4800B92B1B4585AE005BFE35 /* Vert+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4800B9211B4585AE005BFE35 /* Vert+CoreDataProperties.swift */; };
+		4800B92C1B4585AE005BFE35 /* Vert+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4800B9211B4585AE005BFE35 /* Vert+CoreDataProperties.swift */; };
+		4800B92F1B4585AE005BFE35 /* Attribute+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4800B9231B4585AE005BFE35 /* Attribute+CoreDataProperties.swift */; };
+		4800B9301B4585AE005BFE35 /* Attribute+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4800B9231B4585AE005BFE35 /* Attribute+CoreDataProperties.swift */; };
+		4800B9311B4585AE005BFE35 /* Edge+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4800B9241B4585AE005BFE35 /* Edge+CoreDataProperties.swift */; };
+		4800B9321B4585AE005BFE35 /* Edge+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4800B9241B4585AE005BFE35 /* Edge+CoreDataProperties.swift */; };
+		4800B9351B4585AE005BFE35 /* Entity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4800B9261B4585AE005BFE35 /* Entity+CoreDataProperties.swift */; };
+		4800B9361B4585AE005BFE35 /* Entity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4800B9261B4585AE005BFE35 /* Entity+CoreDataProperties.swift */; };
+		4800B9371B4585AE005BFE35 /* Graph+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4800B9271B4585AE005BFE35 /* Graph+CoreDataProperties.swift */; };
+		4800B9381B4585AE005BFE35 /* Graph+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4800B9271B4585AE005BFE35 /* Graph+CoreDataProperties.swift */; };
 		4810C3A01B39FE17004280C1 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 48282E901B179DF400BDA782 /* Model.xcdatamodeld */; };
 		4810E3551B1744C300F72097 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810E3541B1744C300F72097 /* AppDelegate.swift */; };
 		4810E35A1B1744C300F72097 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4810E3581B1744C300F72097 /* Main.storyboard */; };
@@ -68,18 +80,6 @@
 		48FA79D21B44E3C7005B7D44 /* Attribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA79C21B44E3C7005B7D44 /* Attribute.swift */; };
 		48FA79E11B44E3C7005B7D44 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA79CA1B44E3C7005B7D44 /* Entity.swift */; };
 		48FA79E21B44E3C7005B7D44 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA79CA1B44E3C7005B7D44 /* Entity.swift */; };
-		48FA7A2C1B44F2C2005B7D44 /* Vert+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA7A231B44F2C2005B7D44 /* Vert+CoreDataProperties.swift */; };
-		48FA7A2D1B44F2C2005B7D44 /* Vert+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA7A231B44F2C2005B7D44 /* Vert+CoreDataProperties.swift */; };
-		48FA7A301B44F2C2005B7D44 /* User+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA7A251B44F2C2005B7D44 /* User+CoreDataProperties.swift */; };
-		48FA7A311B44F2C2005B7D44 /* User+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA7A251B44F2C2005B7D44 /* User+CoreDataProperties.swift */; };
-		48FA7A321B44F2C2005B7D44 /* Graph+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA7A261B44F2C2005B7D44 /* Graph+CoreDataProperties.swift */; };
-		48FA7A331B44F2C2005B7D44 /* Graph+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA7A261B44F2C2005B7D44 /* Graph+CoreDataProperties.swift */; };
-		48FA7A361B44F2C2005B7D44 /* Attribute+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA7A281B44F2C2005B7D44 /* Attribute+CoreDataProperties.swift */; };
-		48FA7A371B44F2C2005B7D44 /* Attribute+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA7A281B44F2C2005B7D44 /* Attribute+CoreDataProperties.swift */; };
-		48FA7A381B44F2C2005B7D44 /* Edge+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA7A291B44F2C2005B7D44 /* Edge+CoreDataProperties.swift */; };
-		48FA7A391B44F2C2005B7D44 /* Edge+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA7A291B44F2C2005B7D44 /* Edge+CoreDataProperties.swift */; };
-		48FA7A3C1B44F2C2005B7D44 /* Entity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA7A2B1B44F2C2005B7D44 /* Entity+CoreDataProperties.swift */; };
-		48FA7A3D1B44F2C2005B7D44 /* Entity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48FA7A2B1B44F2C2005B7D44 /* Entity+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +93,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4800B9201B4585AE005BFE35 /* User+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "User+CoreDataProperties.swift"; path = "../User+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		4800B9211B4585AE005BFE35 /* Vert+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Vert+CoreDataProperties.swift"; path = "../Vert+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		4800B9231B4585AE005BFE35 /* Attribute+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Attribute+CoreDataProperties.swift"; path = "../Attribute+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		4800B9241B4585AE005BFE35 /* Edge+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Edge+CoreDataProperties.swift"; path = "../Edge+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		4800B9261B4585AE005BFE35 /* Entity+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Entity+CoreDataProperties.swift"; path = "../Entity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		4800B9271B4585AE005BFE35 /* Graph+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Graph+CoreDataProperties.swift"; path = "../Graph+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		4810E34F1B1744C300F72097 /* CoreDataModeller.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreDataModeller.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4810E3531B1744C300F72097 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4810E3541B1744C300F72097 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -130,12 +136,6 @@
 		48FA79C01B44E3C7005B7D44 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = User.swift; path = ../User.swift; sourceTree = "<group>"; };
 		48FA79C21B44E3C7005B7D44 /* Attribute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Attribute.swift; path = ../Attribute.swift; sourceTree = "<group>"; };
 		48FA79CA1B44E3C7005B7D44 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Entity.swift; path = ../Entity.swift; sourceTree = "<group>"; };
-		48FA7A231B44F2C2005B7D44 /* Vert+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Vert+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		48FA7A251B44F2C2005B7D44 /* User+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "User+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		48FA7A261B44F2C2005B7D44 /* Graph+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Graph+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		48FA7A281B44F2C2005B7D44 /* Attribute+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Attribute+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		48FA7A291B44F2C2005B7D44 /* Edge+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Edge+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		48FA7A2B1B44F2C2005B7D44 /* Entity+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Entity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,12 +159,6 @@
 		4810E3461B1744C300F72097 = {
 			isa = PBXGroup;
 			children = (
-				48FA7A231B44F2C2005B7D44 /* Vert+CoreDataProperties.swift */,
-				48FA7A251B44F2C2005B7D44 /* User+CoreDataProperties.swift */,
-				48FA7A261B44F2C2005B7D44 /* Graph+CoreDataProperties.swift */,
-				48FA7A281B44F2C2005B7D44 /* Attribute+CoreDataProperties.swift */,
-				48FA7A291B44F2C2005B7D44 /* Edge+CoreDataProperties.swift */,
-				48FA7A2B1B44F2C2005B7D44 /* Entity+CoreDataProperties.swift */,
 				4810E3511B1744C300F72097 /* CoreDataModeller */,
 				4810E3671B1744C400F72097 /* CoreDataModellerTests */,
 				4810E3501B1744C300F72097 /* Products */,
@@ -297,6 +291,12 @@
 		48D5A0361B37007600198878 /* Persistent */ = {
 			isa = PBXGroup;
 			children = (
+				4800B9201B4585AE005BFE35 /* User+CoreDataProperties.swift */,
+				4800B9211B4585AE005BFE35 /* Vert+CoreDataProperties.swift */,
+				4800B9231B4585AE005BFE35 /* Attribute+CoreDataProperties.swift */,
+				4800B9241B4585AE005BFE35 /* Edge+CoreDataProperties.swift */,
+				4800B9261B4585AE005BFE35 /* Entity+CoreDataProperties.swift */,
+				4800B9271B4585AE005BFE35 /* Graph+CoreDataProperties.swift */,
 			);
 			name = Persistent;
 			sourceTree = "<group>";
@@ -405,12 +405,14 @@
 			files = (
 				48FA79D11B44E3C7005B7D44 /* Attribute.swift in Sources */,
 				484524541B3FA1E400D2BEB0 /* CurDate.swift in Sources */,
+				4800B92B1B4585AE005BFE35 /* Vert+CoreDataProperties.swift in Sources */,
 				484C8FFE1B306AD90051CDC1 /* Gestures.swift in Sources */,
 				4882F58F1B1E4391002F6A01 /* Edge.swift in Sources */,
 				48282EBA1B17AED100BDA782 /* Vert.swift in Sources */,
 				4812E3CB1B1D047C0061EAB1 /* VertView.swift in Sources */,
-				48FA7A321B44F2C2005B7D44 /* Graph+CoreDataProperties.swift in Sources */,
 				48FA79CD1B44E3C7005B7D44 /* User.swift in Sources */,
+				4800B9311B4585AE005BFE35 /* Edge+CoreDataProperties.swift in Sources */,
+				4800B9351B4585AE005BFE35 /* Entity+CoreDataProperties.swift in Sources */,
 				4812E3C91B1D046F0061EAB1 /* GraphWorldView.swift in Sources */,
 				48F22B421B42EFEF0087C2BD /* RelationshipCell.swift in Sources */,
 				48C1AFAC1B3373AC00F99336 /* imgTextButton.swift in Sources */,
@@ -418,24 +420,22 @@
 				4893456B1B38E314002D1A80 /* Picker.swift in Sources */,
 				4812E3CD1B1D048C0061EAB1 /* EdgeView.swift in Sources */,
 				48BEF91A1B2A038000DC51A4 /* EntityTableVC.swift in Sources */,
-				48FA7A301B44F2C2005B7D44 /* User+CoreDataProperties.swift in Sources */,
+				4800B9371B4585AE005BFE35 /* Graph+CoreDataProperties.swift in Sources */,
 				4810E3551B1744C300F72097 /* AppDelegate.swift in Sources */,
 				48F22B3F1B4225850087C2BD /* TagTextField.swift in Sources */,
 				48D5A0381B371B9600198878 /* ObjCAppDelegateMGen.swift in Sources */,
-				48FA7A381B44F2C2005B7D44 /* Edge+CoreDataProperties.swift in Sources */,
 				48D5A0341B37006600198878 /* ObjCAppDelegateHGen.swift in Sources */,
 				48EA6BDB1B3B512300D9D308 /* ObjCEntityHGen.swift in Sources */,
 				48FA79E11B44E3C7005B7D44 /* Entity.swift in Sources */,
-				48FA7A361B44F2C2005B7D44 /* Attribute+CoreDataProperties.swift in Sources */,
 				484983391B361A9F00E5D7FE /* AttributeTextField.swift in Sources */,
 				484983361B35D31C00E5D7FE /* AttributeCell.swift in Sources */,
+				4800B9291B4585AE005BFE35 /* User+CoreDataProperties.swift in Sources */,
 				48282E921B179DF400BDA782 /* Model.xcdatamodeld in Sources */,
 				4882F58D1B1E4046002F6A01 /* Graph.swift in Sources */,
 				484523F21B3C9F9D00D2BEB0 /* ObjCEntityMGen.swift in Sources */,
+				4800B92F1B4585AE005BFE35 /* Attribute+CoreDataProperties.swift in Sources */,
 				489039241B1B8E0C005E0992 /* CoreController.swift in Sources */,
 				483B47B31B410CCB00F73242 /* Options.swift in Sources */,
-				48FA7A3C1B44F2C2005B7D44 /* Entity+CoreDataProperties.swift in Sources */,
-				48FA7A2C1B44F2C2005B7D44 /* Vert+CoreDataProperties.swift in Sources */,
 				48D5A0751B3780C000198878 /* MailGen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -446,14 +446,14 @@
 			files = (
 				48FA79D21B44E3C7005B7D44 /* Attribute.swift in Sources */,
 				483DAFB21B1E8D42007A532E /* Edge.swift in Sources */,
-				48FA7A2D1B44F2C2005B7D44 /* Vert+CoreDataProperties.swift in Sources */,
 				483B47B41B410CCB00F73242 /* Options.swift in Sources */,
 				48F22B431B42EFEF0087C2BD /* RelationshipCell.swift in Sources */,
 				48E92ABB1B1E226700110510 /* Vert.swift in Sources */,
-				48FA7A371B44F2C2005B7D44 /* Attribute+CoreDataProperties.swift in Sources */,
 				48C1AFAD1B33AD6700F99336 /* imgTextButton.swift in Sources */,
+				4800B9381B4585AE005BFE35 /* Graph+CoreDataProperties.swift in Sources */,
 				48E92ABD1B1E226700110510 /* GraphView.swift in Sources */,
 				4810C3A01B39FE17004280C1 /* Model.xcdatamodeld in Sources */,
+				4800B92A1B4585AE005BFE35 /* User+CoreDataProperties.swift in Sources */,
 				484C8FFF1B3078F20051CDC1 /* Gestures.swift in Sources */,
 				48EA6BDC1B3B512300D9D308 /* ObjCEntityHGen.swift in Sources */,
 				48E92ABE1B1E226700110510 /* GraphWorldView.swift in Sources */,
@@ -461,22 +461,22 @@
 				48FA79E21B44E3C7005B7D44 /* Entity.swift in Sources */,
 				48E92ABF1B1E226700110510 /* VertView.swift in Sources */,
 				48F22B401B4225850087C2BD /* TagTextField.swift in Sources */,
+				4800B9301B4585AE005BFE35 /* Attribute+CoreDataProperties.swift in Sources */,
 				48BEF91B1B2A185C00DC51A4 /* EntityTableVC.swift in Sources */,
-				48FA7A311B44F2C2005B7D44 /* User+CoreDataProperties.swift in Sources */,
 				48D5A0391B371B9600198878 /* ObjCAppDelegateMGen.swift in Sources */,
 				48D5A0351B37006600198878 /* ObjCAppDelegateHGen.swift in Sources */,
 				484523F31B3C9F9D00D2BEB0 /* ObjCEntityMGen.swift in Sources */,
-				48FA7A3D1B44F2C2005B7D44 /* Entity+CoreDataProperties.swift in Sources */,
+				4800B9321B4585AE005BFE35 /* Edge+CoreDataProperties.swift in Sources */,
 				48E92AC01B1E226700110510 /* EdgeView.swift in Sources */,
-				48FA7A391B44F2C2005B7D44 /* Edge+CoreDataProperties.swift in Sources */,
 				484524551B3FA1E500D2BEB0 /* CurDate.swift in Sources */,
 				48FA79CE1B44E3C7005B7D44 /* User.swift in Sources */,
 				48E92AC11B1E226700110510 /* CoreController.swift in Sources */,
 				48E92AC31B1E226700110510 /* AppDelegate.swift in Sources */,
 				4849833A1B361AA300E5D7FE /* AttributeTextField.swift in Sources */,
+				4800B9361B4585AE005BFE35 /* Entity+CoreDataProperties.swift in Sources */,
 				483DAFB11B1E8D40007A532E /* Graph.swift in Sources */,
 				484983371B35DAEC00E5D7FE /* AttributeCell.swift in Sources */,
-				48FA7A331B44F2C2005B7D44 /* Graph+CoreDataProperties.swift in Sources */,
+				4800B92C1B4585AE005BFE35 /* Vert+CoreDataProperties.swift in Sources */,
 				4810E36B1B1744C400F72097 /* CoreDataModellerTests.swift in Sources */,
 				48D5A0761B3780C000198878 /* MailGen.swift in Sources */,
 			);

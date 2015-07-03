@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="8118.20" systemVersion="14D136" minimumToolsVersion="Xcode 4.3">
-    <entity name="Attribute" representedClassName="CoreDataModeller.Attribute" syncable="YES">
-        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+    <entity name="Attribute" representedClassName="Attribute" syncable="YES">
+        <attribute name="name" attributeType="String" syncable="YES"/>
+        <attribute name="type" attributeType="String" syncable="YES"/>
         <relationship name="vertWithAttribute" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Vert" inverseName="attributes" inverseEntity="Vert" syncable="YES"/>
     </entity>
-    <entity name="Edge" representedClassName="CoreDataModeller.Edge" syncable="YES">
-        <attribute name="edgeViewId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="freshView" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="parseObjectId" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="rel1name" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="rel2name" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="vertChange" optional="YES" attributeType="Boolean" syncable="YES"/>
+    <entity name="Edge" representedClassName="Edge" syncable="YES">
+        <attribute name="edgeViewId" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="freshView" attributeType="Boolean" syncable="YES"/>
+        <attribute name="parseObjectId" attributeType="String" syncable="YES"/>
+        <attribute name="rel1name" attributeType="String" syncable="YES"/>
+        <attribute name="rel2name" attributeType="String" syncable="YES"/>
+        <attribute name="vertChange" attributeType="Boolean" syncable="YES"/>
         <relationship name="graph" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Graph" inverseName="edges" inverseEntity="Graph" syncable="YES"/>
         <relationship name="joinedTo" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vert" inverseName="edges" inverseEntity="Vert" syncable="YES"/>
     </entity>
     <entity name="Entity" representedClassName="Entity" parentEntity="Graph" syncable="YES"/>
-    <entity name="Graph" representedClassName="CoreDataModeller.Graph" syncable="YES">
-        <attribute name="curEdgeId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="curVertId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+    <entity name="Graph" representedClassName="Graph" syncable="YES">
+        <attribute name="curEdgeId" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="curVertId" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <relationship name="edges" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Edge" inverseName="graph" inverseEntity="Edge" syncable="YES"/>
         <relationship name="verts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vert" inverseName="graph" inverseEntity="Vert" syncable="YES"/>
     </entity>
-    <entity name="User" representedClassName="CoreDataModeller.User" syncable="YES">
-        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="password" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
+    <entity name="User" representedClassName="User" syncable="YES">
+        <attribute name="email" attributeType="String" syncable="YES"/>
+        <attribute name="password" attributeType="String" syncable="YES"/>
+        <attribute name="username" attributeType="String" syncable="YES"/>
     </entity>
-    <entity name="Vert" representedClassName="CoreDataModeller.Vert" syncable="YES">
-        <attribute name="depthSearchSeen" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="finishedObservedMethod" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="freshViews" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="parseObjId" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="shouldSyncEntityAttributes" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="vertViewId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="x" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="y" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+    <entity name="Vert" representedClassName="Vert" syncable="YES">
+        <attribute name="depthSearchSeen" attributeType="Boolean" syncable="YES"/>
+        <attribute name="finishedObservedMethod" attributeType="Boolean" syncable="YES"/>
+        <attribute name="freshViews" attributeType="Boolean" syncable="YES"/>
+        <attribute name="parseObjId" attributeType="String" syncable="YES"/>
+        <attribute name="shouldSyncEntityAttributes" attributeType="Boolean" syncable="YES"/>
+        <attribute name="title" attributeType="String" syncable="YES"/>
+        <attribute name="vertViewId" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="x" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="y" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <relationship name="attributes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Attribute" inverseName="vertWithAttribute" inverseEntity="Attribute" syncable="YES"/>
         <relationship name="edges" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Edge" inverseName="joinedTo" inverseEntity="Edge" syncable="YES"/>
         <relationship name="graph" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Graph" inverseName="verts" inverseEntity="Graph" syncable="YES"/>

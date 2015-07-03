@@ -12,6 +12,77 @@ import CoreData
 @objc(Edge)
 class Edge: NSManagedObject {
 
+    //MARK: getters
+    func gEdgeViewId()->Int32 {
+        let selfEdges:NSNumber? = valueForKeyPath("edgeViewId") as? NSNumber
+        if selfEdges == nil {print("Edge: getFreshView: is nil");}
+        return selfEdges!.intValue;
+    }
+    
+    func gFreshView()->Bool {
+        let selfEdges:NSNumber? = valueForKeyPath("freshView") as? NSNumber
+        if selfEdges == nil {print("Edge: getFreshView: is nil");}
+        return selfEdges!.boolValue;
+    }
+    
+    func gRel1Name()->String {
+        let rel1:String? = valueForKeyPath("rel1Name") as? String
+        if rel1 == nil {print("Edge: getRel1Name: rel1 is nil");}
+        return rel1!;
+    }
+    
+    func gRel2Name()->String {
+        let rel2:String? = valueForKeyPath("rel2Name") as? String
+        if rel2 == nil {print("Edge: getRel2Name: rel2 is nil");}
+        return rel2!;
+    }
+    
+    func gVertChange()->Bool {
+        let selfEdges:NSNumber? = valueForKeyPath("getVertChange") as? NSNumber
+        if selfEdges == nil {print("Edge: getVertChange: is nil");}
+        return selfEdges!.boolValue;
+    }
+    
+    func gJoinedTo()->NSMutableSet {
+        let selfNeighbors:NSMutableSet? = valueForKeyPath("joinedTo") as? NSMutableSet;
+        if selfNeighbors == nil {print("Edge: joinedTo: nil");}
+        return selfNeighbors!;
+    }
+    
+    //MARK: setters
+    func sEdgeViewId(int:Int32) {
+        setValue(NSNumber(int:int),forKeyPath: "edgeViewId") ;
+    }
+    
+    func sFreshView(bool:Bool) {
+        setValue(bool,forKeyPath:"freshView");
+        //setValue(NSNumber(bool:bool),forKeyPath: "freshView") ;
+    }
+    
+    func sRel1Name(string:String) {
+        setValue(string,forKeyPath: "rel1Name") ;
+    }
+    
+    func sRel2Name(string:String) {
+        setValue(string,forKeyPath: "rel2Name") ;
+    }
+    
+    func sVertChange(bool:Bool) {
+        setValue(NSNumber(bool: bool),forKeyPath: "rel1Name") ;
+    }
+    
+    func addVertToJoinedTo(vert:Vert) {
+        let selfNeighbors:NSMutableSet? = valueForKeyPath("joinedTo") as? NSMutableSet;
+        if selfNeighbors == nil {print("Edge:addVertToJoinedTo: selfNeighbors is nil");}
+        selfNeighbors!.addObject(vert);
+    }
+    
+    func remVertFromJoinedTo(vert:Vert) {
+        let selfNeighbors:NSMutableSet? = valueForKeyPath("joinedTo") as? NSMutableSet;
+        if selfNeighbors == nil {print("Edge:remVertToJoinedTo: selfNeighbors is nil");}
+        selfNeighbors!.removeObject(vert);
+    }
+
     override var description:String {
         // store methodName for logging errors
         // should use connects
@@ -21,10 +92,10 @@ class Edge: NSManagedObject {
         //var desc:String="Edge(\(Int(v.x)),\(Int(v.y)))(\(Int(w.x)),\(Int(w.y)))";
         var desc = String();
         
-        if joinedTo!.count != 2 {
+        if gJoinedTo().count != 2 {
             desc=desc+"INCOMPLETE";
         }
-        for v in joinedTo! {
+        for v in gJoinedTo() {
             if let vert:Vert=v as? Vert {
                 desc=desc + "(";
                 desc=desc + "\(Int(vert.x)) , \(Int(vert.y))";
@@ -39,6 +110,8 @@ class Edge: NSManagedObject {
     }
 
     // computed properties
+    //TODO:
+    /*
     func length()->Float? {
         let v:Vert?;
         let w:Vert?;
@@ -60,6 +133,7 @@ class Edge: NSManagedObject {
             print("Edge cat: length: v or w is nil");
             return nil;
     }
+    */
 
     // not tested
     func getNameForVert(vert:Vert)->String? {
@@ -69,10 +143,10 @@ class Edge: NSManagedObject {
         
         if v == nil || w == nil {print("Edge ext: getNameForVert: could not get pair of verts that the edge connects");}
         if vert === v! {
-            return rel1name;
+            return gRel1Name();
         }
         else if vert === w! {
-            return rel1name;
+            return gRel2Name();
         }
         else {
             print("Edge ext: getNameForVert: err");
@@ -88,12 +162,13 @@ class Edge: NSManagedObject {
         (v,w)=Connects();
         if v == nil || w == nil {print("Edge ext: getNameForVert: could not get pair of verts that the edge connects");}
         
-        print("edge cat: setNameForVert: \(v!.title), \(w!.title)");
+        print("edge cat: setNameForVert: \(v!.gTitle()), \(w!.gTitle())");
         if vert === v! {
-            rel1name = relationshipName;
+            sRel1Name(relationshipName);
         }
         else if vert === w! {
-            rel2name = relationshipName;
+            sRel2Name(relationshipName);
+            //rel2name = relationshipName;
         }
         else {
             print("Edge ext: setNameForVert: err");
@@ -109,12 +184,12 @@ class Edge: NSManagedObject {
         (v,w)=Connects();
         if v == nil || w == nil {print("Edge ext: getNameForVert: could not get pair of verts that the edge connects");}
         
-        print("edge cat: setNameForVert: \(v!.title), \(w!.title)");
+        print("edge cat: setNameForVert: \(v!.gTitle()), \(w!.gTitle())");
         if inverse === v! {
-            rel1name = relationshipName;
+            sRel1Name(relationshipName);
         }
         else if inverse === w! {
-            rel2name = relationshipName;
+            sRel2Name(relationshipName);
         }
         else {print("Edge ext: getNameForVert: err");}
     }
@@ -127,16 +202,16 @@ class Edge: NSManagedObject {
         var w:Vert?;
         // check that the number of verts on an edge is correct
         // this is made more important because verts can be deleted from the graph
-        if joinedTo!.count < 2 {
+        if gJoinedTo().count < 2 {
             print("Edge cat: Connects: vertArray: err edge has too few verts in joinedTo");
         }
-        else if joinedTo!.count > 2 {
+        else if gJoinedTo().count > 2 {
             print("Edge cat: Connects: vertArray: err edge has too few verts in joinedTo")
         }
         else {
         
             var count:Int=0;
-            for vert in joinedTo! {
+            for vert in gJoinedTo() {
                 if(count==0) {
                     if vert is Vert {
                         v=vert as? Vert;
@@ -179,22 +254,20 @@ class Edge: NSManagedObject {
     }
 
     func swapDesintationVert(v:Vert,forVert w:Vert) {
-        var manyRelation:AnyObject?
+        //var manyRelation:AnyObject?
         
-        manyRelation = self.valueForKeyPath("joinedTo") ;
-        if let verts = (manyRelation as? NSMutableSet) {
-            if verts.count != 2 {
-                print("Edge cat: swapDestinationVert: err number of connected verts before removal is wrong");
-            }
-            (manyRelation as! NSMutableSet).removeObject(v);
-            
-            if verts.count != 1 {
-                print("Edge cat: swapDestinationVert: err number of connected verts after removal is wrong");
-            }
+        // remove
+        if gJoinedTo().count != 2 {
+            print("Edge cat: swapDestinationVert: err number of connected verts before removal is wrong");
+        }
+        remVertFromJoinedTo(v);
+        
+        if gJoinedTo().count != 1 {
+            print("Edge cat: swapDestinationVert: err number of connected verts after removal is wrong");
         }
         
-        manyRelation = self.valueForKeyPath("joinedTo") ;
-        if manyRelation is NSMutableSet {(manyRelation as! NSMutableSet).addObject(w);}
+        // add
+        addVertToJoinedTo(w);
         
         vertChange = true;
     }

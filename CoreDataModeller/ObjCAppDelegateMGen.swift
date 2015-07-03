@@ -18,21 +18,21 @@ class ObjCAppDelegateMGen: NSObject {
     var year = "";
         
     var appDelegateM = String();
-    var comment:Array<String> = Array<String>();
-    var privInterface:Array<String> = Array<String>();
-    var didFinishLaunch:Array<String> = Array<String>();
-    var appWillResign:Array<String> = Array<String>();
+    var comment:Array<String>           = Array<String>();
+    var privInterface:Array<String>     = Array<String>();
+    var didFinishLaunch:Array<String>   = Array<String>();
+    var appWillResign:Array<String>     = Array<String>();
     
-    var appDidEnterBackground:Array<String> = Array<String>();
-    var appWillEnterForeground:Array<String> = Array<String>();
-    var appDidBecomeActive:Array<String> = Array<String>();
-    var appWillTerminate:Array<String> = Array<String>();
-    var variables:Array<String> = Array<String>();
-    var appDocumentsDirectory:Array<String> = Array<String>();
-    var managedObjectModel:Array<String> = Array<String>();
+    var appDidEnterBackground:Array<String>     = Array<String>();
+    var appWillEnterForeground:Array<String>    = Array<String>();
+    var appDidBecomeActive:Array<String>        = Array<String>();
+    var appWillTerminate:Array<String>          = Array<String>();
+    var variables:Array<String>                 = Array<String>();
+    var appDocumentsDirectory:Array<String>     = Array<String>();
+    var managedObjectModel:Array<String>        = Array<String>();
     var persistentStoreCoordinator:Array<String> = Array<String>();
-    var context:Array<String> = Array<String>();
-    var save:Array<String> = Array<String>();
+    var context:Array<String>                   = Array<String>();
+    var save:Array<String>                      = Array<String>();
     
     func setStrArrays() {
         comment = ["//","//  AppDelegate.m","//  June4CoreDataObjCTest","//","//  Created by \(username) on \(date).","//  Copyright (c) \(year) \(username). All rights reserved.","//","","#import \"AppDelegate.h\"","#import <CoreData/CoreData.h>",""];
