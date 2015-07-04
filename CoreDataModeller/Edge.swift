@@ -26,13 +26,13 @@ class Edge: NSManagedObject {
     }
     
     func gRel1Name()->String {
-        let rel1:String? = valueForKeyPath("rel1Name") as? String
+        let rel1:String? = valueForKeyPath("rel1name") as? String
         if rel1 == nil {print("Edge: getRel1Name: rel1 is nil");}
         return rel1!;
     }
     
     func gRel2Name()->String {
-        let rel2:String? = valueForKeyPath("rel2Name") as? String
+        let rel2:String? = valueForKeyPath("rel2name") as? String
         if rel2 == nil {print("Edge: getRel2Name: rel2 is nil");}
         return rel2!;
     }
@@ -60,27 +60,35 @@ class Edge: NSManagedObject {
     }
     
     func sRel1Name(string:String) {
-        setValue(string,forKeyPath: "rel1Name") ;
+        let opString:String? = string;
+        setValue(opString,forKeyPath: "rel1name") ;
     }
     
     func sRel2Name(string:String) {
-        setValue(string,forKeyPath: "rel2Name") ;
+        let opString:String? = string;
+        setValue(opString,forKeyPath: "rel2name") ;
     }
     
     func sVertChange(bool:Bool) {
-        setValue(NSNumber(bool: bool),forKeyPath: "rel1Name") ;
+        setValue(NSNumber(bool: bool),forKeyPath: "vertChange") ;
     }
     
     func addVertToJoinedTo(vert:Vert) {
-        let selfNeighbors:NSMutableSet? = valueForKeyPath("joinedTo") as? NSMutableSet;
+        let key="joinedTo";
+        var selfNeighbors:Set<Vert>? = valueForKeyPath(key) as? Set<Vert>;
         if selfNeighbors == nil {print("Edge:addVertToJoinedTo: selfNeighbors is nil");}
-        selfNeighbors!.addObject(vert);
+        selfNeighbors!.insert(vert);
+        
+        setValue(selfNeighbors, forKeyPath: key);
     }
     
     func remVertFromJoinedTo(vert:Vert) {
-        let selfNeighbors:NSMutableSet? = valueForKeyPath("joinedTo") as? NSMutableSet;
+        let key="joinedTo";
+        var selfNeighbors:Set<Vert>? = valueForKeyPath(key) as? Set<Vert>;
         if selfNeighbors == nil {print("Edge:remVertToJoinedTo: selfNeighbors is nil");}
-        selfNeighbors!.removeObject(vert);
+        selfNeighbors!.remove(vert);
+        
+        setValue(selfNeighbors, forKeyPath: key);
     }
 
     override var description:String {

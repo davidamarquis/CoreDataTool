@@ -26,8 +26,8 @@ class Attribute: NSManagedObject {
         return selfX!;
     }
     
-    func gVertWithAttribute()->NSMutableArray {
-        let selfX:NSMutableArray? = valueForKeyPath("type") as? NSMutableArray;
+    func gVertWithAttribute()->Vert {
+        let selfX:Vert? = valueForKeyPath("vertWithAttribute") as? Vert;
         if selfX == nil {print("Attribute: gVert: is nil");}
         return selfX!;
     }

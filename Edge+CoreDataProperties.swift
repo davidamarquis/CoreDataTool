@@ -2,7 +2,7 @@
 //  Edge+CoreDataProperties.swift
 //  CoreDataModeller
 //
-//  Created by David Marquis on 2015-07-02.
+//  Created by David Marquis on 2015-07-03.
 //  Copyright © 2015 David Marquis. All rights reserved.
 //
 //  Delete this file and regenerate it using "Create NSManagedObject Subclass…"
@@ -16,7 +16,6 @@ extension Edge {
 
     @NSManaged var edgeViewId: Int32
     @NSManaged var freshView: Bool
-    @NSManaged var parseObjectId: String?
     @NSManaged var rel1name: String?
     @NSManaged var rel2name: String?
     @NSManaged var vertChange: Bool

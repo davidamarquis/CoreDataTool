@@ -98,8 +98,6 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
             }
         }
         else if object is Attribute {
-            var att = object as! Attribute;
-            
             if keyPath == "name" || keyPath == "type" {
                 // get list and re-sort it
                 getSortedAttributes();
@@ -205,7 +203,9 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     
         // 1.get an unsorted array of attributes from the vert
         if vert == nil {print("EntityTableVC: getSortedAttributes: the vert is nil");}
-        attrsOrNil=vert!.attributes!.allObjects as? Array<Attribute>;
+        //attrsOrNil=vert!.attributes!.allObjects as? Array<Attribute>;
+        attrsOrNil = Array<Attribute>(vert!.gAttributes());
+        
         if attrsOrNil == nil {print("EntityTableVC: getSortedAttributes: the list of attributes is nil");}
         
         // 2.sort
@@ -264,10 +264,12 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         // update vert
         if vert == nil {print("CoreController: addAttributeById: could not find vert to modify");}
 
-        let manyRelation:AnyObject? = vert!.valueForKeyPath("attributes") ;
-        if manyRelation is NSMutableSet {
-            (manyRelation as! NSMutableSet).addObject(attr);
-        }
+        //TODO: this is wrong
+        vert!.addAttrFromAttrs(attr);
+        //let manyRelation:AnyObject? = vert!.valueForKeyPath("attributes") ;
+        //if manyRelation is NSMutableSet {
+        //    (manyRelation as! NSMutableSet).addObject(attr);
+        //}
         
         // set attr properties
         attr.name=attrString; // trigger KVO

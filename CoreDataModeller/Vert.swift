@@ -71,8 +71,8 @@ func gVertViewId()->Int32 {
 }
 
 // attributes, NSSet
-func gAttributes()->NSMutableSet {
-    let selfAttributes:NSMutableSet? = valueForKeyPath("attributes") as? NSMutableSet;
+func gAttributes()->Set<Attribute> {
+    let selfAttributes:Set<Attribute>? = valueForKeyPath("attributes") as? Set<Attribute>;
     if selfAttributes == nil {print("Vert: getAttributes: Attributes is nil");}
     return selfAttributes!
 }
@@ -85,6 +85,7 @@ func gNeighbors()->NSMutableSet {
 
 func gEdges()->NSMutableSet {
     let selfEdges:NSMutableSet? = valueForKeyPath("edges") as? NSMutableSet;
+    
     if selfEdges == nil {print("Vert: getEdges: edges is nil");}
     return selfEdges!;
 }
@@ -129,41 +130,59 @@ func sVertViewId(int:Int32) {
 // ADD / REM
 //
 func addVertToNeighbors(vert:Vert) {
-    let selfNeighbors:NSMutableSet? = valueForKeyPath("neighbors") as? NSMutableSet;
+    let key="neighbors";
+    var selfNeighbors:Set<Vert>? = valueForKeyPath(key) as? Set<Vert>;
     if selfNeighbors == nil {print("Vert: addVertToNeighbors: neighbors is nil");}
-    selfNeighbors!.addObject(vert);
+    selfNeighbors!.insert(vert);
+    
+    setValue(selfNeighbors, forKeyPath: key);
 }
 
 // adds an edge to the managed property "edges"
 func addEdgeToEdges(edge:Edge) {
-    let selfEdges:NSMutableSet? = valueForKeyPath("edges") as? NSMutableSet;
+    let key="edges";
+    var selfEdges:Set<Edge>? = valueForKeyPath(key) as? Set<Edge>;
     if selfEdges == nil {print("Vert: addAttrFromAttrs: is nil");}
-    selfEdges!.addObject(edge);
+    selfEdges!.insert(edge);
+    
+    setValue(selfEdges, forKeyPath: key);
 }
 
 func addAttrFromAttrs(attr:Attribute) {
-    let selfAttrs:NSMutableSet? = valueForKeyPath("attributes") as? NSMutableSet;
+    let key="attributes";
+    var selfAttrs:Set<Attribute>? = valueForKeyPath(key) as? Set<Attribute>;
     if selfAttrs == nil {print("Vert: addAttrFromAttrs: is nil");}
-    selfAttrs!.addObject(attr);
+    selfAttrs!.insert(attr);
+    
+    setValue(selfAttrs, forKeyPath: key);
 }
 
 func remVertFromNeighbors(vert:Vert) {
-    let selfNeighbors:NSMutableSet? = valueForKeyPath("neighbors") as? NSMutableSet;
+    let key="neighbors";
+    var selfNeighbors:Set<Vert>? = valueForKeyPath(key) as? Set<Vert>;
     if selfNeighbors == nil {print("Vert: remVertToNeighbors: is nil");}
-    selfNeighbors!.removeObject(vert);
+    selfNeighbors!.remove(vert);
+    
+    setValue(selfNeighbors, forKeyPath: key);
 }
 
 // removes an edge to the managed property "edges"
 func remEdgeFromEdges(edge:Edge) {
-    let selfEdges:NSMutableSet? = valueForKeyPath("attributes") as? NSMutableSet;
+    let key="attributes";
+    var selfEdges:Set<Edge>? = valueForKeyPath(key) as? Set<Edge>;
     if selfEdges == nil {print("Vert: remEdgeToNeighbors: is nil");}
-    selfEdges!.removeObject(edge);
+    selfEdges!.remove(edge);
+    
+    setValue(selfEdges, forKeyPath: key);
 }
 
 func remAttrFromAttrs(attr:Attribute) {
-    let selfAttrs:NSMutableSet? = valueForKeyPath("edges") as? NSMutableSet;
+    let key="edges";
+    var selfAttrs:Set<Attribute>? = valueForKeyPath(key) as? Set<Attribute>;
     if selfAttrs == nil {print("Vert: remAttrFromAttrs: is nil");}
-    selfAttrs!.removeObject(attr);
+    selfAttrs!.remove(attr);
+    
+    setValue(selfAttrs, forKeyPath: key);
 }
 
 //MARK: methods
@@ -172,9 +191,7 @@ override var description:String {
     var desc:String="Vert(\(Int(x)),\(Int(y)))[";
     
     var nghs = gNeighbors().allObjects as! Array<Vert>;
-    
-    // let nghs:Array<Vert> = self.neighbors!.allObjects as! Array<Vert>;
-    //let n:Int=self.neighbors!.count;
+
     let n:Int = nghs.count;
     var i:Int;
     if n > 0 {
@@ -191,9 +208,6 @@ func isNeighborOf(other:Vert)->Bool {
 
     let selfNeighbors:NSMutableSet = gNeighbors();
     let otherNeighbors:NSMutableSet = gNeighbors();
-
-    //let otherNeighbors:NSMutableSet? = other.valueForKeyPath("neighbors") as? NSMutableSet;
-    //if otherNeighbors == nil {print("Vert: isNeighborOf: neighbors is nil");}
 
     if(selfNeighbors.containsObject(other) && otherNeighbors.containsObject(self)) {
         return true;
@@ -243,40 +257,25 @@ func getNeighborOnEdge(edge:Edge)->Vert? {
     }
 }
 
-/* TO DO
-func isPositionEqual(other: Vert)->Bool {
-    // TO DO: this comparison of doubles is bad
-    if((self.x==other.x) && (self.y==other.y)) {
-        return true;
-    }
-    else {
-        return(false);
-    }
-}
-*/
-
 // addEdge sets up a new edge
 func AddEdge(edgeOrNil:Edge?, toVert vertOrNil:Vert?)  {
 
     if(edgeOrNil != nil && vertOrNil != nil) {
         //TODO: check if the verts already have an edge
 
+        // bidirectional relationship: only need to update on one side
         addVertToNeighbors(vertOrNil!);
+        // update edge sets
         self.addEdgeToEdges(edgeOrNil!);
         vertOrNil!.addEdgeToEdges(edgeOrNil!);
         
         edgeOrNil!.addVertToJoinedTo(vertOrNil!);
         edgeOrNil!.addVertToJoinedTo(self);
-        //edgeOrNil!.joinedTo=edgeOrNil!.joinedTo!.setByAddingObject(vertOrNil!);
-        //edgeOrNil!.joinedTo=edgeOrNil!.joinedTo!.setByAddingObject(self);
-        
+
         edgeOrNil!.sFreshView(false);
         self.sFinishedObservedMethod(true);
         vertOrNil!.sFinishedObservedMethod(true);
         
-        //edgeOrNil!.freshView = false;
-        //finishedObservedMethod=true;
-        //vertOrNil!.finishedObservedMethod=true;
     }
     else {
        print("Vert: addEdge: one of the inputs is nil");
@@ -321,7 +320,7 @@ func distance(other:Vert)->Float{
 func invalidateViews() {
     for obj in edges! {
         if obj is Edge {
-            //(obj as! Edge).freshView = false;
+            (obj as! Edge).sFreshView(false);
         }
     }
     sFreshViews(false);
@@ -332,18 +331,8 @@ func moveVertTo(newX:Float, _ newY:Float) {
     // set the new x and y positions
     sX(newX);
     sY(newY);
-    //setValue(NSNumber(float: newX), forKey: "x");
-    //setValue(NSNumber(float: newY), forKey: "y");
-    
-    // no verts have been seen
-    // set here so outside classes don't get confused about vert state
-    // @search algos: set this flag to false at start when executed
-    // setValue(NSNumber(bool:false), forKey:"depthSearchSeen");
-    
-    sFinishedObservedMethod(true);
-    //setValue(NSNumber(bool:true), forKey:"finishedObservedMethod");
-    
-    // now trigger kvo response to redraw the associated views
+
+    // now trigger kvo response to redraw the associated edge views
     invalidateViews();
 }
 

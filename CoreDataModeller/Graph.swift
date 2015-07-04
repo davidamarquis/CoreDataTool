@@ -34,12 +34,12 @@ class Graph: NSManagedObject {
         return selfEdges!.intValue;
     }
     
-    func sCurEdgeId(string:String) {
-        setValue(string,forKeyPath: "curEdgeId") ;
+    func sCurEdgeId(newId:Int32) {
+        setValue(NSNumber(int: newId), forKeyPath: "curEdgeId") ;
     }
     
-    func sCurVertId(string:String) {
-        setValue(string,forKeyPath: "curVertId") ;
+    func sCurVertId(newId:Int32) {
+        setValue(NSNumber(int: newId), forKeyPath: "curVertId") ;
     }
     
     func gEdges()->NSMutableSet {
@@ -49,33 +49,44 @@ class Graph: NSManagedObject {
     }
     
     func gVerts()->NSMutableSet {
-        let selfEdges:NSMutableSet? = valueForKeyPath("verts") as? NSMutableSet
-        if selfEdges == nil {print("Graph: verts is nil");}
-        return selfEdges!;
+        let verts:NSMutableSet? = valueForKeyPath("verts") as? NSMutableSet;
+        
+        if verts == nil {print("Graph: verts is nil");}
+        return verts!;
     }
     
     func addVertToVerts(vert:Vert) {
-        let selfNeighbors:NSMutableSet? = valueForKeyPath("verts") as? NSMutableSet;
+        var selfNeighbors:Set<Vert>? = self.valueForKeyPath("verts") as? Set<Vert>;
+        
         if selfNeighbors == nil {print("Graph:addVertToVerts is nil");}
-        selfNeighbors!.addObject(vert);
+        selfNeighbors!.insert(vert);
+        setValue(selfNeighbors, forKeyPath: "verts");
     }
     
     func remVertFromVerts(vert:Vert) {
-        let selfNeighbors:NSMutableSet? = valueForKeyPath("verts") as? NSMutableSet;
+        var selfNeighbors:Set<Vert>? = valueForKeyPath("verts") as? Set<Vert>;
+        
         if selfNeighbors == nil {print("Graph:remVertFromVerts is nil");}
-        selfNeighbors!.removeObject(vert);
+        selfNeighbors!.remove(vert);
+        
+        setValue(selfNeighbors, forKeyPath: "verts");
     }
     
     func addEdgeToEdges(edge:Edge) {
-        let selfNeighbors:NSMutableSet? = valueForKeyPath("edges") as? NSMutableSet;
+        var selfNeighbors:Set<Edge>? = valueForKeyPath("edges") as? Set<Edge>;
         if selfNeighbors == nil {print("Graph:addEdgeToEdges is nil");}
-        selfNeighbors!.addObject(edge);
+        selfNeighbors!.insert(edge);
+        
+        setValue(selfNeighbors, forKeyPath: "edges");
     }
     
     func remEdgeFromEdges(edge:Edge) {
-        let selfNeighbors:NSMutableSet? = valueForKeyPath("edges") as? NSMutableSet;
+        var selfNeighbors:Set<Edge>? = valueForKeyPath("edges") as? Set<Edge>
         if selfNeighbors == nil {print("Graph:remEdgeFromEdges is nil");}
-        selfNeighbors!.removeObject(edge);
+        
+        selfNeighbors!.remove(edge);
+        
+        setValue(selfNeighbors, forKeyPath: "edges");
     }
     
     // getIds() is a debugging method
@@ -108,15 +119,13 @@ class Graph: NSManagedObject {
         // Warning: setting of ids should be guarded against the deletion of managed verts from but is not currently
       
         if let vert=vertOrNil {
-            // assign the title property
-            vert.sTitle("");
-         
         
             // add to set within graph
-            gVerts().addObject(vert);
+            addVertToVerts(vert);
 
             incrementCurVertId();
-            vert.setValue(valueForKey("curVertId") as! NSNumber, forKey: "vertViewId" );
+            vert.sVertViewId(self.gCurVertId());
+            
             // 
             vert.moveVertTo(xPos, yPos);
         }
@@ -131,10 +140,13 @@ class Graph: NSManagedObject {
             
             incrementCurEdgeId();
             // adding an edge sets vert1 and vert2 to be neighbors joined by the edge e
+            
+            edgeOrNil!.sEdgeViewId(self.gCurEdgeId());
         }
         else {
             print("Graph Cat : SetupEdge: ");
         }
+        //TODO: check
         vertOrNil1!.AddEdge(edgeOrNil, toVert:vertOrNil2);
     }
 
