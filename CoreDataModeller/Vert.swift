@@ -77,14 +77,14 @@ func gAttributes()->Set<Attribute> {
     return selfAttributes!
 }
 
-func gNeighbors()->NSMutableSet {
-    let selfNeighbors:NSMutableSet? = valueForKeyPath("neighbors") as? NSMutableSet;
+func gNeighbors()->Set<Vert> {
+    let selfNeighbors:Set<Vert>? = valueForKeyPath("neighbors") as? Set<Vert>;
     if selfNeighbors == nil {print("Vert: getNeighbors: neighbors is nil");}
     return selfNeighbors!;
 }
 
-func gEdges()->NSMutableSet {
-    let selfEdges:NSMutableSet? = valueForKeyPath("edges") as? NSMutableSet;
+func gEdges()->Set<Edge> {
+    let selfEdges:Set<Edge>? = valueForKeyPath("edges") as? Set<Edge>;
     
     if selfEdges == nil {print("Vert: getEdges: edges is nil");}
     return selfEdges!;
@@ -190,7 +190,7 @@ override var description:String {
     // store methodName for logging errors
     var desc:String="Vert(\(Int(x)),\(Int(y)))[";
     
-    var nghs = gNeighbors().allObjects as! Array<Vert>;
+    var nghs = Array<Vert>(self.gNeighbors());
 
     let n:Int = nghs.count;
     var i:Int;
@@ -206,13 +206,13 @@ override var description:String {
 
 func isNeighborOf(other:Vert)->Bool {
 
-    let selfNeighbors:NSMutableSet = gNeighbors();
-    let otherNeighbors:NSMutableSet = gNeighbors();
+    let selfNeighbors = gNeighbors();
+    let otherNeighbors = gNeighbors();
 
-    if(selfNeighbors.containsObject(other) && otherNeighbors.containsObject(self)) {
+    if(selfNeighbors.contains(other) && otherNeighbors.contains(self)) {
         return true;
     }
-    else if selfNeighbors.containsObject(other) {
+    else if selfNeighbors.contains(other) {
         return true;
     }
     else {

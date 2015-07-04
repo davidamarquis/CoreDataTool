@@ -43,8 +43,8 @@ class Edge: NSManagedObject {
         return selfEdges!.boolValue;
     }
     
-    func gJoinedTo()->NSMutableSet {
-        let selfNeighbors:NSMutableSet? = valueForKeyPath("joinedTo") as? NSMutableSet;
+    func gJoinedTo()->Set<Vert> {
+        let selfNeighbors:Set<Vert>? = valueForKeyPath("joinedTo") as? Set<Vert>;
         if selfNeighbors == nil {print("Edge: joinedTo: nil");}
         return selfNeighbors!;
     }
@@ -192,18 +192,19 @@ class Edge: NSManagedObject {
         (v,w)=Connects();
         if v == nil || w == nil {print("Edge ext: getNameForVert: could not get pair of verts that the edge connects");}
         
-        print("edge cat: setNameForVert: \(v!.gTitle()), \(w!.gTitle())");
         if inverse === v! {
+            print("edge cat: setNameForInverse: the entity \(v!.gTitle()) has a relationship \(relationshipName) ");
             sRel1Name(relationshipName);
         }
         else if inverse === w! {
+            print("edge cat: setNameForInverse: the entity \(w!.gTitle()) has a relationship \(relationshipName) ");
             sRel2Name(relationshipName);
         }
         else {print("Edge ext: getNameForVert: err");}
     }
 
     // returns the two verts that an edge is connected to
-    func Connects()->(v:Vert?,w:Vert?) {
+    func Connects() -> (v:Vert?,w:Vert?) {
         
         // v and w: if both do not exist both will be nil
         var v:Vert?;
@@ -216,49 +217,40 @@ class Edge: NSManagedObject {
         else if gJoinedTo().count > 2 {
             print("Edge cat: Connects: vertArray: err edge has too few verts in joinedTo")
         }
-        else {
-        
-            var count:Int=0;
-            for vert in gJoinedTo() {
-                if(count==0) {
-                    if vert is Vert {
-                        v=vert as? Vert;
-                    }
-                    else {
-                        print("Edge cat: Connects(): err");
-                    }
-                }
-                else {
-                    if vert is Vert {
-                        w=vert as? Vert;
-                    }
-                    else {
-                        print("Edge cat: Connects(): err");
-                    }
-                }
-                count++;
+
+        var count:Int=0;
+        for vert in gJoinedTo() {
+            if count == 0 {
+                v = vert;
             }
+            else {
+                w = vert;
+            }
+            count++;
         }
-        
-        // ordering of verts: verts are almost always ordered by their x-coord. In the unlikely event of a tie they are ordered by their y-coord
-        if v!.x < w!.x {
+
+        if v != nil && w != nil {
+            orderVerts(v,w);
+            return orderVerts(v,w);
+        }
+        else {
+            v = Vert();
+            w = Vert();
             return (v,w);
         }
-        else if v!.x > w!.x {
+    }
+    
+    func orderVerts(v:Vert?,_ w:Vert?)->(Vert?,Vert?) {
+        if v!.gVertViewId() < w!.gVertViewId() {
+            return (v,w);
+        }
+        else if v!.gVertViewId() > w!.gVertViewId() {
             return (w,v);
         }
         else {
-            if v!.y < w!.y {
-                return (v,w);
-            }
-            else if v!.y > w!.y {
-                return (w,v);
-            }
-            else {
-                print("Edge extension: connects(): err: v and w have the same x and y values");
-            }
+            print("Edge: orderVerts: err ids of both verts are equal");
+            return (v,w);
         }
-        return (v,w); // not called just to suppress compiler warnings.
     }
 
     func swapDesintationVert(v:Vert,forVert w:Vert) {

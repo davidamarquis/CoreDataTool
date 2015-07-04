@@ -42,14 +42,14 @@ class Graph: NSManagedObject {
         setValue(NSNumber(int: newId), forKeyPath: "curVertId") ;
     }
     
-    func gEdges()->NSMutableSet {
-        let selfEdges:NSMutableSet? = valueForKeyPath("edges") as? NSMutableSet
+    func gEdges()->Set<Edge> {
+        let selfEdges:Set<Edge>? = valueForKeyPath("edges") as? Set<Edge>
         if selfEdges == nil {print("Graph: edges is nil");}
         return selfEdges!;
     }
     
-    func gVerts()->NSMutableSet {
-        let verts:NSMutableSet? = valueForKeyPath("verts") as? NSMutableSet;
+    func gVerts()->Set<Vert> {
+        let verts:Set<Vert>? = valueForKeyPath("verts") as? Set<Vert>;
         
         if verts == nil {print("Graph: verts is nil");}
         return verts!;

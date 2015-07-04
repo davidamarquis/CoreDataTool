@@ -59,11 +59,14 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                     if segue.destinationViewController is EntityTableVC {
                         //set vert
                         (segue.destinationViewController as! EntityTableVC).vert=vert;
+                        
                         //set attr observers
                         setupAttrObservers(vert!, vc: segue.destinationViewController as! EntityTableVC);
                         //set context
                         if context == nil {print("CoreController: prepareForSegure: context is nil")}
                         (segue.destinationViewController as! EntityTableVC).context=context!;
+                        
+                        printRels(vert!);
                     }
                 }
                 else { print("CoreController: prepareForSegue: vert is nil"); }
@@ -75,6 +78,12 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             if user != nil {
                 (segue.destinationViewController as! Options).user = user;
             }
+        }
+    }
+    
+    func printRels(vert:Vert) {
+        for edge in vert.gEdges() {
+            print("vert has rel named \(edge.getNameForVert(vert)) )" );
         }
     }
 
@@ -1088,11 +1097,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         attr.addObserver(self, forKeyPath: "name", options: .New, context: nil);
         attr.addObserver(self, forKeyPath: "type", options: .New, context: nil);
         
-        //TODO: refactor
-        let manyRelation:AnyObject? = vert.valueForKeyPath("attributes") ;
-        if manyRelation is NSMutableSet {
-            (manyRelation as! NSMutableSet).addObject(attr);
-        }
+        vert.addAttrFromAttrs(attr);
+        
         return attr;
     }
     
@@ -1119,16 +1125,18 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             verts[3].sTitle("Photo");
             
             // the indexs of the verts are the same as the first column of vert indexs above
-            edges[0].setNameForVert(verts[0], relationshipName: "Owner");
-            edges[1].setNameForVert(verts[1], relationshipName: "FavoriteBrand");
-            edges[2].setNameForVert(verts[0], relationshipName: "FavoriteBrand");
-            edges[3].setNameForVert(verts[2], relationshipName: "Photo");
+            edges[0].setNameForVert(verts[0], relationshipName: "Owner"); // v is Dog
+            edges[0].setNameForVert(verts[1], relationshipName: "Dogs"); // v is Owner
             
-            edges[0].setNameForInverseOfVert(verts[1], relationshipName: "Dog");
-            edges[1].setNameForInverseOfVert(verts[2], relationshipName: "OwnersThatLike");
-            edges[2].setNameForInverseOfVert(verts[2], relationshipName: "DogsThatLike");
-            edges[3].setNameForInverseOfVert(verts[3], relationshipName: "Brand");
-
+            edges[1].setNameForVert(verts[1], relationshipName: "BrandsOwnerLikes"); // v is Owner
+            edges[1].setNameForVert(verts[2], relationshipName: "OwnersThatLike"); // v is Brand
+            
+            edges[2].setNameForVert(verts[0], relationshipName: "BrandsDogLikes"); // v is Dog
+            edges[2].setNameForVert(verts[2], relationshipName: "DogsThatLike"); // v is Brand
+            
+            edges[2].setNameForVert(verts[2], relationshipName: "BrandImages"); // v is Brand
+            edges[2].setNameForVert(verts[3], relationshipName: "Brand"); // v is Photo
+            
             let dogname = addAttributeById(verts[0]);
             dogname.setValue("Name", forKeyPath: "name");
             dogname.setValue("String", forKeyPath: "type");

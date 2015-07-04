@@ -45,11 +45,11 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     
     // validates entity name in the model
     private func validateEntityNameWithAlert()->Bool {
-        if vert!.title == "" {
+        if vert!.gTitle() == "" {
             invalidInput(entityNameWarning, title:"Invalid Entity Name");
             return false;
         }
-        else if !firstCharacterIsCapital(vert!.title!) {
+        else if !firstCharacterIsCapital(vert!.gTitle()) {
             invalidInput(entityFirstChar, title:"Invalid Entity Name");
             return false;
         }
@@ -128,8 +128,8 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         // set numbe of attributes and edges
         getSortedAttributes();
         getSortedRels();
-        for obj in vert!.edges! {
-            (obj as! Edge).addObserver(self, forKeyPath: "name", options: .New, context: nil);
+        for obj in vert!.gEdges() {
+            obj.addObserver(self, forKeyPath: "name", options: .New, context: nil);
         }
         
         //register for keyboard notifications
@@ -147,8 +147,8 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         setTextField(titleField!, placeholder:"Add title");
         
         // if there's text in vert title then override placeholder text
-        if !vert!.title!.isEmpty {
-            titleField!.text = vert!.title;
+        if !vert!.gTitle().isEmpty {
+            titleField!.text = vert!.gTitle();
         }
         
         // create the table view
@@ -217,7 +217,7 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     
     // the sorting method for attributes
     private func sortAttributes(a1:Attribute, a2:Attribute)->Bool {
-        if a1.name < a2.name {
+        if a1.gName() < a2.gName() {
             return true;
         }
         return false;
@@ -228,7 +228,8 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         // 1.get an unsorted array of edges
         if vert == nil {print("EntityTableVC: getSortedRels: the vert is nil");}
         
-        relsOrNil=vert!.edges!.allObjects as? Array<Edge>;
+        relsOrNil = Array<Edge>(vert!.gEdges());
+        
         if relsOrNil == nil {print("EntityTableVC: getSortedRels: the list of rels is nil");}
         
         // 2.sort
@@ -264,27 +265,21 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         // update vert
         if vert == nil {print("CoreController: addAttributeById: could not find vert to modify");}
 
-        //TODO: this is wrong
         vert!.addAttrFromAttrs(attr);
-        //let manyRelation:AnyObject? = vert!.valueForKeyPath("attributes") ;
-        //if manyRelation is NSMutableSet {
-        //    (manyRelation as! NSMutableSet).addObject(attr);
-        //}
-        
+
         // set attr properties
-        attr.name=attrString; // trigger KVO
-        attr.type="Undefined";
+        attr.setValue(attrString, forKeyPath: "name"); // this triggers KVO
+        attr.setValue("Undefined", forKeyPath: "type");
     }
     
     // delegate method
     func setAttrName(attr:Attribute, name:String){
-        attr.name = name;
+        attr.setValue(name, forKeyPath: "name");
     }
     
     // delegate method
     func setAttrType(attr:Attribute, type:String){
-    
-        attr.type = type;
+        attr.setValue(type, forKeyPath: "type");
     }
     
     //MARK: UITextFieldDelegate methods
@@ -300,7 +295,7 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
             if vc is CoreController {
  
                 if validateEntityNameInputWithAlert(textField.text!) {
-                    (vc as! CoreController).setTitle(vert!.vertViewId, title: textField.text!);
+                    (vc as! CoreController).setTitle(vert!.gVertViewId(), title: textField.text!);
                 }
             }
         }
@@ -312,9 +307,7 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         return 162;
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-    return 2;
-    }
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {return 2;}
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
@@ -329,7 +322,6 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         else if section == 1 {
             if relsOrNil != nil {
                 return relsOrNil!.count+1;
-                
             }
             else {
                 print("EntityTableVC: number of rows in section: err trying to set number of rows but relsOrNil is nil");
@@ -342,53 +334,29 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         }
     }
     
-    //MARK: table view helpers
-    func inAttributesSection(indexPath:NSIndexPath)->Bool {
-        if indexPath.row < self.tableView(entityTable!, numberOfRowsInSection: 0) {
-            return true;
-        }
-        else {return false;}
-    }
-    
-    func inRelationshipsSection(indexPath:NSIndexPath)->Bool {
-
-        let m = self.tableView(entityTable!, numberOfRowsInSection: 0);
-        let n = self.tableView(entityTable!, numberOfRowsInSection: 0) + self.tableView(entityTable!, numberOfRowsInSection: 1);
-
-        // row must be greater than or equal to number rows in the first section, less than total number of rows
-        if m <= indexPath.row && indexPath.row < n {
-            return true;
-        }
-        else {return false;}
-    }
-
-
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     {
-    
-        if inAttributesSection(indexPath) {
-
+        if indexPath.section == 0 {
             let cellIdentifier:String="AttributeCell";
+            
             var cell:AttributeCell? = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as? AttributeCell
             if cell == nil {
                 // init a custom cell
                 cell = AttributeCell(style:UITableViewCellStyle.Default, reuseIdentifier: cellIdentifier);
                 
                 if cell == nil {print("AttributeTable: tableView cellForRowAtIndexPath: failed to create cell");}
-                
-                // do any additional setup of the cell...
             }
             
             (cell!.picker!.delegate,cell!.picker!.dataSource) = (cell!,cell!);  //UIPickerView delegate and datasource
             cell!.attributesDelegate = self;                                    //CheckAttributes delegate
-            cell!.vertViewId = vert!.vertViewId;
+            cell!.vertViewId = vert!.gVertViewId();
 
             // customize the cell based on its section
-
             setAttributeCell(indexPath, cell: cell!);
+            
             return cell!;
         }
-        else if inRelationshipsSection(indexPath) {
+        else if indexPath.section == 1 {
         
             let cellIdentifier:String="RelationshipCell";
             
@@ -408,7 +376,6 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         }
         else {
             print("EntityTable: tableView cellForRowAtIndexPath: invalid section");
-            
             return tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell;
         }
     }
@@ -453,17 +420,32 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
             // if a cell is not !doesCreateNewCell then changes to textFields modify existing attribute
             cell.doesCreateNewCell = false;
             
-            print("setRelationshipCell: relationship/edge is \(relsOrNil![indexPath.row]) ");
-            print("setRelationshipCell: vert is \(vert!) ");
+            // set the relationship name
+            let relname = relsOrNil![indexPath.row].getNameForVert(vert!);
+            cell.descriptionLabel!.text = relname;
+            // set the inverse relationship name
+            // TODO
             
-            cell.descriptionLabel!.text = relsOrNil![indexPath.row].getNameForVert(vert!);
             cell.edge = relsOrNil![indexPath.row];
             
             cell.relationshipDelegate = self;
         
-            for obj in vert!.neighbors! {
-                cell.destinations.append((obj as! Vert).title!);
+            // get destinations
+            var dests:Array<String>? = Array<String>();
+            // set destinations array
+            for v in vert!.gNeighbors() {
+                dests!.append(v.title!);
             }
+            // set destinations for cell
+            cell.destinations = dests!;
+            
+            // set current destination
+            let curDestTitle = vert!.getNeighborOnEdge(cell.edge!)!.title;
+            
+            let destInd = dests!.indexOf(curDestTitle!);
+            
+            if destInd == nil {print("EntityTableVC: setRelationshipCell: destInd is nil");}
+            cell.picker?.selectRow(destInd!, inComponent: 0, animated: false);
         }
         else {
             cell.doesCreateNewCell = true;
