@@ -131,7 +131,7 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         for obj in vert!.gEdges() {
             obj.addObserver(self, forKeyPath: "name", options: .New, context: nil);
         }
-        
+    
         //register for keyboard notifications
         NSNotificationCenter.defaultCenter().addObserver(self,selector:"keyboardWasShown:", name:UIKeyboardDidShowNotification, object:nil);
         NSNotificationCenter.defaultCenter().addObserver(self,selector:"keyboardWillBeHidden:", name:UIKeyboardWillHideNotification, object:nil);
@@ -162,25 +162,15 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         entityTable!.registerClass(RelationshipCell.self, forCellReuseIdentifier:"RelationshipCell");
         entityTable!.registerClass(UITableViewCell.self, forCellReuseIdentifier:"Cell");
         entityTable!.reloadData();
+        
+        // prevent row selection in table view 
+        entityTable!.allowsSelection = false;
+        
         view.addSubview(entityTable!);
         
         // observes keyboard dismissal in case any error
         let noteCenter:NSNotificationCenter = NSNotificationCenter.defaultCenter();
         let mainQueue:NSOperationQueue=NSOperationQueue.mainQueue();
-        noteCenter.addObserverForName( UIKeyboardWillHideNotification, object: nil, queue: mainQueue, usingBlock:
-        {(notification:NSNotification!) -> Void in
-        
-            if self.attrNameDidNotStartWithCaptial {
-                let alert = UIAlertController(title: "Invalid Name", message: "Attribute names must start with a capital letter", preferredStyle: .Alert);
-                let alertAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil);
-                alert.addAction(alertAction);
-                self.presentViewController(alert, animated: false, completion:
-                {() -> Void in
-                    // reset the showAttrErr flag
-                    self.attrNameDidNotStartWithCaptial=false;
-                });
-            }
-        });
         
         noteCenter.addObserverForName( UIKeyboardWillHideNotification, object: nil, queue: mainQueue, usingBlock:
         {(notification:NSNotification!) -> Void in
@@ -193,6 +183,17 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
                 {() -> Void in
                     // reset the showAttrErr flag
                     self.attrAlreadyExists=false;
+                });
+            }
+            
+            if self.attrNameDidNotStartWithCaptial {
+                let alert = UIAlertController(title: "Invalid Name", message: "Attribute names must start with a capital letter", preferredStyle: .Alert);
+                let alertAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil);
+                alert.addAction(alertAction);
+                self.presentViewController(alert, animated: false, completion:
+                {() -> Void in
+                    // reset the showAttrErr flag
+                    self.attrNameDidNotStartWithCaptial=false;
                 });
             }
         });
@@ -367,7 +368,8 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
                 if cell == nil {print("RelationshipTable: tableView cellForRowAtIndexPath: failed to create cell");}
             }
             
-            (cell!.picker!.delegate,cell!.picker!.dataSource) = (cell!,cell!);  //UIPickerView delegate and datasource
+            cell!.picker!.delegate = cell!;
+            cell!.picker!.dataSource = cell!;  //UIPickerView delegate and datasource
 
             // customize the cell based on its section
             setRelationshipCell(indexPath, cell: cell!);
@@ -419,23 +421,31 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         {
             // if a cell is not !doesCreateNewCell then changes to textFields modify existing attribute
             cell.doesCreateNewCell = false;
-            
-            // set the relationship name
-            let relname = relsOrNil![indexPath.row].getNameForVert(vert!);
-            cell.descriptionLabel!.text = relname;
-            // set the inverse relationship name
-            // TODO
-            
-            cell.edge = relsOrNil![indexPath.row];
-            
             cell.relationshipDelegate = self;
         
+            // set edge
+            let edge = relsOrNil![indexPath.row];
+            cell.edge = edge;
+            
+            // set the relationship name
+            let relname = edge.getNameForVert(vert!);
+            // set inv name
+            let inv = vert!.getNeighborOnEdge(edge);
+            let relInvName = edge.getNameForVert(inv!)
+            
+            // set cell text
+            cell.relField!.text = relname;
+            cell.invField!.text = relInvName;
+            
             // get destinations
             var dests:Array<String>? = Array<String>();
-            // set destinations array
+
             for v in vert!.gNeighbors() {
                 dests!.append(v.title!);
             }
+            // neighbors does not include the current vert
+            dests!.append(vert!.title!);
+            
             // set destinations for cell
             cell.destinations = dests!;
             
@@ -449,8 +459,6 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         }
         else {
             cell.doesCreateNewCell = true;
-            // the last cell in the attribute section invites creating a new cell
-            cell.descriptionLabel!.placeholder = cell.addRelFieldPlaceholderText ;
         }
     }
     

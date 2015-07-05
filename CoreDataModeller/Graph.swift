@@ -9,6 +9,10 @@
 import Foundation
 import CoreData
 
+protocol ModelObserver {
+
+}
+
 @objc(Graph)
 class Graph: NSManagedObject {
 // all methods in an extension
@@ -115,11 +119,15 @@ class Graph: NSManagedObject {
         setValue(NSNumber(int: inc), forKey: "curEdgeId");
     }
     
+    //MARK: methods
+        
     func SetupVert(vertOrNil:Vert?, AtX xPos:Float, AtY yPos:Float ) {
         // Warning: setting of ids should be guarded against the deletion of managed verts from but is not currently
       
         if let vert=vertOrNil {
-        
+            // set properties
+            vert.setVertProperties();
+
             // add to set within graph
             addVertToVerts(vert);
 
@@ -128,14 +136,18 @@ class Graph: NSManagedObject {
             
             // 
             vert.moveVertTo(xPos, yPos);
+            
         }
         else {
             print("Graph cat: SetupVert: err ");
         }
     }
-
+    
     func SetupEdge(edgeOrNil:Edge?, From vertOrNil1:Vert?, To vertOrNil2:Vert?) {
         if edgeOrNil != nil {
+            // set properties
+            edgeOrNil!.setEdgeProperties();
+            
             addEdgeToEdges(edgeOrNil!);
             
             incrementCurEdgeId();

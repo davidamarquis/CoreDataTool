@@ -39,16 +39,15 @@ class gestureCC:CoreController, GestureResponse
         let relLoc = CGPointMake(loc.x - graphView!.contentOffset.x,loc.y - graphView!.contentOffset.y);
         
         let id1,id2:Int32;
+        
+        // Each case follows these steps: (1) check gesture, (2) check Move/Vert/Edge and if the given gesture does anything
+        //in this state then assign any vert ids or edge ids, (3) using the ids get CoreController to respond. Cases:
         // case 1 = gesture started on addVertControl and ended somewhere
         // case 2 = gesture started on vertView and ended hitting the remove button
         // case 3 = gesture started on vertView and ended hitting another vert
         // case 4 = gesture started on vertView and ended hitting nothing
         // case 5 = gesture started on edgeView and ended hitting remEdgeControl
-        
-        // each case follows these steps: check what the gesture, check the state that CoreController is in, if the given gesture
-        //does anything in this state then assign any vert or edge ids and get CoreController to respond
-        // Style Warning: the bool *guards* are responsible for printing an error message if a variable needed inside the guard is nil
-        //this makes the code below more readible
+        // Methods for case determination are responsible for printing an error message if anything is nil
         if mustAddVert {
             addVert(loc);
         }
@@ -90,10 +89,8 @@ class gestureCC:CoreController, GestureResponse
             return true;
         }
         for x in view.subviews {
-            if x is UIView {
-                if (x as UIView).pointInside(loc, withEvent: nil) {
-                    return true;
-                }
+            if x.pointInside(loc, withEvent: nil) {
+                return true;
             }
         }
         return false;

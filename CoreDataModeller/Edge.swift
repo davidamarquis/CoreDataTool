@@ -90,6 +90,16 @@ class Edge: NSManagedObject {
         
         setValue(selfNeighbors, forKeyPath: key);
     }
+    
+    //MARK: init
+    // setEdgeProperties must init all attributes of an edge
+    func setEdgeProperties() {
+        sEdgeViewId(-1);
+        sFreshView(false);
+        sRel1Name("");
+        sRel2Name("");
+        sVertChange(false);
+    }
 
     override var description:String {
         // store methodName for logging errors
@@ -104,14 +114,9 @@ class Edge: NSManagedObject {
             desc=desc+"INCOMPLETE";
         }
         for v in gJoinedTo() {
-            if let vert:Vert=v as? Vert {
-                desc=desc + "(";
-                desc=desc + "\(Int(vert.x)) , \(Int(vert.y))";
-                desc=desc + ")";
-            }
-            else {
-                print("Edge cat description err");
-            }
+            desc=desc + "(";
+            desc=desc + "\(Int(v.x)) , \(Int(v.y))";
+            desc=desc + ")";
         }
         
         return desc;
@@ -234,9 +239,7 @@ class Edge: NSManagedObject {
             return orderVerts(v,w);
         }
         else {
-            v = Vert();
-            w = Vert();
-            return (v,w);
+            return (nil,nil);
         }
     }
     

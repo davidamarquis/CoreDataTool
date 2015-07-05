@@ -70,6 +70,8 @@
 		48E92AC31B1E226700110510 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810E3541B1744C300F72097 /* AppDelegate.swift */; };
 		48EA6BDB1B3B512300D9D308 /* ObjCEntityHGen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48EA6BDA1B3B512300D9D308 /* ObjCEntityHGen.swift */; };
 		48EA6BDC1B3B512300D9D308 /* ObjCEntityHGen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48EA6BDA1B3B512300D9D308 /* ObjCEntityHGen.swift */; };
+		48EE828A1B48F9F700C46DAA /* EntityTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48EE82891B48F9F700C46DAA /* EntityTextField.swift */; };
+		48EE828B1B48F9F700C46DAA /* EntityTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48EE82891B48F9F700C46DAA /* EntityTextField.swift */; };
 		48F22B3F1B4225850087C2BD /* TagTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F22B3E1B4225840087C2BD /* TagTextField.swift */; };
 		48F22B401B4225850087C2BD /* TagTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F22B3E1B4225840087C2BD /* TagTextField.swift */; };
 		48F22B421B42EFEF0087C2BD /* RelationshipCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48F22B411B42EFEF0087C2BD /* RelationshipCell.swift */; };
@@ -131,6 +133,7 @@
 		48D5A0371B371B9600198878 /* ObjCAppDelegateMGen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCAppDelegateMGen.swift; sourceTree = "<group>"; };
 		48D5A0741B3780C000198878 /* MailGen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MailGen.swift; sourceTree = "<group>"; };
 		48EA6BDA1B3B512300D9D308 /* ObjCEntityHGen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjCEntityHGen.swift; sourceTree = "<group>"; };
+		48EE82891B48F9F700C46DAA /* EntityTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityTextField.swift; sourceTree = "<group>"; };
 		48F22B3E1B4225840087C2BD /* TagTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagTextField.swift; sourceTree = "<group>"; };
 		48F22B411B42EFEF0087C2BD /* RelationshipCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RelationshipCell.swift; sourceTree = "<group>"; };
 		48FA79C01B44E3C7005B7D44 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = User.swift; path = ../User.swift; sourceTree = "<group>"; };
@@ -283,6 +286,7 @@
 				484983381B361A9F00E5D7FE /* AttributeTextField.swift */,
 				484983351B35D31C00E5D7FE /* AttributeCell.swift */,
 				48F22B411B42EFEF0087C2BD /* RelationshipCell.swift */,
+				48EE82891B48F9F700C46DAA /* EntityTextField.swift */,
 				4893456A1B38E314002D1A80 /* Picker.swift */,
 			);
 			name = AttributeTable;
@@ -431,6 +435,7 @@
 				48BB56041B47075600D56563 /* Edge+CoreDataProperties.swift in Sources */,
 				484983361B35D31C00E5D7FE /* AttributeCell.swift in Sources */,
 				48282E921B179DF400BDA782 /* Model.xcdatamodeld in Sources */,
+				48EE828A1B48F9F700C46DAA /* EntityTextField.swift in Sources */,
 				4882F58D1B1E4046002F6A01 /* Graph.swift in Sources */,
 				484523F21B3C9F9D00D2BEB0 /* ObjCEntityMGen.swift in Sources */,
 				48BB560A1B47075600D56563 /* Attribute+CoreDataProperties.swift in Sources */,
@@ -475,6 +480,7 @@
 				48E92AC31B1E226700110510 /* AppDelegate.swift in Sources */,
 				4849833A1B361AA300E5D7FE /* AttributeTextField.swift in Sources */,
 				483DAFB11B1E8D40007A532E /* Graph.swift in Sources */,
+				48EE828B1B48F9F700C46DAA /* EntityTextField.swift in Sources */,
 				484983371B35DAEC00E5D7FE /* AttributeCell.swift in Sources */,
 				4810E36B1B1744C400F72097 /* CoreDataModellerTests.swift in Sources */,
 				48BB56131B47075600D56563 /* Vert+CoreDataProperties.swift in Sources */,
