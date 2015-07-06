@@ -9,7 +9,7 @@
 import UIKit
 import Foundation
 
-protocol RelationshipDelegate {
+protocol RelationshipDelegate: class {
     
     var activeField:UITextField? {get set};
     var shouldMove:Bool? {get set};
@@ -18,7 +18,7 @@ protocol RelationshipDelegate {
 
 class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPickerViewDataSource {
     
-    var relationshipDelegate:RelationshipDelegate?;
+    weak var relationshipDelegate:RelationshipDelegate?;
     
     // there are two ways to end editing of a text field:
     // switching to another text field or hitting the return button
@@ -32,10 +32,9 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
     // destinations holds the titles of the verts that the edge can end on. Assigned by EntityTable
     var destinations:Array<String> = Array<String>();
     var edge:Edge?;
-    
-    var relField:EntityTextField?;
-    var invField:EntityTextField?;
-    
+    // controls
+    var invContents:EntityContents = EntityContents();
+    var relContents:EntityContents = EntityContents();
     var picker:Picker?;
     
     // selectCell() enables picker scrolling
@@ -53,53 +52,35 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
         super.init(style: style, reuseIdentifier:reuseIdentifier);
         postInitSetup();
     }
-    
+
     func postInitSetup() {
+       
         let textAreaColor = UIColor(red: 32/255, green: 135/255, blue: 252/255, alpha: 1); // blue
         let backColor = UIColor(red: 28/255, green: 35/255, blue: 53/255, alpha: 1); // purple
-        let labelHeight:CGFloat = 20;
-        let fieldHeight:CGFloat = 48;
+        let contentsHeight:CGFloat = 64;
         let labelWidth:CGFloat = 160;
         
         contentView.backgroundColor = backColor;
 
-        // relationship
-        let relLabel = UILabel(frame: CGRectMake(0, 0, labelWidth, labelHeight));
-        relLabel.backgroundColor = backColor;
-        relLabel.text = "Relationship";
-        relLabel.textColor = UIColor.grayColor();
-        relLabel.font = UIFont(name: "HelveticaNeue", size: 13);
-        self.addSubview(relLabel);
-
-        relField = EntityTextField(frame: CGRectMake(0, relLabel.frame.height, labelWidth, fieldHeight));
-        //relField!.borderStyle = UITextBorderStyle.Line;
-
-        
-        relField!.backgroundColor = textAreaColor;
-        // placeholder will be overridden if there is anything in the cell
-        setTextField(relField!, placeholder: addRelFieldPlaceholderText);
-        relField!.textColor = UIColor.whiteColor();
-        contentView.addSubview(relField!);
+        // rel
+        relContents = EntityContents(frame: CGRectMake(0, relContents.frame.height, labelWidth, contentsHeight));
+        relContents.backColor = backColor;
+        relContents.textAreaColor = textAreaColor;
+        relContents.labelText = "Relationship";
+        // relContents.fieldText is set by the table view delegate when this cell is init()
+        relContents.fieldPlaceholder = "Add Relationship";
+        relContents.descField!.delegate = self;
+        addSubview(relContents);
         
         // inverse
-        let invLabelY = relLabel.frame.height + relField!.frame.height;
-    
-        let invLabel = UILabel(frame: CGRectMake(0, invLabelY, labelWidth, labelHeight));
-        invLabel.backgroundColor = backColor;
-        invLabel.text = "Inverse";
-        invLabel.textColor = UIColor.grayColor();
-        invLabel.font = UIFont(name: "HelveticaNeue", size: 13);
-        self.addSubview(invLabel);
-    
-        let invFieldY = invLabelY + invLabel.frame.height;
-        
-        invField = EntityTextField(frame: CGRectMake(0, invFieldY, labelWidth, fieldHeight));
-        invField!.borderStyle = UITextBorderStyle.Line;
-        invField!.backgroundColor = textAreaColor;
-        // placeholder will be overridden if there is anything in the cell
-        setTextField(invField!, placeholder: addInvFieldPlaceholderText);
-        invField!.textColor = UIColor.whiteColor();
-        contentView.addSubview(invField!);
+        invContents = EntityContents(frame: CGRectMake(0, relContents.frame.height, labelWidth, contentsHeight));
+        invContents.backColor = backColor;
+        invContents.textAreaColor = textAreaColor;
+        invContents.labelText = "Inverse";
+        // invContents.fieldText is set by the table view delegate when this cell is init()
+        invContents.fieldPlaceholder = "Add Inverse";
+        invContents.descField!.delegate = self;
+        addSubview(invContents);
         
         // picker
         picker = Picker();
@@ -118,18 +99,14 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return destinations.count;
     }
-    /*
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-    
-        return destinations[row];
-    }
-    */
     
     func pickerView(pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return 20;
     }
     
     func pickerView(pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+        // set text as destinations[row] with white color
+        // from http://stackoverflow.com/questions/19232817/how-do-i-change-the-color-of-the-text-in-a-uipickerview-under-ios-7
         return NSAttributedString(string: destinations[row], attributes: [NSForegroundColorAttributeName:UIColor.whiteColor()])
     }
     
@@ -145,10 +122,8 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
     }
     
     private func setTextField(textField:UITextField, placeholder:String) {
-        textField.adjustsFontSizeToFitWidth = true;
-        textField.textColor = UIColor.blackColor();
-        textField.placeholder = placeholder;
-        textField.keyboardType = UIKeyboardType.EmailAddress;
+
+        
         textField.delegate = self;
     }
     
@@ -161,7 +136,7 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
     //
     func textFieldShouldReturn(textField: UITextField)->Bool {
         
-        // user has ended control by hitting return
+        // set willSwitchField as user has ended control by hitting return
         willSwitchFields = false;
         
         setRelName(textField);
@@ -170,7 +145,8 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
         return true;
     }
     
-    private func setRelName(textField:UITextField) {
+    // kvo response to relationship name being set
+    func setRelName(textField:UITextField) {
         if relationshipDelegate == nil {print("RelationshipCell: textFieldShouldReturn: delegate is nil");}
         if doesCreateNewCell == nil {print("RelationshipCell: textFieldShouldReturn: relationshipDelegate's: doesCreateNewCell is nil");}
         
@@ -214,6 +190,10 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
         
         if relationshipDelegate == nil {print("RelationshipCell: textFieldDidEndEditing: delegate is nil");}
         relationshipDelegate!.activeField = nil;
+    
+    }
+    
+    deinit {
     
     }
     

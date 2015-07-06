@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol VertViewWasTouchedProtocol {
+protocol VertViewWasTouchedProtocol:class {
     var inEdgeMode:Bool {get};
     var inVertMode:Bool {get};
     var inMoveMode:Bool {get};
@@ -28,7 +28,7 @@ class VertView: UIView {
     var circSize,strokeSize:CGFloat?;
     var vertViewId:Int32?;
     // protocol delegates
-    var delegate:VertViewWasTouchedProtocol?;
+    weak var delegate:VertViewWasTouchedProtocol?;
     
     var titleLabel:UILabel?;
     var isDrawn = false;

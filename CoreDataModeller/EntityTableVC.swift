@@ -128,8 +128,10 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         // set numbe of attributes and edges
         getSortedAttributes();
         getSortedRels();
-        for obj in vert!.gEdges() {
-            obj.addObserver(self, forKeyPath: "name", options: .New, context: nil);
+        for edge in vert!.gEdges() {
+            edge.addObserver(self, forKeyPath: "rel1name", options: .New, context: nil);
+            edge.addObserver(self, forKeyPath: "rel2name", options: .New, context: nil);
+            edge.addObserver(self, forKeyPath: "rel1name", options: .New, context: nil);
         }
     
         //register for keyboard notifications
@@ -347,6 +349,9 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
                 
                 if cell == nil {print("AttributeTable: tableView cellForRowAtIndexPath: failed to create cell");}
             }
+            else {
+                print("entityTableVC: cellForRowAtIndexPath: attribte cell dequeued");
+            }
             
             (cell!.picker!.delegate,cell!.picker!.dataSource) = (cell!,cell!);  //UIPickerView delegate and datasource
             cell!.attributesDelegate = self;                                    //CheckAttributes delegate
@@ -367,6 +372,10 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
                 cell = RelationshipCell(style:UITableViewCellStyle.Default, reuseIdentifier: cellIdentifier);
                 if cell == nil {print("RelationshipTable: tableView cellForRowAtIndexPath: failed to create cell");}
             }
+            else {
+            
+                print("entityTableVC: cellForRowAtIndexPath: relationship cell dequeued");
+            }
             
             cell!.picker!.delegate = cell!;
             cell!.picker!.dataSource = cell!;  //UIPickerView delegate and datasource
@@ -382,61 +391,55 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         }
     }
     
-    // setAttributeCell() does the setup for a table view cell in the attributes section. 
-    // Assumes that the indexPath row its given is in the right section
+    // setAttributeCell() does the setup for a table view cell in the attributes section.
     func setAttributeCell(indexPath: NSIndexPath, cell:AttributeCell) {
         
-        // set the text showing the attribute name
         // assumption: attrsOrNil!.count+1 = length of attributes section
         if indexPath.row < attrsOrNil!.count
         {
+            // set attribute
+            let attr = attrsOrNil![indexPath.row];
+            cell.attr = attr;
+            
+            // set name of attribute
+            cell.attrContents.fieldText = attr.gName();
+        
+            // get current type and use it to set the picker's row
+            let ind = pickerTest.indexOf(cell.attr!.type!);
+            if ind == nil {print("EntityTableVC: setAttributeCell: ind is nil");}
+            cell.picker!.selectRow(ind!, inComponent: 0, animated: false);
+            
             // if a cell is not flagged with doesCreateNewCell then changing the textField makes a change to an existing attribute
             cell.doesCreateNewCell = false;
-            
-            //set the text of the cell textfield
-            cell.descriptionLabel!.text=attrsOrNil![indexPath.row].name;
-        
-            cell.attr=attrsOrNil![indexPath.row];
-            
-            let ind = pickerTest.indexOf(cell.attr!.type!);
-            if ind != nil {
-            
-                cell.picker!.selectRow(ind!, inComponent: 0, animated: false);
-            }
         }
         else {
             cell.doesCreateNewCell = true;
-            // the last cell in the attribute section invites creating a new cell
-            cell.descriptionLabel!.placeholder=cell.addAttrFieldPlaceholderText;
         }
     
     }
     
     // setRelationshipCell() does the setup for a table view cell in the attributes section.
-    // Assumes that the indexPath row its given is in the right section
     func setRelationshipCell(indexPath: NSIndexPath, cell:RelationshipCell) {
-        // set the text showing the attribute name
+
         // assumption: attrsOrNil!.count+1 = length of attributes section
         if indexPath.row < relsOrNil!.count
         {
-            // if a cell is not !doesCreateNewCell then changes to textFields modify existing attribute
-            cell.doesCreateNewCell = false;
-            cell.relationshipDelegate = self;
-        
-            // set edge
-            let edge = relsOrNil![indexPath.row];
+            // set edge/relationship
+            var edge = relsOrNil![indexPath.row];
             cell.edge = edge;
             
-            // set the relationship name
-            let relname = edge.getNameForVert(vert!);
-            // set inv name
-            let inv = vert!.getNeighborOnEdge(edge);
-            let relInvName = edge.getNameForVert(inv!)
+            // set delegate
+            cell.relationshipDelegate = self;
             
-            // set cell text
-            cell.relField!.text = relname;
-            cell.invField!.text = relInvName;
-            
+            // get the relationship name
+            var relname = edge.getNameForVert(vert!);
+            // get inv name
+            var inv = vert!.getNeighborOnEdge(edge);
+            var relInvName = edge.getNameForVert(inv!)
+            // set names
+            cell.relContents.fieldText = relname!;
+            cell.invContents.fieldText = relInvName!;
+
             // get destinations
             var dests:Array<String>? = Array<String>();
 
@@ -446,16 +449,17 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
             // neighbors does not include the current vert
             dests!.append(vert!.title!);
             
-            // set destinations for cell
+            // set destinations
             cell.destinations = dests!;
             
-            // set current destination
+            // get current "destination" vert and use it to set the picker's row
             let curDestTitle = vert!.getNeighborOnEdge(cell.edge!)!.title;
-            
-            let destInd = dests!.indexOf(curDestTitle!);
-            
+            let destInd:Int? = dests!.indexOf(curDestTitle!);
             if destInd == nil {print("EntityTableVC: setRelationshipCell: destInd is nil");}
             cell.picker?.selectRow(destInd!, inComponent: 0, animated: false);
+            
+            // if !doesCreateNewCell then changes to textFields modify existing attribute
+            cell.doesCreateNewCell = false;
         }
         else {
             cell.doesCreateNewCell = true;
@@ -562,5 +566,20 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         entityTable!.scrollIndicatorInsets = contentInsets;
     }
     
+    deinit {
     
+        for attr in vert!.gAttributes() {
+            attr.removeObserver(self, forKeyPath: "name");
+            attr.removeObserver(self, forKeyPath: "type");
+        }
+        for edge in vert!.gNeighbors() {
+            edge.removeObserver(self, forKeyPath: "re1name");
+            edge.removeObserver(self, forKeyPath: "rel2name");
+            edge.removeObserver(self, forKeyPath: "vertChange");
+        }
+        NSNotificationCenter.defaultCenter().removeObserver(self);
+
+        //NSNotificationCenter.defaultCenter().addObserver(self,selector:"keyboardWasShown:", name:UIKeyboardDidShowNotification, object:nil);
+        //NSNotificationCenter.defaultCenter().addObserver(self,selector:"keyboardWillBeHidden:", name:UIKeyboardWillHideNotification, object:nil);
+    }
 }

@@ -9,7 +9,7 @@
 import UIKit
 import Foundation
 
-protocol CheckAttributes {
+protocol CheckAttributes: class {
     
     func addAttributeById(vertId:Int32, withString attrString:String);
     // the delegate is responsible for presenting an
@@ -27,30 +27,28 @@ protocol CheckAttributes {
 
 class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, UIPickerViewDataSource {
 
-    var attributesDelegate:CheckAttributes?;
+    weak var attributesDelegate:CheckAttributes?;
     
-    // there are two ways to end editing of a text field
-    // switching to another text field or hitting the return button
+    // There are two ways to end editing of a text field
+    // switching to another text field or hitting the return button.
     var willSwitchFields = true;
 
     // if the field or the picker gets changed then this flag determines the response
     var doesCreateNewCell:Bool?;
 
-    var pickerTest=["Undefined","Integer 16","Integer 32","Integer 64","Decimal","Double","Float","String","Boolean","Date","Binary Data","Transformable"];
+    var types=["Undefined","Integer 16","Integer 32","Integer 64","Decimal","Double","Float","String","Boolean","Date","Binary Data","Transformable"];
     
     let addAttrFieldPlaceholderText = "Add Attribute";
     // the id of the vert that has been passed to AttrTable
     var vertViewId:Int32?;
     
-    //MARK: UI vars 
-    //pickerView's delegate is AttributeTable
-    var descriptionLabel:UITextField?;
+    // controls
+    var attrContents = EntityContents();
     var picker:Picker?;
-    var typeLabel:UILabel?;
-    
-    //TODO: refactor trello:
+
     var attr:Attribute?;
     
+    //MARK: methods
     // selectCell() enables picker scrolling
     func selectCell() {
         if picker == nil {print("AttributeCell: selectCell: picker is nil")}
@@ -68,22 +66,28 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
     }
     
     func postInitSetup() {
-        // configure control(s)
-        descriptionLabel = UITextField(frame: CGRectMake(0, 0, 160, 48));
-        descriptionLabel!.backgroundColor = UIColor(red: 245/255.0, green: 245/255.0, blue: 245/255.0, alpha: 1);
-        setTextField(descriptionLabel!, placeholder: addAttrFieldPlaceholderText);
-        contentView.addSubview(descriptionLabel!);
+        let textAreaColor = UIColor(red: 32/255, green: 135/255, blue: 252/255, alpha: 1); // blue
+        let backColor = UIColor(red: 28/255, green: 35/255, blue: 53/255, alpha: 1); // purple
+        let contentsHeight:CGFloat = 64;
+        let labelWidth:CGFloat = 160;
         
-        if descriptionLabel != nil {
-            typeLabel = UILabel(frame: CGRectMake(0, descriptionLabel!.frame.height, 160, descriptionLabel!.frame.height));
-            typeLabel!.backgroundColor = UIColor(red: 245/255.0, green: 245/255.0, blue: 245/255.0, alpha: 1);
-            contentView.addSubview(typeLabel!);
-        }
-        else {print("CoreController: descriptionLabel is nil so can't set typeLabel");}
+        // set background color
+        contentView.backgroundColor = backColor;
+
+        // attr
+        attrContents = EntityContents(frame: CGRectMake(0, 0, labelWidth, contentsHeight));
+        attrContents.backColor = backColor;
+        attrContents.textAreaColor = textAreaColor;
+        attrContents.labelText = "Attribute";
+        // attrContents.fieldText is set by the table view delegate when this cell is init()
+        attrContents.fieldPlaceholder = "Add Attribute";
+        attrContents.descField!.delegate = self;
+        addSubview(attrContents);
         
         picker=Picker();
         if picker == nil {print("AttributeCell: postInitSetup: picker is nil");}
         picker!.frame = CGRectMake(160,0,140,self.frame.height);
+        picker!.backgroundColor = backColor;
         contentView.addSubview(picker!);
     }
     
@@ -92,13 +96,15 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
         return 1;
     }
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return pickerTest.count
+        return types.count
     }
     
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-    
-        return pickerTest[row];
+    func pickerView(pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+        // set text as destinations[row] with white color
+        // from http://stackoverflow.com/questions/19232817/how-do-i-change-the-color-of-the-text-in-a-uipickerview-under-ios-7
+        return NSAttributedString(string: types[row], attributes: [NSForegroundColorAttributeName:UIColor.whiteColor()])
     }
+    
     func pickerView(pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
         return 20;
     }
@@ -109,17 +115,9 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
         if doesCreateNewCell! {return;}
         
         if attributesDelegate == nil {print("AttributeCell: pickerView: attributesDelegate is nil");}
-        if row < 0 || pickerTest.count < row { print("AttributeCell:pickerView:didSelectRow: row is too large after checking doesCreateNewCell"); }
+        if row < 0 || types.count < row { print("AttributeCell:pickerView:didSelectRow: row is too large after checking doesCreateNewCell"); }
 
-        attributesDelegate!.setAttrType(attr!, type: pickerTest[row]);
-    }
-    
-    private func setTextField(textField:UITextField, placeholder:String) {
-        textField.adjustsFontSizeToFitWidth = true;
-        textField.textColor = UIColor.blackColor();
-        textField.placeholder = placeholder;
-        textField.keyboardType = UIKeyboardType.EmailAddress;
-        textField.delegate = self;
+        attributesDelegate!.setAttrType(attr!, type: types[row]);
     }
     
     required init(coder decoder: NSCoder) {
@@ -127,8 +125,6 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
         postInitSetup();
     }
     
-
-
     //MARK: UITextFieldDelegate methods
     //
     func textFieldShouldReturn(textField: UITextField)->Bool {
@@ -142,7 +138,7 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
         return true;
     }
     
-    private func setAttribute(textField:UITextField) {
+    func setAttribute(textField:UITextField) {
         if attributesDelegate == nil {print("AttributeCell: textFieldShouldReturn: delegate is nil");}
         if vertViewId == nil {print("AttributeCell: textFieldShouldReturn: vertViewId is nil");}
         if attributesDelegate == nil {print("AttributeCell: textFieldShouldReturn: attributesDelegate is nil");}
@@ -150,6 +146,7 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
         if doesCreateNewCell == nil {print("AttributeCell: textFieldShouldReturn: attributesDelegate's: doesCreateNewCell is nil");}
         
         if attributesDelegate!.validateAttrName(textField.text!) {
+        
             if doesCreateNewCell! {
                 attributesDelegate!.addAttributeById(vertViewId!, withString: textField.text!);
             }
@@ -187,4 +184,7 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
     
     }
     
+    deinit {
+    
+    }
 }

@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol GestureResponse {
+protocol GestureResponse: class {
     func handleStateBegan(recog:UIPanGestureRecognizer);
     func handleStateChanged(recog:UIPanGestureRecognizer);
     func handleStateEnded(recog:UIPanGestureRecognizer);
@@ -17,7 +17,7 @@ protocol GestureResponse {
 class GraphWorldView: UIView {
 
     // MARK: vars and inits
-    var gestureResponseDelegate:GestureResponse?;
+    weak var gestureResponseDelegate:GestureResponse?;
     var circSize,edgeSize,strokeSize: CGFloat?;
 
     var gestureVV:VertView?;

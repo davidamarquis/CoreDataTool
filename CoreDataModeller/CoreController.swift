@@ -303,7 +303,13 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             drawVert(vert);
         }
         for edge in self.graph!.gEdges() {
+            let edgeId = edge.valueForKey("edgeViewId");
+            let freshView = edge.valueForKey("freshView");
+            print("CoreController: loadGraph: edge id is \(edgeId!) ");
+            print("CoreController: loadGraph: fresh view is \(freshView!) ");
+            
             edge.addObserver(self, forKeyPath: "freshView", options: .New, context: nil);
+
             drawEdge(edge);
         }
     }
@@ -744,10 +750,16 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         else if object is Edge {
         
             if keyPath == "freshView" {
-            
-                if !(object as! Edge).gFreshView() {
-                    drawEdge(object as! Edge);
-                }
+
+                    if !(object as! Edge).gFreshView() {
+                        drawEdge(object as! Edge);
+                    }
+                    /*
+                    object!.removeObserver(self, forKeyPath: "freshView");
+                    let edgeId = (object as! Edge).edgeViewId;
+                    let edge = graph!.getEdgeById(edgeId);
+                    edge!.addObserver(self, forKeyPath: "freshView", options: .New, context: nil );
+                    */
             }
         }
     }

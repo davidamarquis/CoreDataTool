@@ -274,5 +274,9 @@ class Edge: NSManagedObject {
         
         vertChange = true;
     }
+    
+    deinit {
+    
+    }
 
 }
