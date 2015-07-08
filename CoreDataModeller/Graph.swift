@@ -114,6 +114,7 @@ class Graph: NSManagedObject {
     }
     
     func incrementCurEdgeId() {
+    
         // set the id property
         let inc:Int32 = gCurEdgeId() + 1;
         setValue(NSNumber(int: inc), forKey: "curEdgeId");
@@ -125,16 +126,21 @@ class Graph: NSManagedObject {
         // Warning: setting of ids should be guarded against the deletion of managed verts from but is not currently
       
         if let vert=vertOrNil {
-            // set properties
-            vert.setVertProperties();
-
             // add to set within graph
             addVertToVerts(vert);
 
+            // set title
+            print("SetupVert: cur vert id is is \(self.gCurVertId())");
             incrementCurVertId();
             vert.sVertViewId(self.gCurVertId());
+            print("SetupVert: cur vert id is is \(self.gCurVertId())");
+            print("SetupVert: id of vert is is \(vert.gVertViewId())");
             
-            // 
+            // set default title
+            let title = "Entity\(self.gVerts().count)";
+            vert.setValue(title, forKeyPath: "title");
+            
+            // set position
             vert.moveVertTo(xPos, yPos);
             
         }
@@ -145,9 +151,6 @@ class Graph: NSManagedObject {
     
     func SetupEdge(edgeOrNil:Edge?, From vertOrNil1:Vert?, To vertOrNil2:Vert?) {
         if edgeOrNil != nil {
-            // set properties
-            edgeOrNil!.setEdgeProperties();
-            
             addEdgeToEdges(edgeOrNil!);
             
             incrementCurEdgeId();
@@ -227,13 +230,11 @@ class Graph: NSManagedObject {
             return nil;
         }
         // search for matching id
-        for e in edges! {
-            if e is Edge {
-                let edge:Edge=e as! Edge;
-                if edge.gEdgeViewId() == edgeId {
-                    return edge;
+        for e in self.gEdges() {
+                if e.gEdgeViewId() == edgeId {
+                    return e;
                 }
-            }
+
         }
         return nil;
     }
@@ -246,13 +247,11 @@ class Graph: NSManagedObject {
             return nil;
         }
         // search for matching id
-        for v in verts! {
-            if v is Vert {
-                let vert:Vert=v as! Vert;
-                if vert.gVertViewId() == vertId {
-                    return vert;
+        for v in self.gVerts() {
+            print( "\(vertId), \(v.gVertViewId())" );
+                if v.gVertViewId() == vertId {
+                    return v;
                 }
-            }
         }
         return nil;
     }

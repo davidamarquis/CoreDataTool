@@ -64,6 +64,7 @@ class VertView: UIView {
         
         titleLabel!.backgroundColor = UIColor.clearColor();
         titleLabel!.textColor = UIColor.blackColor();
+        titleLabel!.font = UIFont(name: "HelveticaNeue", size: 11);
     }
 
     // MARK: methods

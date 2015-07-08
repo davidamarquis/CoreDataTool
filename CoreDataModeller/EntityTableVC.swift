@@ -23,6 +23,7 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     let attrNameWarning="Entity attribute needs name";
     let entityNameWarning="Entity needs name";
     let entityFirstChar="Entity name must start with a capital letter";
+    let textAreaColor = UIColor(red: 32/255, green: 135/255, blue: 252/255, alpha: 1);
     
     let capLets=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"] as Array<Character>;
     let lowLets=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"] as Array<Character>;
@@ -124,7 +125,7 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     //MARK: view lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad();
-
+        
         // set numbe of attributes and edges
         getSortedAttributes();
         getSortedRels();
@@ -145,9 +146,15 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         if titleField == nil {print("AttributeTable: viewWillAppear: err titleField is nil");}
         
         view.addSubview(titleField!);
-        titleField!.backgroundColor=UIColor.blueColor();
-        setTextField(titleField!, placeholder:"Add title");
-        
+        titleField!.adjustsFontSizeToFitWidth = true;
+        titleField!.textColor = UIColor.whiteColor();
+        titleField!.placeholder = "Add title";
+        titleField!.keyboardType = UIKeyboardType.EmailAddress;
+        titleField!.delegate = self;
+        titleField!.backgroundColor = textAreaColor;
+        titleField!.font = UIFont(name: "HelveticaNeue", size: 20);
+        titleField!.clearsOnBeginEditing = true;
+
         // if there's text in vert title then override placeholder text
         if !vert!.gTitle().isEmpty {
             titleField!.text = vert!.gTitle();
@@ -306,6 +313,22 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     }
     
     //MARK: table view data source and delegate
+    
+    // to set a custom font size for a table view row we need the following method
+    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let myLabel = UILabel();
+        myLabel.frame = CGRectMake(20,8,320,20);
+        myLabel.font = UIFont(name: "HelveticaNeue", size: 20);
+        myLabel.text = self.tableView(tableView, titleForHeaderInSection:section);
+        myLabel.backgroundColor = self.textAreaColor;
+        myLabel.textColor = UIColor.whiteColor();
+
+        let headerView = UIView();
+        headerView.addSubview(myLabel);
+
+        return headerView;
+    }
+    
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         return 162;
     }
@@ -417,7 +440,7 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
         }
     
     }
-    
+
     // setRelationshipCell() does the setup for a table view cell in the attributes section.
     func setRelationshipCell(indexPath: NSIndexPath, cell:RelationshipCell) {
 
@@ -481,14 +504,6 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
                 break;
         }    
         return sectionName;
-    }
-
-    private func setTextField(textField:UITextField, placeholder:String) {
-        textField.adjustsFontSizeToFitWidth = true;
-        textField.textColor = UIColor.blackColor();
-        textField.placeholder = placeholder;
-        textField.keyboardType = UIKeyboardType.EmailAddress;
-        textField.delegate = self;
     }
     
     //MARK: attr name validation

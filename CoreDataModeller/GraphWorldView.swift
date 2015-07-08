@@ -53,6 +53,8 @@ class GraphWorldView: UIView {
     }
     
     // MARK: gesture recognizers
+    
+    // pan() determines the state of the pan gesture and passes it to the Gestures extension of CoreController to handle
     func pan(recognizer:UIPanGestureRecognizer) {
     
         panCount++;
@@ -80,12 +82,13 @@ class GraphWorldView: UIView {
     }
     
     //getVertViewById() returns the VertView corresponding to a particular id or nil if such a VertView does not exist
-    func getVertViewById(vertViewId:Int32) -> VertView? {
+    func getVertViewById(vertVId:Int32) -> VertView? {
 
         for subview in subviews {
             if subview is VertView {
                 let vertView:VertView=subview as! VertView;
-                if(vertView.vertViewId == vertViewId) {return vertView;}
+                print("VERTVIEW: \(vertView.vertViewId!) and input id is \(vertVId)");
+                if(vertView.vertViewId! == vertVId) {return vertView;}
             }
             else {
                 // probably subview is an Edge
@@ -108,13 +111,13 @@ class GraphWorldView: UIView {
     }
 
     // return the EdgeView corresponding to a particular id
-    func getEdgeViewById(edgeViewId:Int32)->EdgeView? {
+    func getEdgeViewById(edgeVId:Int32)->EdgeView? {
         for subview in subviews {
             if subview is EdgeView {
             
                 let edgeView:EdgeView=subview as! EdgeView;
-                if(edgeView.edgeViewId == edgeViewId) {
-                    print("GraphWorldView: getEdgeViewById: got edge with id \(edgeViewId)");
+                if(edgeView.edgeViewId! == edgeVId) {
+                    print("GraphWorldView: getEdgeViewById: got edge with id \(edgeVId)");
                     return edgeView;
                 }
             }

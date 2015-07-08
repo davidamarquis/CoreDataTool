@@ -55,7 +55,7 @@ class Edge: NSManagedObject {
     }
     
     func sFreshView(bool:Bool) {
-        setValue(bool,forKeyPath:"freshView");
+        setValue(NSNumber(bool:bool),forKeyPath:"freshView");
         //setValue(NSNumber(bool:bool),forKeyPath: "freshView") ;
     }
     
@@ -252,6 +252,7 @@ class Edge: NSManagedObject {
         }
         else {
             print("Edge: orderVerts: err ids of both verts are equal");
+            //TODO: try (nil, nil)
             return (v,w);
         }
     }

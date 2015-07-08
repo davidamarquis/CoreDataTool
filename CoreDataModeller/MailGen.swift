@@ -37,7 +37,7 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
             
             mailVC!.modalTransitionStyle = UIModalTransitionStyle.CoverVertical;
             
-            mailVC!.setSubject("test file");
+            mailVC!.setSubject("Core Data Model");
             mailVC!.setToRecipients(["david.a.marquis@gmail.com"]);
             
             // http://stackoverflow.com/questions/901357/how-do-i-convert-an-nsstring-value-to-nsdata
@@ -59,7 +59,7 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
                     entityHGen.updateString();
                     let entityStr = entityHGen.entityH;
                     let entityData:NSData?=entityStr.dataUsingEncoding(NSUTF8StringEncoding);
-                    mailVC!.addAttachmentData(entityData!, mimeType:"text/rtf", fileName:"\(vert.title).h");
+                    mailVC!.addAttachmentData(entityData!, mimeType:"text/rtf", fileName:"\(vert.gTitle()).h");
                     
                     // M
                     let entityMGen = ObjCEntityMGen();
@@ -70,7 +70,7 @@ class MailGen: NSObject, MFMailComposeViewControllerDelegate {
                     entityMGen.updateString();
                     let entityMStr = entityMGen.entityM;
                     let entityMData:NSData?=entityMStr.dataUsingEncoding(NSUTF8StringEncoding);
-                    mailVC!.addAttachmentData(entityMData!, mimeType:"text/rtf", fileName:"\(vert.title).m");
+                    mailVC!.addAttachmentData(entityMData!, mimeType:"text/rtf", fileName:"\(vert.gTitle()).m");
                 }
             }
             

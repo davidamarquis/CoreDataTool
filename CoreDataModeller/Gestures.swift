@@ -9,10 +9,9 @@
 import UIKit
 import Foundation
 
-// warning: in the methods and comments of this class to be concise we will sometimes refer to vertViews as verts
+// warning: in the context of this class, the terms vert and edge are refering to views not model objects
 class gestureCC:CoreController, GestureResponse
 {
-    //@IBOutlet weak var emailButtonPressed: UIBarButtonItem!
     // 3 properties
     var gestureVV:VertView?;
     var shiftedOrigin:CGPoint?;
@@ -20,6 +19,7 @@ class gestureCC:CoreController, GestureResponse
     var edgeViewToCheckRem:EdgeView?;
   
     //computed properties
+    // gestureDidStartOnVert() is a computed flag: in handleStateChanged() and handleStateEnded() a gesture started on a vert if and only if gestureVV has a non-nil value
     private func gestureDidStartOnVert()->Bool {
         if gestureVV != nil {
             return true;
@@ -65,10 +65,7 @@ class gestureCC:CoreController, GestureResponse
             respondToNoHit();
         }
         else if inEdgeMode && edgeViewToCheckRem != nil {
-            //println("Preparing to delete edge");
-            //println("loc is \(loc)");
-            //println("remEdgeControl frame is \(remEdgeControl!.frame)");
-            
+ 
             if remEdgeControl == nil {print("CoreController gestures: handleStateEnded: trying to remove edge but remEdgeControl is nil");}
             if CGRectContainsPoint(remEdgeControl!.frame, loc) {
             
@@ -78,7 +75,7 @@ class gestureCC:CoreController, GestureResponse
         }
 
         
-        //TODO: rem this? remove the gestureVV it exists
+        //TODO: rem this? remove the gestureVV if it exists
         gestureVV = nil;
     }
     
@@ -96,9 +93,8 @@ class gestureCC:CoreController, GestureResponse
         return false;
     }
     
-    ////
-    // All helper methods below called by handleStateEnded() at some point
-    //MARK: guards
+    // MARK: methods for handleStateEnded()
+    //
     private func vertEndsOnVert()->Bool {
         if inEdgeMode && gestureDidStartOnVert() {
             // error checking
@@ -120,19 +116,12 @@ class gestureCC:CoreController, GestureResponse
             if gestureVV == nil {print("Graph extension: vertEndsOnRemControl: gestureVV is nil");}
             if remVertControl == nil {print("Graph extension: vertEndsOnRemControl: remVertControl is nil");}
             
-            /*
-            //TODO: june 22: get rid of relative frames
-            let relFrame = CGRectMake(gestureVV!.frame.origin.x - graphView!.contentOffset.x,
-            gestureVV!.frame.origin.y - graphView!.contentOffset.y,
-            gestureVV!.frame.size.width,
-            gestureVV!.frame.size.height);*/
-            
             return CGRectIntersectsRect(gestureVV!.frame, remVertControl!.frame);
         }
         return false;
     }
     
-    // getHitVertId() returns the id of the vertView that was hit by the vertView that was moved by the user
+    // getHitVertId() returns the id of the vertView that was hit by the user
     private func getHitVertId()->Int32 {
         // vertEndsOnVert() checks that we are in Edge mode
         if vertEndsOnVert() {
@@ -149,7 +138,6 @@ class gestureCC:CoreController, GestureResponse
         return 0;
     }
     
-    //MARK: helpers
     private func respondToNoHit() {
         if inVertMode && gestureDidStartOnVert() {
             if gestureVV!.vertViewId == nil { print(""); }
@@ -159,7 +147,7 @@ class gestureCC:CoreController, GestureResponse
         }
     }
     
-    // getIntersectingVert examines all the stored vertViews to see if any collisions have occured. Returns the first vertView on which a hit has occured
+    // getIntersectingVert examines all the stored vertViews to see if any hits have occured. Returns the first vertView on which a hit has occured
     // this method is used for creating edges between verts
     private func getIntersectingVert(vframe:CGRect, vv:VertView!)->VertView? {
         
@@ -178,7 +166,7 @@ class gestureCC:CoreController, GestureResponse
         return nil;
     }
     
-    // checkFrame(): if in vertMode assert(vframe=vv.frame);
+    // checkFrame(): takes two frames as input. If these frames are equal and we are in vert mode checkFrames() prints and error message
     private func checkFramePositionsAndMode(frame1:CGRect,frame2:CGRect) {
         let org1,org2:CGPoint;
         (org1,org2)=(frame1.origin,frame2.origin);
@@ -233,7 +221,8 @@ class gestureCC:CoreController, GestureResponse
         if graphView == nil {print("CoreController gestures: handleStateBegan: graphView is nil");}
         if graphView!.gwv == nil {print("CoreController gestures: handleStateBegan: gwv is nil");}
         
-        if addVertControl != nil {
+        // case 1: user has started a pan gesture from the add entity button
+        if addVertControl != nil && inVertMode {
         
             // if we started on the addVertControl then we set the flag for adding vert
             if CGRectContainsPoint(addVertControl!.frame, startPos) {
@@ -241,13 +230,12 @@ class gestureCC:CoreController, GestureResponse
                 mustAddVert=true;
             }
         }
-        // at this point (1) mustAddVert is true if the starting point was contained in the frame and false otherwise
-        // gestureVV is nil,shiftedOrigin is nil
         
+        // case 2: User has started a pan gesture from a vert.
+        // At this point (1) mustAddVert is true if the starting point was contained in the frame and false otherwise
+        // (2) gestureVV is nil,shiftedOrigin is nil.
         let N:Int=graphView!.gwv!.subviews.count;
         var i:Int=0;
-
-        // case 1: user has started a pan gesture from a vert
         for(i=0;i<N;i++) {
             // get a view
             if(graphView!.gwv!.subviews[i] is VertView) {
@@ -261,7 +249,9 @@ class gestureCC:CoreController, GestureResponse
                 }
             }
         }
-        // at this point mustAddVert is true if and only if relLoc was contained in the frame
+        
+        // case 3: User has started a pan gesture from an edge.
+        // At this point mustAddVert is true if and only if relLoc was contained in the frame
         // gestureVV is nil if and only if the user started the pan on a vert
         // shiftedOrigin is nil
         if inEdgeMode {

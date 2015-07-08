@@ -273,7 +273,7 @@ class Vert: NSManagedObject {
         if(edgeOrNil != nil && vertOrNil != nil) {
             //TODO: check if the verts already have an edge
 
-            // bidirectional relationship: only need to update on one side
+            // vert.neighbors is a bidirectional relationship. update one side only. CD will sync it
             addVertToNeighbors(vertOrNil!);
             // update edge sets
             self.addEdgeToEdges(edgeOrNil!);
@@ -292,13 +292,14 @@ class Vert: NSManagedObject {
         }
     }
 
+    /*
     // prepare for the removal of an edge from the context
     func removeEdge(edgeOrNil:Edge?, vertOrNil:Vert?) {
         if(edgeOrNil != nil && vertOrNil != nil) {
 
             remVertFromNeighbors(vertOrNil!);
-            self.remEdgeFromEdges(edgeOrNil!);
-            vertOrNil!.remEdgeFromEdges(edgeOrNil!);
+            //self.remEdgeFromEdges(edgeOrNil!);
+            //vertOrNil!.remEdgeFromEdges(edgeOrNil!);
             
             edgeOrNil!.sFreshView(false);
             self.sFinishedObservedMethod(true);
@@ -308,6 +309,7 @@ class Vert: NSManagedObject {
             print("Vert cat: removeEdge: one of the inputs is nil");
         }
     }
+    */
 
     func distance(other:Vert)->Float{
         if(self.isNeighborOf(other)) {
@@ -344,6 +346,8 @@ class Vert: NSManagedObject {
 
         // now trigger kvo response to redraw the associated edge views
         invalidateViews();
+        
+        sFinishedObservedMethod(true);
     }
 
     /*
