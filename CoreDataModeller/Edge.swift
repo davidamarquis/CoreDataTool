@@ -100,7 +100,7 @@ class Edge: NSManagedObject {
         sRel2Name("");
         sVertChange(false);
     }
-
+/*
     override var description:String {
         // store methodName for logging errors
         // should use connects
@@ -121,7 +121,7 @@ class Edge: NSManagedObject {
         
         return desc;
     }
-
+*/
     // computed properties
     //TODO:
     /*

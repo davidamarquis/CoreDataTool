@@ -200,6 +200,7 @@ class Vert: NSManagedObject {
     }
 
     //MARK: methods
+    /*
     override var description:String {
         // store methodName for logging errors
         var desc:String="Vert(\(Int(x)),\(Int(y)))[";
@@ -217,6 +218,7 @@ class Vert: NSManagedObject {
         }
         return desc;
     }
+    */
 
     func isNeighborOf(other:Vert)->Bool {
 

@@ -526,6 +526,9 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         if graph == nil {print("CoreController: addVert: graph is nil");}
         graph!.SetupVert(vert, AtX: Float(loc.x), AtY: Float(loc.y));
         
+        // 4. commit changes
+        saveContext();
+        
         return vert!;
     }
     
@@ -538,7 +541,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         let vert:Vert? = graph!.getVertById(vertId);
         
         if context != nil && vert != nil {
-        
+            
              // 1. remove observers
              remVertObservers(vert!);
         
@@ -608,6 +611,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         else {
             print("CoreController: addEdge: values are nil");
         }
+        // 4. commit changes
+        saveContext();
         
         return edge!;
     }
@@ -1092,20 +1097,30 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         print("CoreController: saveContext: number of updatedObjects is \(moc.updatedObjects.count) ");
         print("CoreController: saveContext: number of deletedObjects is \(moc.deletedObjects.count) ");
         for obj in moc.insertedObjects {
-            //print("inserted obj \(obj)");
-            if obj is Graph {
-                for vert in (obj as! Graph).gVerts() {
-                    print("CoreController: inserted vert is \(vert)");
-                }
+            print("CoreController: printContextUpdates: warning graph has been updated. Printing verts/edges...");
+            if obj is Vert {
+                print("CoreController: printContextUpdates: inserted vertId= \((obj as! Vert).gVertViewId())");
+            }
+            if obj is Edge {
+                print("CoreController: printContextUpdates: inserted edgeId= \((obj as! Edge).gEdgeViewId())");
             }
         }
         for obj in moc.updatedObjects {
-            //print("updated obj \(obj)");
-            if obj is Graph {
-                print("CoreController: printContextUpdates: warning graph has been updated. Printing its verts...")
-                for vert in (obj as! Graph).gVerts() {
-                    print("CoreController: changed vert is \(vert)");
-                }
+            print("CoreController: printContextUpdates: warning graph has been updated. Printing verts/edges...");
+            if obj is Vert {
+                print("CoreController: printContextUpdates: inserted vertId= \((obj as! Vert).gVertViewId())");
+            }
+            if obj is Edge {
+                print("CoreController: printContextUpdates: inserted edgeId= \((obj as! Edge).gEdgeViewId())");
+            }
+        }
+        for obj in moc.deletedObjects {
+            print("CoreController: printContextUpdates: warning graph has been updated. Printing verts/edges...");
+            if obj is Vert {
+                print("CoreController: printContextUpdates: inserted vertId= \((obj as! Vert).gVertViewId())");
+            }
+            if obj is Edge {
+                print("CoreController: printContextUpdates: inserted edgeId= \((obj as! Edge).gEdgeViewId())");
             }
         }
     }
@@ -1244,7 +1259,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     
     private func testVertsArray(numVerts:Int)->Array<Vert> {
         var verts=Array<Vert>();
-        for var i=0;i<numVerts;i++ {
+        for var i=0;i<numVerts;++i {
             // call addVert to setup vert and add observers
             let vert = addVert(CGPointZero);
             verts.append(vert);
@@ -1256,7 +1271,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     // Attributes of the edges created by this method are only meant for initialization. It is the callers responsibility to make them correct
     private func testEdgesArray(numEdges:Int)->Array<Edge> {
         var edges=Array<Edge>();
-        for var i=0;i<numEdges;i++ {
+        for var i=0;i<numEdges;++i {
             // call addEdge
             let edge = addEdge(Int32(0), vertId2: Int32(0));
             edges.append(edge);
