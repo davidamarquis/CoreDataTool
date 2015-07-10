@@ -305,7 +305,9 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
             if vc is CoreController {
  
                 if validateEntityNameInputWithAlert(textField.text!) {
-                    (vc as! CoreController).setTitle(vert!.gVertViewId(), title: textField.text!);
+                    if vert!.gVertViewId() != nil {
+                        (vc as! CoreController).setTitle(vert!.gVertViewId()!, title: textField.text!);
+                    }
                 }
             }
         }
@@ -317,13 +319,14 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     // to set a custom font size for a table view row we need the following method
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let myLabel = UILabel();
-        myLabel.frame = CGRectMake(20,8,320,20);
-        myLabel.font = UIFont(name: "HelveticaNeue", size: 20);
+        myLabel.frame = CGRectMake(0,8,320,20);
+        myLabel.font = UIFont(name: "HelveticaNeue", size: 18);
         myLabel.text = self.tableView(tableView, titleForHeaderInSection:section);
         myLabel.backgroundColor = self.textAreaColor;
         myLabel.textColor = UIColor.whiteColor();
 
         let headerView = UIView();
+        headerView.backgroundColor = UIColor.clearColor();
         headerView.addSubview(myLabel);
 
         return headerView;

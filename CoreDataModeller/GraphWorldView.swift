@@ -16,7 +16,7 @@ protocol GestureResponse: class {
     
 class GraphWorldView: UIView {
 
-    // MARK: vars and inits
+    // MARK: vars, inits, pan()
     weak var gestureResponseDelegate:GestureResponse?;
     var circSize,edgeSize,strokeSize: CGFloat?;
 
@@ -45,15 +45,6 @@ class GraphWorldView: UIView {
         super.init(coder: aDecoder);
     }
 
-    // MARK: methods
-    func removeSubviews() {
-        for s in subviews {
-            s.removeFromSuperview();
-        }
-    }
-    
-    // MARK: gesture recognizers
-    
     // pan() determines the state of the pan gesture and passes it to the Gestures extension of CoreController to handle
     func pan(recognizer:UIPanGestureRecognizer) {
     
@@ -76,7 +67,7 @@ class GraphWorldView: UIView {
     func addVertAtPoint(cgp:CGPoint)->VertView {
         let diameter:CGFloat=circSize!+edgeSize!;
         let vert:VertView=VertView( frame: CGRectMake(cgp.x, cgp.y, diameter, diameter) );
-        (vert.circSize,vert.strokeSize)=(circSize,strokeSize);
+        (vert.circSize,vert.strokeSize) = (circSize,strokeSize);
         addSubview(vert);
         return vert;
     }
@@ -86,8 +77,7 @@ class GraphWorldView: UIView {
 
         for subview in subviews {
             if subview is VertView {
-                let vertView:VertView=subview as! VertView;
-                print("VERTVIEW: \(vertView.vertViewId!) and input id is \(vertVId)");
+                let vertView:VertView = subview as! VertView;
                 if(vertView.vertViewId! == vertVId) {return vertView;}
             }
             else {
@@ -98,7 +88,7 @@ class GraphWorldView: UIView {
     }
 
     //MARK: Edge Interface
-    //setEdge() sets the properties of an EdgeView and returns a ref to it (ref is needed if for example the edgeView init() was in setEdge input)
+    //setEdge() sets the properties of an EdgeView and returns a ref to it (a ref is needed if, for example, the edgeView was initialized in call to setEdge())
     func setEdge(ev:EdgeView, topLeftToBotRight:Bool)->EdgeView {
         ev.topLeftToBotRight=topLeftToBotRight;
         // fill in the radius
@@ -117,7 +107,6 @@ class GraphWorldView: UIView {
             
                 let edgeView:EdgeView=subview as! EdgeView;
                 if(edgeView.edgeViewId! == edgeVId) {
-                    print("GraphWorldView: getEdgeViewById: got edge with id \(edgeVId)");
                     return edgeView;
                 }
             }

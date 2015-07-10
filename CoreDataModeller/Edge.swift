@@ -13,10 +13,15 @@ import CoreData
 class Edge: NSManagedObject {
 
     //MARK: getters
-    func gEdgeViewId()->Int32 {
-        let selfEdges:NSNumber? = valueForKeyPath("edgeViewId") as? NSNumber
-        if selfEdges == nil {print("Edge: getFreshView: is nil");}
-        return selfEdges!.intValue;
+    func gEdgeViewId()->Int32? {
+        let edgeViewId:NSNumber? = valueForKeyPath("edgeViewId") as? NSNumber
+        if edgeViewId == nil {print("Edge: edgeViewId: is nil");}
+        if edgeViewId != nil {
+            return edgeViewId!.intValue;
+        }
+        else {
+            return nil;
+        }
     }
     
     func gFreshView()->Bool {
@@ -100,6 +105,7 @@ class Edge: NSManagedObject {
         sRel2Name("");
         sVertChange(false);
     }
+
 /*
     override var description:String {
         // store methodName for logging errors
@@ -121,10 +127,10 @@ class Edge: NSManagedObject {
         
         return desc;
     }
-*/
+    
     // computed properties
     //TODO:
-    /*
+    
     func length()->Float? {
         let v:Vert?;
         let w:Vert?;

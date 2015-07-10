@@ -47,15 +47,16 @@ class Graph: NSManagedObject {
     }
     
     func gEdges()->Set<Edge> {
-        let selfEdges:Set<Edge>? = valueForKeyPath("edges") as? Set<Edge>
-        if selfEdges == nil {print("Graph: edges is nil");}
+        //let selfEdges:Set<Edge>? = valueForKeyPath("edges") as? Set<Edge>
+        var selfEdges = mutableSetValueForKeyPath("edges") as? Set<Edge>;
+        //if selfEdges == nil {print("Graph: edges is nil");}
         return selfEdges!;
     }
     
     func gVerts()->Set<Vert> {
-        let verts:Set<Vert>? = valueForKeyPath("verts") as? Set<Vert>;
-        
-        if verts == nil {print("Graph: verts is nil");}
+        //let verts:Set<Vert>? = valueForKeyPath("verts") as? Set<Vert>;
+        var verts = mutableSetValueForKeyPath("verts") as? Set<Vert>;
+        //if verts == nil {print("Graph: verts is nil");}
         return verts!;
     }
     
@@ -125,23 +126,20 @@ class Graph: NSManagedObject {
     func SetupVert(vertOrNil:Vert?, AtX xPos:Float, AtY yPos:Float ) {
         // Warning: setting of ids should be guarded against the deletion of managed verts from but is not currently
       
-        if let vert=vertOrNil {
+        if vertOrNil != nil {
             // add to set within graph
-            addVertToVerts(vert);
+            addVertToVerts(vertOrNil!);
 
             // set title
-            print("SetupVert: cur vert id is is \(self.gCurVertId())");
             incrementCurVertId();
-            vert.sVertViewId(self.gCurVertId());
-            print("SetupVert: cur vert id is is \(self.gCurVertId())");
-            print("SetupVert: id of vert is is \(vert.gVertViewId())");
-            
+            vertOrNil!.sVertViewId(self.gCurVertId());
+
             // set default title
             let title = "Entity\(self.gVerts().count)";
-            vert.setValue(title, forKeyPath: "title");
+            vertOrNil!.setValue(title, forKeyPath: "title");
             
             // set position
-            vert.moveVertTo(xPos, yPos);
+            vertOrNil!.moveVertTo(xPos, yPos);
             
         }
         else {
@@ -178,9 +176,14 @@ class Graph: NSManagedObject {
             if(!(testEdge is NSManagedObject)) { print("Graph cat: edgeIdArray: verts has element that is not an NSManagedObject"); }
             else {
                 if(testEdge is Edge ) {
-                    let (v, w): (Vert?, Vert?)=(testEdge as! Edge).Connects();
-                    edgeArray.append([v!.gVertViewId(),w!.gVertViewId()]);
+                    var (v, w): (Vert?, Vert?)=(testEdge as! Edge).Connects();
                     
+                    if v!.gVertViewId() != nil && w!.gVertViewId() != nil {
+                        edgeArray.append([v!.gVertViewId()!,w!.gVertViewId()!]);
+                    }
+                    else {
+                        
+                    }
                 }
                 else {
                     print("Graph cat: edgeIdArray: verts has element that is not a vert");
@@ -248,7 +251,7 @@ class Graph: NSManagedObject {
         }
         // search for matching id
         for v in self.gVerts() {
-            print( "\(vertId), \(v.gVertViewId())" );
+            //print( "\(vertId), \(v.gVertViewId())" );
                 if v.gVertViewId() == vertId {
                     return v;
                 }
@@ -258,7 +261,7 @@ class Graph: NSManagedObject {
 
     //moveVertTo(newX:Double, _ newY:Double)
     func moveVertById(vertId:Int32, toXPos endX:Float, toYPos endY:Float) {
-        let v:Vert? = getVertById(vertId);
+        var v:Vert? = getVertById(vertId);
         // check v
         if(v==nil) {
             print("moveVertById err: no vert found", appendNewline: false);

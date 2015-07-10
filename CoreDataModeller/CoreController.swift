@@ -240,31 +240,10 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                 self.graph = savedGraphs![0] as? Graph;
                 if self.graph == nil {print("CoreController: fetchGraph: graph is nil");}
                 
-                /*
-                print("CoreController: fetchGraph: assigned graph is \(self.graph!)");
-                print("CoreController: fetchGraph: asssigned cur vert id \(self.graph!.gCurVertId())");
-                print("CoreController: fetchGraph: num verts is \(self.graph!.gVerts().count)");
-                print("CoreController: fetchGraph: verts are \(self.graph!.gVerts())");
-                
-                //print("CoreController: fetchGraph: num edges is \(self.graph!.gEdges().count)");
-                //print("CoreController: fetchGraph: num verts is \((savedGraphs![0] as! Graph).gVerts())");
-                //print("CoreController: fetchGraph: num edges is \((savedGraphs![0] as! Graph).gEdges())");
-                
-                for obj in self.graph!.gVerts() {
-                    print("CoreController: fetchGraph: vert \(obj as! Vert) ");
-                }
-                for obj in (self.graph!.valueForKey("verts") as! NSSet)  {
-                    print("CoreController: fetchGraph: (avoiding gVerts) vert \(obj as! Vert) ");
-                }
-                for obj in (self.graph!.valueForKeyPath("verts") as! NSSet)  {
-                    print("CoreController: fetchGraph: (avoiding gVerts) vert \(obj as! Vert) ");
-                }
-                */
-
                 loadGraph();
             }
             else {
-                // TODO: move testGraph into options
+                // TODO: move testGraph into OptionsVC
                 testGraph();
             }
         }
@@ -307,26 +286,49 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     
     // loadGraph() draws the verts and edges of a saved vert
     // when debugging core data use println not debugging commands
-    private func loadGraph() {
-        
+    func loadGraph() {
+        // NSManagedObjects are only assigned a permanent managed object id if they are saved to a persistent store. I believe a permanent id is neccessary for KVO to work on the object.
+        saveContext();
         
         if self.graph == nil {print("CoreController: loadGraph: graph is nil");}
         for vert in self.graph!.gVerts() {
+            
 
             vert.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
             vert.addObserver(self, forKeyPath: "title", options: .New, context: nil);
+            
+            print("CoreController: loadGraph: vert is fault? \(vert.fault) ");
             drawVert(vert);
+            
+            for edge in vert.gEdges() {
+                let edgeId = edge.valueForKey("edgeViewId");
+                let freshView = edge.valueForKey("freshView");
+                print("CoreController: loadGraph: edge id is \(edgeId!) ");
+                print("CoreController: loadGraph: fresh view is \(freshView!) ");
+                print("CoreController: loadGraph: edge is fault? \(edge.fault) ");
+                print("CC: loadGraph: edge observationInfo \(edge.observationInfo) ");
+                
+                edge.setValue(false, forKeyPath: "freshView");
+                edge.addObserver(self, forKeyPath: "freshView", options: .New, context: nil);
+                edge.setValue(true, forKeyPath: "freshView");
+                
+                drawEdge(edge);
+            }
         }
+        /*
         for edge in self.graph!.gEdges() {
             let edgeId = edge.valueForKey("edgeViewId");
             let freshView = edge.valueForKey("freshView");
             print("CoreController: loadGraph: edge id is \(edgeId!) ");
             print("CoreController: loadGraph: fresh view is \(freshView!) ");
             
+            edge.setValue(true, forKeyPath: "freshView");
             edge.addObserver(self, forKeyPath: "freshView", options: .New, context: nil);
 
+            
             drawEdge(edge);
         }
+        */
     }
 
     // removes the
@@ -366,7 +368,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     
         // if needed arrange views into final order here
         /* ... */
-
+        
+        
         // starting mode is one of moveMode(), vertMode(), edgeMode()
         moveMode();
     }
@@ -513,6 +516,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     
         let vertDescription = NSEntityDescription.entityForName("Vert",inManagedObjectContext: context!);
         var vert:Vert? = Vert(entity: vertDescription!,insertIntoManagedObjectContext: context);
+        
         if vert == nil {print("CoreController: addVert: created vert is nil");}
         
         // 1. initial values for non-optional properties
@@ -527,7 +531,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         graph!.SetupVert(vert, AtX: Float(loc.x), AtY: Float(loc.y));
         
         // 4. commit changes
-        saveContext();
+        //TODO:saveContext();
         
         return vert!;
     }
@@ -538,17 +542,24 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         //DEMO saveContext();
         
         // get the vert
-        let vert:Vert? = graph!.getVertById(vertId);
+        var vert:Vert? = graph!.getVertById(vertId);
         
         if context != nil && vert != nil {
             
              // 1. remove observers
              remVertObservers(vert!);
+            
+             for edge in graph!.gEdges() {
+                 print("CC: ")
+                 print("CC: remVert: edge: \(edge)");
+             }
         
              // 2. remove edges
              for e in vert!.gEdges() {
                  // edges can only safely be removed by calling remEdge.
-                 remEdge(e.gEdgeViewId());
+                 if e.gEdgeViewId() != nil {
+                     remEdge(e.gEdgeViewId()!);
+                 }
              }
             
              // 3. set flags on neighbors
@@ -562,7 +573,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
              context!.deleteObject(vert!);
             
             // 5. commit changes
-            saveContext();
+            //saveContext();
             
         }
         else { print("removeVertById: err"); }
@@ -612,7 +623,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             print("CoreController: addEdge: values are nil");
         }
         // 4. commit changes
-        saveContext();
+        //saveContext();
         
         return edge!;
     }
@@ -645,20 +656,19 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             
             // 1. remove observers
             edge!.removeObserver(self, forKeyPath: "freshView");
-            //edge!.addObserver(self, forKeyPath: "freshView", options: .New, context: nil);
-            
+ 
             // 2. set flags on neighboring verts
             v!.sFinishedObservedMethod(true);
             w!.sFinishedObservedMethod(true);
             
             // the edge does not have a fresh view
-            edge!.freshView=false;
+            edge!.sFreshView(false);
             
             // 3. remove from context
             context!.deleteObject(edge!);
             
             // 4. commit changes
-            saveContext();
+            //saveContext();
             
         }
         else {print("removeEdgeById: err");}
@@ -808,38 +818,80 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         testGraph();
     }
 
+    //MARK: kvo helpers
+    func printDeletedVerts() {
+        for elem in self.context!.deletedObjects {
+            if elem is Vert {
+                print("printDeletedVerts");
+                if (elem as! Vert).gVertViewId() != nil {
+                    print("deleted vert id \((elem as! Vert).gVertViewId()!) ");
+                }
+                return;
+            }
+        }
+    }
+    func printChangedVerts() {
+        for elem in self.context!.updatedObjects {
+            if elem is Vert  {
+                print("CC: printChangedVerts");
+                if (elem as! Vert).gVertViewId() != nil {
+                    print("updated vert id \((elem as! Vert).gVertViewId()!) ");
+                }
+                return;
+            }
+        }
+    }
+
     //MARK: KVO on model
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [NSObject: AnyObject]?, context: UnsafeMutablePointer<Void>) {
         
         if graphView == nil {print("CoreController: observeValueForKeyPath: graphView is nil"); }
         
+        // make sure that the object in the key value response has not been deleted from the context
+        saveContext();
+        printDeletedVerts();
+        printChangedVerts();
+        print("CC:kvo");
+        
         if object is Vert {
 
             if keyPath == "finishedObservedMethod" {
-                if !(object as! Vert).gFreshViews() {
+                //if !(object as! Vert).gFreshViews() {
+                if (object as! Vert).gVertViewId() != nil {
                     drawVert(object as! Vert);
                 }
+                else {
+                    print("CC:observeValueForKeyPath: responding to vert that was nil");
+                }
             }
+            /*
             else if keyPath == "title" {
+            
                 setVertViewTitle(object as! Vert);
             }
+            */
+            
             else {print("CoreController: observeValueForKeyPath: unrecognized keyPath \(keyPath) for object vert");}
         }
-        else if object is Edge {
         
+        else if object is Edge {
+            
             if keyPath == "freshView" {
-
+            
+                if (object as! Edge).gEdgeViewId() != nil {
                     if !(object as! Edge).gFreshView() {
                         drawEdge(object as! Edge);
                     }
-                    /*
-                    object!.removeObserver(self, forKeyPath: "freshView");
-                    let edgeId = (object as! Edge).edgeViewId;
-                    let edge = graph!.getEdgeById(edgeId);
-                    edge!.addObserver(self, forKeyPath: "freshView", options: .New, context: nil );
-                    */
+                    else {
+                        print("CC: observeValueForKeyPath: edgeView is not fresh");
+                    }
+                }
+                else {
+                    print("CC:observeValueForKeyPath: responding to edge that was nil");
+                }
             }
         }
+        
     }
     
     // caller of this function should check that the edge view really does need to be redrawn
@@ -847,7 +899,14 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     
         // check if a view exists corresponding to the vert instance. Then (1) if no view is found then vertView is nil and
         // we init a vertView and paste it to view. (2) otherwise model and view are out of date.
-        let vertView:VertView? = graphView!.gwv!.getVertViewById( v.gVertViewId() );
+        
+        var vertView:VertView?;
+        if v.gVertViewId() != nil {
+            vertView = graphView!.gwv!.getVertViewById( v.gVertViewId()! );
+        }
+        else {
+            return;
+        }
         if(vertView != nil) {
             // Refresh any properties of the vert view:
             // (1) title
@@ -869,7 +928,9 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             // set title, delegate, and id of the new vert view
             setVertViewTitle(vv, title: v.gTitle() );
             vv.delegate=self;
-            vv.vertViewId=v.gVertViewId();
+            if v.gVertViewId() != nil {
+                vv.vertViewId=v.gVertViewId();
+            }
             
         }
         
@@ -909,7 +970,10 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
         
         // step 3: getEdgeView()
-        var edgeView:EdgeView? = graphView!.gwv!.getEdgeViewById(e.gEdgeViewId());
+        var edgeView:EdgeView?;
+        if e.gEdgeViewId() != nil {
+            edgeView = graphView!.gwv!.getEdgeViewById(e.gEdgeViewId()!);
+        }
         if(edgeView != nil) {
 
             // fix the frame
@@ -924,7 +988,9 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             edgeView=graphView!.gwv!.setEdge(EdgeView(frame: edgeFrame), topLeftToBotRight: edgeDir);
             
             // do any additional setup i.e. length or angle
-            edgeView!.edgeViewId=e.gEdgeViewId();
+            if e.gEdgeViewId() != nil {
+                edgeView!.edgeViewId=e.gEdgeViewId();
+            }
         }
         // redraw the edge
         edgeView!.setNeedsDisplay();
@@ -949,7 +1015,13 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     //MARK: title
     // sets the title of a vert view
     func setVertViewTitle(v:Vert) {
-        let vv:VertView? = graphView!.gwv!.getVertViewById( v.gVertViewId() );
+        var vv:VertView?;
+        if v.gVertViewId() != nil {
+            vv = graphView!.gwv!.getVertViewById( v.gVertViewId()! );
+        }
+        else {
+            return;
+        }
         if vv != nil {
             if vv!.titleLabel != nil {
                 // labels update live so we don't need to call setNeedsDisplay()
@@ -977,8 +1049,8 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     //MARK: deinit (for KVO)
     
     func remVertObservers(vert:Vert) {
-        vert.removeObserver(self, forKeyPath: "finishedObservedMethod");
-        vert.removeObserver(self, forKeyPath: "title");
+        //TODO:vert.removeObserver(self, forKeyPath: "finishedObservedMethod");
+        //TODO: vert.removeObserver(self, forKeyPath: "title");
             for attr in vert.gAttributes() {
             //attr.removeObserver(self, forKeyPath: "name");
             //attr.removeObserver(self, forKeyPath: "type");
@@ -1099,32 +1171,59 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         for obj in moc.insertedObjects {
             print("CoreController: printContextUpdates: warning graph has been updated. Printing verts/edges...");
             if obj is Vert {
-                print("CoreController: printContextUpdates: inserted vertId= \((obj as! Vert).gVertViewId())");
+                if (obj as! Vert).gVertViewId() != nil {
+                    print("CoreController: printContextUpdates: inserted vertId= \((obj as! Vert).gVertViewId())");
+                }
             }
             if obj is Edge {
-                print("CoreController: printContextUpdates: inserted edgeId= \((obj as! Edge).gEdgeViewId())");
+                
+                //print("CoreController: printContextUpdates: inserted edgeId= \((obj as! Edge).gEdgeViewId())");
             }
         }
         for obj in moc.updatedObjects {
             print("CoreController: printContextUpdates: warning graph has been updated. Printing verts/edges...");
             if obj is Vert {
-                print("CoreController: printContextUpdates: inserted vertId= \((obj as! Vert).gVertViewId())");
+                //print("CoreController: printContextUpdates: inserted vertId= \((obj as! Vert).gVertViewId())");
             }
             if obj is Edge {
-                print("CoreController: printContextUpdates: inserted edgeId= \((obj as! Edge).gEdgeViewId())");
+                //print("CoreController: printContextUpdates: inserted edgeId= \((obj as! Edge).gEdgeViewId())");
             }
         }
         for obj in moc.deletedObjects {
             print("CoreController: printContextUpdates: warning graph has been updated. Printing verts/edges...");
             if obj is Vert {
-                print("CoreController: printContextUpdates: inserted vertId= \((obj as! Vert).gVertViewId())");
+                //print("CoreController: printContextUpdates: inserted vertId= \((obj as! Vert).gVertViewId())");
             }
             if obj is Edge {
-                print("CoreController: printContextUpdates: inserted edgeId= \((obj as! Edge).gEdgeViewId())");
+                //print("CoreController: printContextUpdates: inserted edgeId= \((obj as! Edge).gEdgeViewId())");
             }
         }
     }
-    
+    /*
+    func remObservers() {
+        for vert in graph!.gVerts() {
+            vert.removeObserver(self, forKeyPath: "finishedObservedMethod");
+            vert.removeObserver(self, forKeyPath: "title");
+            //edge.removeObserver(self, forKeyPath: "freshView");
+            //vert!.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
+            //vert!.addObserver(self, forKeyPath: "title", options: .New, context: nil);
+        }
+        for edge in graph!.gEdges() {
+            edge.removeObserver(self, forKeyPath: "freshView");
+        }
+    }
+
+    func addObservers() {
+        for vert in graph!.gVerts() {
+            vert.addObserver(self, forKeyPath: "finishedObservedMethod", options: .New, context: nil);
+            vert.addObserver(self, forKeyPath: "title", options: .New, context: nil);
+        }
+        for edge in graph!.gEdges() {
+            edge.addObserver(self, forKeyPath: "freshView", options: .New, context: nil);
+        }
+    }
+    */
+
     //MARK: - Core Data Saving support
     func saveContext() {
     
@@ -1133,9 +1232,6 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             //println("save context: context to save is \(context!)");
             
             if moc.hasChanges {
-            
-                //debug
-                printContextUpdates(moc);
                 
                 do {
                     try moc.save();
@@ -1143,10 +1239,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
                     error = error1;
                     print("CoreController: save: error is \(error)");
                 };
-                // Replace this implementation with code to handle the error appropriately.
-                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                //NSLog("Unresolved error \(error), \(error!.userInfo)")
-                //abort()
+                
             }
         }
     }
@@ -1249,7 +1342,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             photo.setValue("Description", forKeyPath: "name");
             photo.setValue("String", forKeyPath: "type");
 
-            saveContext();
+            //saveContext();
             // let testArr:Array<Int32> = graph!.getIds();
         }
         else {

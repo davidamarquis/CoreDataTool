@@ -64,10 +64,15 @@ class Vert: NSManagedObject {
         return selfY!.floatValue
     }
 
-    func gVertViewId()->Int32 {
+    func gVertViewId()->Int32? {
         let selfFreshViews:NSNumber? = valueForKeyPath("vertViewId") as? NSNumber;
-        if selfFreshViews == nil {print("Vert: getVertViewId: FreshViews is nil");}
-        return selfFreshViews!.intValue;
+        if selfFreshViews == nil {
+            //print("Vert: getVertViewId: VertViewId is nil");
+            return nil;
+        }
+        else {
+            return selfFreshViews!.intValue;
+        }
     }
 
     // attributes,
@@ -121,7 +126,7 @@ class Vert: NSManagedObject {
         setValue(NSNumber(float: float),forKeyPath: "y");
     }
 
-    // y, Float
+    //
     func sVertViewId(int:Int32) {
         setValue(NSNumber(int:int),forKeyPath: "vertViewId");
     }
@@ -190,6 +195,7 @@ class Vert: NSManagedObject {
     func setVertProperties() {
 
         // assign the properties
+        self.sVertViewId(Int32(0));
         sTitle("");
         sFinishedObservedMethod(false);
         sFreshViews(false);
@@ -332,10 +338,10 @@ class Vert: NSManagedObject {
 
     // change Fresh flags so VC must redraw (i.e. trigger a redraw of corresponding view)
     func invalidateViews() {
-        for obj in edges! {
-            if obj is Edge {
-                (obj as! Edge).sFreshView(false);
-            }
+        for edge in self.gEdges() {
+            
+            edge.sFreshView(false);
+            
         }
         sFreshViews(false);
     }

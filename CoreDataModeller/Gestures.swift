@@ -139,11 +139,17 @@ class gestureCC:CoreController, GestureResponse
     }
     
     private func respondToNoHit() {
+    
         if inVertMode && gestureDidStartOnVert() {
             if gestureVV!.vertViewId == nil { print(""); }
             
             let endPos=gestureVV!.frame.origin;
-            drawGraphAfterMovingVert(gestureVV!.vertViewId!, toXPos: Float(endPos.x), toYPos: Float(endPos.y) );
+            if gestureVV!.vertViewId != nil {
+                drawGraphAfterMovingVert(gestureVV!.vertViewId!, toXPos: Float(endPos.x), toYPos: Float(endPos.y) );
+            }
+            else {
+            
+            }
         }
     }
     
@@ -213,6 +219,7 @@ class gestureCC:CoreController, GestureResponse
         gestureVV = nil;
         shiftedOrigin = nil;
         mustAddVert = false;
+        
         edgeViewToCheckRem = nil;
         let startPos:CGPoint=recog.locationInView(graphView!.gwv!);
         //TODO: remove
