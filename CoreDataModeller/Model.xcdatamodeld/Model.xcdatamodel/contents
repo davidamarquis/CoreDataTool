@@ -3,6 +3,7 @@
     <entity name="Attribute" representedClassName="Attribute" syncable="YES">
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="type" attributeType="String" syncable="YES"/>
+        <relationship name="newRelationship" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Graph" inverseName="newRelationship" inverseEntity="Graph" syncable="YES"/>
         <relationship name="vertWithAttribute" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Vert" inverseName="attributes" inverseEntity="Vert" syncable="YES"/>
     </entity>
     <entity name="Edge" representedClassName="Edge" syncable="YES">
@@ -19,6 +20,7 @@
         <attribute name="curEdgeId" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="curVertId" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <relationship name="edges" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Edge" inverseName="graph" inverseEntity="Edge" syncable="YES"/>
+        <relationship name="newRelationship" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Attribute" inverseName="newRelationship" inverseEntity="Attribute" syncable="YES"/>
         <relationship name="verts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vert" inverseName="graph" inverseEntity="Vert" syncable="YES"/>
     </entity>
     <entity name="User" representedClassName="User" syncable="YES">
@@ -37,16 +39,18 @@
         <relationship name="edges" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Edge" inverseName="joinedTo" inverseEntity="Edge" syncable="YES"/>
         <relationship name="graph" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Graph" inverseName="verts" inverseEntity="Graph" syncable="YES"/>
         <relationship name="neighbors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Vert" inverseName="neighbors" inverseEntity="Vert" syncable="YES"/>
+        <relationship name="newRelationship" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Vert" inverseName="newRelationship1" inverseEntity="Vert" syncable="YES"/>
+        <relationship name="newRelationship1" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Vert" inverseName="newRelationship" inverseEntity="Vert" syncable="YES"/>
         <fetchedProperty name="parseObject" optional="YES" syncable="YES">
             <fetchRequest name="fetchedPropertyFetchRequest" entity="Vert"/>
         </fetchedProperty>
     </entity>
     <elements>
-        <element name="Attribute" positionX="-423" positionY="83" width="128" height="88"/>
+        <element name="Attribute" positionX="-423" positionY="83" width="128" height="103"/>
         <element name="Edge" positionX="108" positionY="-195" width="128" height="150"/>
-        <element name="Entity" positionX="-351" positionY="-234" width="128" height="43"/>
-        <element name="Graph" positionX="-369" positionY="-135" width="128" height="103"/>
+        <element name="Entity" positionX="-351" positionY="-234" width="128" height="45"/>
+        <element name="Graph" positionX="-369" positionY="-135" width="128" height="118"/>
         <element name="User" positionX="-702" positionY="9" width="128" height="75"/>
-        <element name="Vert" positionX="-234" positionY="72" width="128" height="239"/>
+        <element name="Vert" positionX="-234" positionY="72" width="128" height="266"/>
     </elements>
 </model>

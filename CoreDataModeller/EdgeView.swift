@@ -16,16 +16,14 @@ class EdgeView: UIView {
     var edgeViewId:Int32?;
     var bz:UIBezierPath = UIBezierPath();
     
-    // length holds the length of the edge
-    var length:CGFloat?;
-    var angle:CGFloat?;
+    // subview's of hitbox catch the user's gestures when they are located near the bezier path
     let hitbox=UIView();
-    
     let numberOfHitboxes = 5;
+    // each subview of hitbox has the same size
     var scaleOfBox:CGFloat?;
     
     //MARK: init
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder);
         setupEdgeView();
     }

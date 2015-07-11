@@ -89,7 +89,7 @@ class EntityTableVC: UIViewController, UITableViewDataSource, UITableViewDelegat
     
     //MARK: kvo
     //kvo is used to support changes in attributes.
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [NSObject: AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String: AnyObject]?, context: UnsafeMutablePointer<Void>) {
 
         if object is Vert {
             let v = object as! Vert;

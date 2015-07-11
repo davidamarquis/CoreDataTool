@@ -17,6 +17,8 @@
 		4812E3C91B1D046F0061EAB1 /* GraphWorldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4812E3C81B1D046F0061EAB1 /* GraphWorldView.swift */; };
 		4812E3CB1B1D047C0061EAB1 /* VertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4812E3CA1B1D047C0061EAB1 /* VertView.swift */; };
 		4812E3CD1B1D048C0061EAB1 /* EdgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4812E3CC1B1D048C0061EAB1 /* EdgeView.swift */; };
+		481D041A1B51B4BB00F46E4E /* PrintMethodsForCC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 481D04191B51B4BB00F46E4E /* PrintMethodsForCC.swift */; };
+		481D041B1B51B4BB00F46E4E /* PrintMethodsForCC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 481D04191B51B4BB00F46E4E /* PrintMethodsForCC.swift */; };
 		48282E921B179DF400BDA782 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 48282E901B179DF400BDA782 /* Model.xcdatamodeld */; };
 		48282EBA1B17AED100BDA782 /* Vert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48282EB91B17AED100BDA782 /* Vert.swift */; };
 		483B47B31B410CCB00F73242 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = 483B47B21B410CCB00F73242 /* Options.swift */; };
@@ -110,6 +112,7 @@
 		4812E3C81B1D046F0061EAB1 /* GraphWorldView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphWorldView.swift; sourceTree = "<group>"; };
 		4812E3CA1B1D047C0061EAB1 /* VertView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertView.swift; sourceTree = "<group>"; };
 		4812E3CC1B1D048C0061EAB1 /* EdgeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EdgeView.swift; sourceTree = "<group>"; };
+		481D04191B51B4BB00F46E4E /* PrintMethodsForCC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrintMethodsForCC.swift; sourceTree = "<group>"; };
 		48282E911B179DF400BDA782 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		48282EB91B17AED100BDA782 /* Vert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vert.swift; sourceTree = "<group>"; };
 		483B47B21B410CCB00F73242 /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
@@ -273,6 +276,7 @@
 			isa = PBXGroup;
 			children = (
 				489039231B1B8E0C005E0992 /* CoreController.swift */,
+				481D04191B51B4BB00F46E4E /* PrintMethodsForCC.swift */,
 				483B47B21B410CCB00F73242 /* Options.swift */,
 				48F22B3E1B4225840087C2BD /* TagTextField.swift */,
 				48C1AFAB1B3373AC00F99336 /* imgTextButton.swift */,
@@ -446,6 +450,7 @@
 				484983391B361A9F00E5D7FE /* AttributeTextField.swift in Sources */,
 				48BB56041B47075600D56563 /* Edge+CoreDataProperties.swift in Sources */,
 				484983361B35D31C00E5D7FE /* AttributeCell.swift in Sources */,
+				481D041A1B51B4BB00F46E4E /* PrintMethodsForCC.swift in Sources */,
 				48282E921B179DF400BDA782 /* Model.xcdatamodeld in Sources */,
 				48EE828A1B48F9F700C46DAA /* EntityContents.swift in Sources */,
 				4882F58D1B1E4046002F6A01 /* Graph.swift in Sources */,
@@ -462,6 +467,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				481D041B1B51B4BB00F46E4E /* PrintMethodsForCC.swift in Sources */,
 				48FA79D21B44E3C7005B7D44 /* Attribute.swift in Sources */,
 				48BB560F1B47075600D56563 /* Graph+CoreDataProperties.swift in Sources */,
 				483DAFB21B1E8D42007A532E /* Edge.swift in Sources */,

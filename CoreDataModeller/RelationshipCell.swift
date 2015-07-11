@@ -127,7 +127,7 @@ class RelationshipCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate
         textField.delegate = self;
     }
     
-    required init(coder decoder: NSCoder) {
+    required init?(coder decoder: NSCoder) {
         super.init(coder: decoder);
         postInitSetup();
     }

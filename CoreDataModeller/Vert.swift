@@ -340,7 +340,8 @@ class Vert: NSManagedObject {
     func invalidateViews() {
         for edge in self.gEdges() {
             
-            edge.sFreshView(false);
+            //edge.sFreshView(false);
+            edge.setValue(false, forKeyPath: "freshView");
             
         }
         sFreshViews(false);

@@ -120,7 +120,7 @@ class AttributeCell: UITableViewCell,UITextFieldDelegate,UIPickerViewDelegate, U
         attributesDelegate!.setAttrType(attr!, type: types[row]);
     }
     
-    required init(coder decoder: NSCoder) {
+    required init?(coder decoder: NSCoder) {
         super.init(coder: decoder);
         postInitSetup();
     }

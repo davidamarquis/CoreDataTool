@@ -41,7 +41,7 @@ class GraphWorldView: UIView {
         addGestureRecognizer(UIPanGestureRecognizer(target:self, action:"pan:" ));
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder);
     }
 

@@ -14,7 +14,6 @@ protocol VertViewWasTouchedProtocol:class {
     var inMoveMode:Bool {get};
     func drawGraphAfterMovingVert(viewId:Int32, toXPos endX:Float, toYPos endY:Float);
     func performSegueWithIdentifier(identifier: String?, sender: AnyObject?);
-    func curMode()->Int;
 }
 
 class VertView: UIView {
@@ -44,7 +43,7 @@ class VertView: UIView {
         postInit();
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         // step 1:
         selected=false;
         (x,y)=(0,0);
