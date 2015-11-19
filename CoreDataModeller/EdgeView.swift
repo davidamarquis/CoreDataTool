@@ -50,7 +50,7 @@ class EdgeView: UIView {
         // reset any global variables containing bezier paths
         bz=UIBezierPath();
         
-        let cont:CGContextRef = UIGraphicsGetCurrentContext();
+        let cont:CGContextRef? = UIGraphicsGetCurrentContext();
         CGContextSaveGState(cont);
         CGContextSetRGBFillColor(cont, 1.0, 1.0, 0.0, 1.0);
         //CGContextStrokeRect(cont, rect);

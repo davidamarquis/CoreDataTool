@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 import MessageUI
 
-class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, MailGenDelegate {
+public class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouchedProtocol, MailGenDelegate {
 
     let vscale:CGFloat=0.15;
     var hght:CGFloat=CGFloat();
@@ -43,13 +43,13 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     var mailGen = MailGen();
     
     // this method exists as fix for xcode 7 beta 2 protocol not recognizing inherited method from UIViewController
-    override func performSegueWithIdentifier(identifier: String?, sender: AnyObject?) {
+    override public func performSegueWithIdentifier(identifier: String?, sender: AnyObject?) {
         super.performSegueWithIdentifier(identifier!, sender: sender);
     }
     
     //MARK: Setup and view lifecycle
     //Setup: view lifecycle
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override public func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
     
         if sender is VertView {
             let vv:VertView = sender as! VertView;
@@ -81,7 +81,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
     }
     
-    override func viewWillLayoutSubviews() {
+    override public func viewWillLayoutSubviews() {
         // refresh the titles of the verts
         if graphView != nil {
             for view in graphView!.gwv!.subviews {
@@ -168,7 +168,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         self.performSegueWithIdentifier("optionsSegue", sender: self);
     }
     
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
 
         // set right nav buttons
         let options = UIBarButtonItem(title:"options", style: UIBarButtonItemStyle.Plain, target: self, action: "gotoOptions");
@@ -331,7 +331,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         }
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override public func viewWillAppear(animated: Bool) {
     
         // clobber attrTable if it exists
         
@@ -768,7 +768,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     }
 
     //MARK: KVO on model    
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override public func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         
         if graphView == nil {print("CoreController: observeValueForKeyPath: graphView is nil"); }
         
@@ -855,6 +855,20 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         v.sFreshViews(true);
     }
     
+    // there are four cases to consider for the positions of the origins of the verts.
+    // There are two cases for the direction of the edge between the two verts: top left to bottom right or bottom left to top right.
+    // The edge view must be told which of these cases it falls into
+    public func setDirection(X1:CGFloat, X2:CGFloat, Y1:CGFloat, Y2:CGFloat)->Bool {
+        let edgeDir:Bool;
+        if (X1 < X2 && Y1 < Y2) || (X1 >= X2 && Y1 >= Y2) {
+            edgeDir=true;
+        }
+        else {
+            edgeDir=false;
+        }
+        return edgeDir;
+    }
+    
     // caller of this function should check that the edge view really does need to be redrawn
     private func drawEdge(e:Edge) {
     
@@ -868,28 +882,23 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         
         // diameter holds diamter of vertViews
         let diameter=graphView!.gwv!.diameter;
-        var X1,Y1,X2,Y2,frameWidth,frameHeight,minX,minY:CGFloat?;
+        var X1,Y1,X2,Y2,frameWidth,frameHeight,minX,minY:CGFloat;
         (X1,Y1,X2,Y2) = (CGFloat(v!.gX()),CGFloat(v!.gY()),CGFloat(w!.gX()),CGFloat(w!.gY()));
-        (frameWidth,frameHeight) = (fabs(X1!-X2!)+diameter,fabs(Y1!-Y2!)+diameter);
-        (minX,minY) = (min(X1!,X2!),min(Y1!,Y2!));
+        (frameWidth,frameHeight) = (fabs(X1-X2)+diameter,fabs(Y1-Y2)+diameter);
+        (minX,minY) = (min(X1,X2), min(Y1,Y2) );
         
         // step 2: adjust the frame based on the least coordinate for the xval and yval for the pair of points
-        let edgeFrame = CGRectMake(minX!, minY!, frameWidth!, frameHeight!);
-        // there are four cases to consider for the positions of the origins of the verts. 
-        // There are two cases for the direction of the edge between the two verts: top left to bottom right or bottom left to top right. 
-        // The edge view must be told which of these cases it falls into
-        let edgeDir:Bool;
-        if (X1<X2 && Y1<Y2) || (X1>=X2 && Y1>=Y2) {
-            edgeDir=true;
-        }
-        else {
-            edgeDir=false;
-        }
+        let edgeFrame = CGRectMake(minX, minY, frameWidth, frameHeight);
+
+        let edgeDir:Bool = setDirection(X1, X2:X2, Y1:Y1, Y2:Y2);
         
         // step 3: getEdgeView()
         var edgeView:EdgeView?;
-        if e.gEdgeViewId() != nil {
+        if(e.gEdgeViewId() != nil) {
             edgeView = graphView!.gwv!.getEdgeViewById(e.gEdgeViewId()!);
+        }
+        else {
+            print("drawEdge: error id not valid")
         }
         if(edgeView != nil) {
 
@@ -915,18 +924,24 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
         e.sFreshView(true);
     }
     
+    // moves a UIView by delta
+    public func moveView(view:UIView?, delta:CGPoint) {
+        view!.center = CGPointMake(view!.center.x + delta.x, view!.center.y + delta.y);
+    }
+    
     // MARK: scroll
-    func scrollViewDidScroll(scrollView: UIScrollView) {
+    public func scrollViewDidScroll(scrollView: UIScrollView) {
     
+        let delta:CGPoint = CGPointMake(scrollView.contentOffset.x, scrollView.contentOffset.y);
+        // adjust x and y view positions by delta
+        self.moveView(addVertControl!, delta:delta);
+        self.moveView(remVertControl!, delta:delta);
+        self.moveView(remEdgeControl!, delta:delta);
+    }
     
-        (graphViewContentOffsetDeltaX,graphViewContentOffsetDeltaY) = (scrollView.contentOffset.x - graphViewPrevContentOffsetX, scrollView.contentOffset.y - graphViewPrevContentOffsetY);
-        // reset the stored offset values
-        (graphViewPrevContentOffsetX, graphViewPrevContentOffsetY) = (scrollView.contentOffset.x, scrollView.contentOffset.y);
+    public func shiftByDelta()
+    {
         
-        // adjust x and y positions by delta
-        addVertControl!.center = CGPointMake(addVertControl!.center.x + graphViewContentOffsetDeltaX, addVertControl!.center.y + graphViewContentOffsetDeltaY);
-        remVertControl!.center = CGPointMake(remVertControl!.center.x + graphViewContentOffsetDeltaX, remVertControl!.center.y + graphViewContentOffsetDeltaY);
-        remEdgeControl!.center = CGPointMake(remEdgeControl!.center.x + graphViewContentOffsetDeltaX, remEdgeControl!.center.y + graphViewContentOffsetDeltaY);
     }
     
     //MARK: title
@@ -959,7 +974,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
     }
 
     //MARK: UIScrollViewDelegateProtocol
-    func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+    public func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
         return graphView!.gwv ;
     }
     
@@ -1008,7 +1023,7 @@ class CoreController: UIViewController, UIScrollViewDelegate, VertViewWasTouched
             }
         }
         else {
-            print("CoreController: drawGraphAfterMovingVertById: err", appendNewline: false)
+            print("CoreController: drawGraphAfterMovingVertById: err")
         }
     }
 

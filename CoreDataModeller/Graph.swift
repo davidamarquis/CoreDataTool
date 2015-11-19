@@ -264,7 +264,7 @@ class Graph: NSManagedObject {
         var v:Vert? = getVertById(vertId);
         // check v
         if(v==nil) {
-            print("moveVertById err: no vert found", appendNewline: false);
+            print("moveVertById err: no vert found");
         }
         v!.moveVertTo(endX, endY);
     }
